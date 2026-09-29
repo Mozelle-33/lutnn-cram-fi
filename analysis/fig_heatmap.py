@@ -57,7 +57,7 @@ def main():
         off = t["bits"]["CLB_IO_CLK"]["offset"]
         row = off // 2 if off < 50 else (off - 1) // 2
         used[row, colpos[base]] += 1
-    fig, axs = plt.subplots(1, 2, figsize=(3.45, 1.9), sharey=True)
+    fig, axs = plt.subplots(1, 2, figsize=(3.45, 1.75), sharey=True)
     for ax, data, title, cmap in ((axs[0], used, "Used LUTs / tile", "Blues"), (axs[1], crit, "Critical bits / tile", "Oranges")):
         im = ax.imshow(data, origin="lower", aspect="auto", cmap=cmap, interpolation="nearest")
         ax.set_title(title, fontsize=7)

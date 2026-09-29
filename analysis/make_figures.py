@@ -354,7 +354,7 @@ def fig_hardening():
     mean, sd = np.array(mean), np.array(sd)
     metrics = ["Critical bits", "$\\sum$ mispredictions", "Severe ($>$1%)", "Catastrophic ($>$10%)", "LUTs"]
     colors = ["#2b6cb0", "#90cdf4", "#dd6b20", "#c53030", "#a0aec0"]
-    fig, ax = plt.subplots(figsize=(7.16, 1.85))
+    fig, ax = plt.subplots(figsize=(7.16, 1.6))
     w = 0.16
     x = np.arange(len(labels))
     for k, (mname, col) in enumerate(zip(metrics, colors)):

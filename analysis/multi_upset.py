@@ -244,7 +244,7 @@ def plot():
     sw_ = json.loads((ROOT / "results/multi_upset_sw.json").read_text())
     pr = json.loads((ROOT / "results/multi_upset_pred.json").read_text())
     from matplotlib.lines import Line2D
-    fig, ax = plt.subplots(figsize=(3.45, 2.1))
+    fig, ax = plt.subplots(figsize=(3.45, 1.85))
     nets = [("dwn_md", "DWN-M", "#2b6cb0"), ("dlgn_a", "DLGN", "#38a169"), ("mlp_32_16", "MLP", "#dd6b20")]
     for m, lab, col in nets:
         ps = sorted(float(p) for p in hw[m])
