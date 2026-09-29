@@ -8,17 +8,22 @@ This repository contains the platform, models, scripts and measurement data of
 
 On an AMD/Xilinx Kintex-7 XC7K325T, an autonomous on-chip injector built around the Soft Error
 Mitigation (SEM) controller flips, tests, restores and verifies **every** configuration-memory
-(CRAM) bit of the region that holds a neural network, at about 10,000 injections per second. The
-study covers differentiable weightless networks (DWNs), differentiable logic-gate networks (DLGNs)
-and an iso-accuracy fixed-point MLP on the JSC and MNIST benchmarks (41 M injections), and adds:
+(CRAM) bit of the region that holds a neural network, at up to 10,000 injections per second
+(6,800–8,000 averaged over complete campaigns). The study covers differentiable weightless networks
+(DWNs), differentiable logic-gate networks (DLGNs) and an iso-accuracy fixed-point MLP on the JSC
+and MNIST benchmarks (23 exhaustive campaigns, 82 M injections), and adds:
 
 * bit-level attribution of every critical bit to its fabric resource and net (Project X-Ray database),
-* the exactness of the parameter bit-flip model for the LUT tables, and the test-set coverage of
-  critical-bit counts,
+* the exactness of the parameter bit-flip model for the LUT tables (1.42 M table bits in 21 builds),
+  and the test-set coverage of critical-bit counts,
+* the persistent upsets of the LUT-mode bits (shift register, LUT-RAM), injected exhaustively with
+  reconfiguration after every persistent error,
 * accumulated-upset experiments in hardware versus the parameter bit-flip model,
 * a functional model of interconnect-multiplexer upsets (a disconnected multiplexer freezes, a
   doubly selected one forms a wired-AND, an undriven wire acts as logic one), validated bit by bit,
-* hardening measured exhaustively: don't-care filling, fault-aware training, selective TMR.
+  with a control experiment on the frozen values,
+* hardening measured exhaustively over three training runs per retrained variant: don't-care
+  filling, fault-aware training (inverted and physically modelled input faults), selective TMR.
 
 ## Layout
 
@@ -37,8 +42,8 @@ and an iso-accuracy fixed-point MLP on the JSC and MNIST benchmarks (41 M inject
 
 ## Requirements
 
-* Vivado 2026.1 (SEM IP v4.1, `xsdb`, `hw_server`). Set `XILINX_VIVADO` to the installation
-  directory, or edit the default path at the top of the PowerShell scripts.
+* Vivado 2026.1 (SEM IP v4.1, `xsdb`, `hw_server`). The PowerShell scripts need `XILINX_VIVADO`
+  set to the installation directory (`settings64.bat` sets it).
 * A board with an XC7K325T-FFG900-2 reachable over JTAG.
 * Python 3.12 with the packages in `requirements.txt` (a CUDA build of PyTorch speeds up training).
 * The Project X-Ray database for the XC7K325T (openXC7 fork,
@@ -64,12 +69,16 @@ python analysis/analyze_campaign.py dwn_md results/camp_dwn_md
 python analysis/make_figures.py
 ```
 
-`train/pipeline_models.ps1` and `fi/run_campaigns.ps1` chain these steps for several models. The
-other experiments have their own scripts: accumulated upsets (`analysis/multi_upset.py`,
-`fi/multi_upset.tcl`), multiplexer fault models (`hw/tcl/export_lutpins.tcl`,
-`hw/tcl/export_routetree.tcl`, `analysis/imux_model.py`, `analysis/route_model.py`), injection
-timing (`fi/throughput.tcl`), frozen-input hold test (`fi/hold_test.tcl`), test-set coverage
-(`analysis/test_coverage.py`). Each script documents its usage in its header.
+`train/pipeline_models.ps1` and `fi/run_campaigns.ps1` chain these steps for several models;
+`fi/board_queue.ps1` runs campaigns as their builds finish and injects the LUT-mode bits of a design
+in between, and resumes after an interruption (as does `train/train.py`, which checkpoints every
+epoch). The other experiments have their own scripts: LUT-mode bits (`fi/inject_list.tcl`,
+`analysis/mode_bits.py`), accumulated upsets (`analysis/multi_upset.py`, `fi/multi_upset.tcl`),
+multiplexer fault models (`hw/tcl/export_lutpins.tcl`, `hw/tcl/export_routetree.tcl`,
+`analysis/imux_model.py`, `analysis/route_model.py`), frozen-value control (`fi/idle_control.tcl`,
+`analysis/idle_control.py`), injection timing (`fi/throughput.tcl`), frozen-input hold test
+(`fi/hold_test.tcl`), test-set coverage (`analysis/test_coverage.py`). Each script documents its
+usage in its header.
 
 ## Data formats
 
@@ -80,6 +89,12 @@ timing (`fi/throughput.tcl`), frozen-input hold test (`fi/hold_test.tcl`), test-
   golden accuracy, duration). Split campaigns keep one sub-directory (`r1`, `r2`) per part.
 * `results/camp_*/analysis.json`: per-resource statistics, essential bits, FIT, and the
   hardware-versus-software check of every table bit.
+* `results/mode_dwn_md_all.tsv`: every LUT-mode bit of DWN-M: frame index, word, bit,
+  mispredictions, correct classifications, mispredictions after the restore, persistent flag,
+  feature; summarised in `results/mode_bits_dwn_md.json`.
+* `results/hardening_stats.json`, `results/composition_seeds.json`, `results/campaign_totals.json`:
+  statistics of the hardening variants over the training runs, the per-run composition check of
+  fault-aware training and TMR, and the totals of all campaigns.
 
 ## License
 

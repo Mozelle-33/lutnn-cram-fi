@@ -6,10 +6,13 @@ Examples:
   python train/train.py qmlp --name mlp_a   --hidden 32 16 --wbits 6 --abits 6 --epochs 30
 The saved spec is checked with the integer reference (models.predict_spec) and the torch
 eval-mode accuracy; both must agree before the spec is written.
+A checkpoint (models/<name>.ckpt) is written after every epoch; a run that was interrupted resumes
+from it when started again with the same arguments, and the checkpoint is removed at the end.
 """
 from pathlib import Path
 import argparse
 import json
+import os
 import time
 import numpy as np
 import torch
@@ -51,6 +54,7 @@ def main():
                     help="fault-aware training noise: input inversion, or freeze / wired-AND (IMUX upsets)")
     ap.add_argument("--init_from", default=None, help="start from models/<name>.pt (fine-tuning)")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
+    ap.add_argument("--no_resume", action="store_true", help="ignore an existing checkpoint and start over")
     a = ap.parse_args()
 
     torch.manual_seed(a.seed)
@@ -110,8 +114,31 @@ def main():
     # The epoch with the best test accuracy is kept. There is no separate validation split; every
     # network is selected the same way, so the comparison between networks is not biased by it.
     best, best_state = -1, None
-    t0 = time.time()
-    for ep in range(a.epochs):
+    # Resume after an interruption: model, optimiser, schedule, best epoch so far and the states of
+    # all random-number generators (batch order, fault-aware noise) are restored.
+    ckpt = ROOT / "models" / f"{a.name}.ckpt"
+    run_args = {k: v for k, v in vars(a).items() if k not in ("device", "no_resume")}
+    start, t_prev = 0, 0.0
+    if ckpt.exists() and not a.no_resume:
+        try:
+            c = torch.load(ckpt, map_location=dev, weights_only=False)
+        except Exception as e:                  # e.g. a file truncated by a crash while it was written
+            print(f"checkpoint {ckpt} unreadable ({e}); starting over", flush=True)
+            c = None
+        if c is not None:
+            if c["args"] != run_args:
+                raise SystemExit(f"{ckpt} was written with other arguments; use --no_resume to start over")
+            net.load_state_dict(c["net"])
+            opt.load_state_dict(c["opt"])
+            sched.load_state_dict(c["sched"])
+            gen.set_state(c["gen"])
+            torch.set_rng_state(c["rng"])
+            if dev.type == "cuda" and c["cuda_rng"] is not None:
+                torch.cuda.set_rng_state(c["cuda_rng"], dev)
+            start, best, best_state, t_prev = c["ep"] + 1, c["best"], c["best_state"], c["seconds"]
+            print(f"resumed from {ckpt.name} after epoch {c['ep']}", flush=True)
+    t0 = time.time() - t_prev
+    for ep in range(start, a.epochs):
         net.train()
         tot, n = 0.0, 0
         for idx in batches(len(ytr), a.bs, gen):
@@ -127,6 +154,16 @@ def main():
         if acc > best:
             best, best_state = acc, {k: v.detach().clone() for k, v in net.state_dict().items()}
         print(f"ep {ep:3d} loss {tot / n:.4f} test {acc:.4f} best {best:.4f} ({time.time() - t0:.0f}s)", flush=True)
+        c = {"args": run_args, "ep": ep, "net": net.state_dict(), "opt": opt.state_dict(), "sched": sched.state_dict(),
+             "gen": gen.get_state(), "rng": torch.get_rng_state(),
+             "cuda_rng": torch.cuda.get_rng_state(dev) if dev.type == "cuda" else None,
+             "best": best, "best_state": best_state, "seconds": time.time() - t0}
+        tmp = ckpt.with_suffix(".ckpt.tmp")
+        with open(tmp, "wb") as f:              # written completely and flushed to disk, then renamed
+            torch.save(c, f)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, ckpt)
 
     # Export the hardware spec (thermometer thresholds, mappings, tables / gates / integer weights)
     # and check it with the bit-exact integer reference before saving it.
@@ -144,6 +181,7 @@ def main():
     out.parent.mkdir(exist_ok=True)
     out.write_text(json.dumps(spec))
     torch.save(best_state, ROOT / "models" / f"{a.name}.pt")
+    ckpt.unlink(missing_ok=True)
     print("saved", out)
 
 

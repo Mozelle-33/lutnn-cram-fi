@@ -1,0 +1,64 @@
+{
+ "build": "dwn_md_fa2_s2",
+ "corr0": 3134,
+ "stats": {
+  "row/bridge-unused": {
+   "n": 6119,
+   "crit": 344
+  },
+  "row/open": {
+   "n": 6000,
+   "crit": 3489,
+   "exact": 5997,
+   "crit_exact": 3486,
+   "pred_crit": 3489,
+   "both_crit": 3489
+  },
+  "col/bridge-unused": {
+   "n": 11810,
+   "crit": 1096
+  },
+  "col/bridge-net": {
+   "n": 4989,
+   "crit": 2161
+  },
+  "col/open": {
+   "n": 6000,
+   "crit": 3513,
+   "exact": 5939,
+   "crit_exact": 3454,
+   "pred_crit": 3489,
+   "both_crit": 3487
+  },
+  "row/bridge-net": {
+   "n": 2820,
+   "crit": 1211
+  },
+  "col/bridge": {
+   "n": 13201,
+   "crit": 4616,
+   "exact": 13201,
+   "crit_exact": 4616,
+   "pred_crit": 4616,
+   "both_crit": 4616
+  },
+  "row/bridge": {
+   "n": 9061,
+   "crit": 3132,
+   "exact": 9061,
+   "crit_exact": 3132,
+   "pred_crit": 3132,
+   "both_crit": 3132
+  }
+ },
+ "evaluable": {
+  "n": 34262,
+  "crit": 14750,
+  "exact": 34198,
+  "crit_exact": 14688,
+  "pred_crit": 14726,
+  "both_crit": 14724
+ },
+ "coverage_bits": 0.5710333333333333,
+ "coverage_critical": 0.7540128821183928
+}

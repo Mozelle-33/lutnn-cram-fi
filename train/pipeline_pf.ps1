@@ -2,7 +2,7 @@
 # software reference and build both bitstreams in parallel (BUILD 12/13, DUT 10/11).
 Set-Location (Split-Path -Parent $PSScriptRoot)          # repository root
 # Vivado installation: $env:XILINX_VIVADO if set (e.g. by settings64.bat), else the local default
-$vivado = if ($env:XILINX_VIVADO) { $env:XILINX_VIVADO } else { 'G:\AMDDesignTools\2026.1.1\Vivado' }
+$vivado = if ($env:XILINX_VIVADO) { $env:XILINX_VIVADO } else { throw 'Set XILINX_VIVADO to the Vivado installation directory (settings64.bat sets it)' }
 $models = @(@{ m = "dwn_md_pf2"; bid = 12; did = 10 }, @{ m = "dwn_md_pf5"; bid = 13; did = 11 })
 while (-not ((Test-Path models\dwn_md_pf2.json) -and (Test-Path models\dwn_md_pf5.json))) {
     if (Select-String -Path results\train_dwn_md_pf2.err, results\train_dwn_md_pf5.err -Pattern 'Traceback' -Quiet) {

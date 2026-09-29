@@ -4,7 +4,7 @@ param([string]$suffix = "")
 $ErrorActionPreference = "Stop"
 Set-Location (Split-Path -Parent $PSScriptRoot)          # repository root
 # Vivado installation: $env:XILINX_VIVADO if set (e.g. by settings64.bat), else the local default
-$vivado = if ($env:XILINX_VIVADO) { $env:XILINX_VIVADO } else { 'G:\AMDDesignTools\2026.1.1\Vivado' }
+$vivado = if ($env:XILINX_VIVADO) { $env:XILINX_VIVADO } else { throw 'Set XILINX_VIVADO to the Vivado installation directory (settings64.bat sets it)' }
 $xsdb = "$vivado\bin\xsdb.bat"
 $runs = @(
     @{ m = "dwn_md";    f0 = 72; f1 = 967 },

@@ -1,0 +1,96 @@
+{
+ "model": "dwn_md_s1",
+ "build": "dwn_md_tmr_s1",
+ "campaign": "results\\camp_dwn_md_tmr_s1",
+ "subcampaigns": [
+  "results\\camp_dwn_md_tmr_s1"
+ ],
+ "ranges": [
+  [
+   72,
+   1455
+  ]
+ ],
+ "injected": 4465843,
+ "reported_injections": 4465843,
+ "seconds": 583.183,
+ "skipped_mode_bits": 7245,
+ "skipped_by_class": {
+  "CLB_OTHER": 7245
+ },
+ "skipped_essential": 7245,
+ "essential_in_range": 1161880,
+ "ebd_lead_pad_frames": 1,
+ "ebd_probe_hits": "2000/2000",
+ "critical": 189408,
+ "critical_frac_injected": 0.042412597128918324,
+ "critical_frac_essential": 0.1630185561331635,
+ "fit_sea_level": 7.57632,
+ "cross_section_cm2": 1.07773152e-09,
+ "acc_degrading": 118876,
+ "persistent": 0,
+ "timeouts": 0,
+ "golden_corr": 3161,
+ "ntest": 4096,
+ "mean_mism_critical": 13.607424184828519,
+ "mean_acc_drop_critical": 0.0012244101935372318,
+ "classes": {
+  "LUT_INIT": {
+   "injected": 844800,
+   "essential": 373952,
+   "critical": 22646,
+   "acc_degrading": 11373,
+   "mean_mism": 3.9882539962907355
+  },
+  "ROUTING": {
+   "injected": 3196000,
+   "essential": 739487,
+   "critical": 156285,
+   "acc_degrading": 100292,
+   "mean_mism": 13.407396743129539
+  },
+  "CLB_OTHER": {
+   "injected": 234255,
+   "essential": 48017,
+   "critical": 10284,
+   "acc_degrading": 7028,
+   "mean_mism": 22.94535200311163
+  },
+  "HCLK": {
+   "injected": 4160,
+   "essential": 424,
+   "critical": 193,
+   "acc_degrading": 183,
+   "mean_mism": 806.6943005181347
+  },
+  "BRAM_DSP": {
+   "injected": 26400,
+   "essential": 0,
+   "critical": 0,
+   "acc_degrading": 0,
+   "mean_mism": 0.0
+  },
+  "UNMAPPED": {
+   "injected": 160228,
+   "essential": 0,
+   "critical": 0,
+   "acc_degrading": 0,
+   "mean_mism": 0.0
+  }
+ },
+ "lut_init_critical_by_module": {
+  "encoder": 16534,
+  "lut_layer": 6018,
+  "other": 84,
+  "argmax": 10
+ },
+ "dwn_lut_layer_hw_vs_sw": {
+  "bits": 64000,
+  "exact_agree": 64000,
+  "tp": 6018,
+  "fp": 0,
+  "fn": 0,
+  "tn": 57982,
+  "examples_diff": []
+ }
+}

@@ -4,7 +4,7 @@ param([Parameter(Mandatory = $true)][string]$name)
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)     # repository root (script is in hw\sim)
 # Vivado installation: $env:XILINX_VIVADO if set (e.g. by settings64.bat), else the local default
-$vivado = if ($env:XILINX_VIVADO) { $env:XILINX_VIVADO } else { 'G:\AMDDesignTools\2026.1.1\Vivado' }
+$vivado = if ($env:XILINX_VIVADO) { $env:XILINX_VIVADO } else { throw 'Set XILINX_VIVADO to the Vivado installation directory (settings64.bat sets it)' }
 $bin = Join-Path $vivado 'bin'
 $gen = Join-Path $root "hw\gen\$name"
 $meta = Get-Content (Join-Path $gen 'meta.json') | ConvertFrom-Json

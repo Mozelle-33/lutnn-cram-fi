@@ -1,0 +1,64 @@
+{
+ "build": "dwn_md_pf5_s2",
+ "corr0": 3142,
+ "stats": {
+  "row/open": {
+   "n": 6000,
+   "crit": 3510,
+   "exact": 5998,
+   "crit_exact": 3508,
+   "pred_crit": 3509,
+   "both_crit": 3509
+  },
+  "row/bridge": {
+   "n": 8609,
+   "crit": 2685,
+   "exact": 8609,
+   "crit_exact": 2685,
+   "pred_crit": 2685,
+   "both_crit": 2685
+  },
+  "row/bridge-unused": {
+   "n": 6157,
+   "crit": 354
+  },
+  "col/open": {
+   "n": 6000,
+   "crit": 3522,
+   "exact": 5962,
+   "crit_exact": 3489,
+   "pred_crit": 3509,
+   "both_crit": 3504
+  },
+  "col/bridge-unused": {
+   "n": 11960,
+   "crit": 1189
+  },
+  "col/bridge-net": {
+   "n": 5622,
+   "crit": 2430
+  },
+  "col/bridge": {
+   "n": 12418,
+   "crit": 3929,
+   "exact": 12417,
+   "crit_exact": 3928,
+   "pred_crit": 3928,
+   "both_crit": 3928
+  },
+  "row/bridge-net": {
+   "n": 3234,
+   "crit": 1385
+  }
+ },
+ "evaluable": {
+  "n": 33027,
+  "crit": 13646,
+  "exact": 32986,
+  "crit_exact": 13610,
+  "pred_crit": 13631,
+  "both_crit": 13626
+ },
+ "coverage_bits": 0.55045,
+ "coverage_critical": 0.7180593559250684
+}

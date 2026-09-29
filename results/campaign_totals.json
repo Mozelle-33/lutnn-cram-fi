@@ -1,0 +1,169 @@
+{
+ "campaigns": 23,
+ "injected": 81806579,
+ "hours": 3.057855277777778,
+ "rate_min": 6760.937580380401,
+ "rate_max": 8049.800003274161,
+ "dwn_builds": 21,
+ "param_bits": 1420800,
+ "param_exact": 1420800,
+ "runs": {
+  "camp_dlgn_a": {
+   "injected": 3563268,
+   "seconds": 478.317,
+   "rate": 7449.595142970039
+  },
+  "camp_dwn_md": {
+   "injected": 2891192,
+   "seconds": 418.804,
+   "rate": 6903.448868683203,
+   "param_bits": 64000,
+   "param_exact": 64000
+  },
+  "camp_dwn_md_dc": {
+   "injected": 2891192,
+   "seconds": 407.653,
+   "rate": 7092.286822370987,
+   "param_bits": 64000,
+   "param_exact": 64000
+  },
+  "camp_dwn_md_fa2": {
+   "injected": 2891432,
+   "seconds": 400.079,
+   "rate": 7227.152637354123,
+   "param_bits": 64000,
+   "param_exact": 64000
+  },
+  "camp_dwn_md_fa2_s1": {
+   "injected": 2891612,
+   "seconds": 400.139,
+   "rate": 7226.518784722309,
+   "param_bits": 64000,
+   "param_exact": 64000
+  },
+  "camp_dwn_md_fa2_s2": {
+   "injected": 2891087,
+   "seconds": 406.11,
+   "rate": 7118.9751545147865,
+   "param_bits": 64000,
+   "param_exact": 64000
+  },
+  "camp_dwn_md_fa2_tmr": {
+   "injected": 4466053,
+   "seconds": 577.6030000000001,
+   "rate": 7732.0460593175585,
+   "param_bits": 64000,
+   "param_exact": 64000
+  },
+  "camp_dwn_md_fa2_tmr_s1": {
+   "injected": 4233574,
+   "seconds": 558.066,
+   "rate": 7586.152892310228,
+   "param_bits": 64000,
+   "param_exact": 64000
+  },
+  "camp_dwn_md_fa2_tmr_s2": {
+   "injected": 4233244,
+   "seconds": 558.065,
+   "rate": 7585.575157015759,
+   "param_bits": 64000,
+   "param_exact": 64000
+  },
+  "camp_dwn_md_fa5": {
+   "injected": 2891477,
+   "seconds": 397.78,
+   "rate": 7269.035647845543,
+   "param_bits": 64000,
+   "param_exact": 64000
+  },
+  "camp_dwn_md_p2": {
+   "injected": 2891342,
+   "seconds": 427.654,
+   "rate": 6760.937580380401,
+   "param_bits": 64000,
+   "param_exact": 64000
+  },
+  "camp_dwn_md_pf2": {
+   "injected": 2891042,
+   "seconds": 407.567,
+   "rate": 7093.415315764034,
+   "param_bits": 64000,
+   "param_exact": 64000
+  },
+  "camp_dwn_md_pf5": {
+   "injected": 2891297,
+   "seconds": 402.607,
+   "rate": 7181.437481216173,
+   "param_bits": 64000,
+   "param_exact": 64000
+  },
+  "camp_dwn_md_pf5_s1": {
+   "injected": 2891132,
+   "seconds": 406.043,
+   "rate": 7120.260662048108,
+   "param_bits": 64000,
+   "param_exact": 64000
+  },
+  "camp_dwn_md_pf5_s2": {
+   "injected": 2891342,
+   "seconds": 400.98,
+   "rate": 7210.688812409596,
+   "param_bits": 64000,
+   "param_exact": 64000
+  },
+  "camp_dwn_md_s1": {
+   "injected": 2891312,
+   "seconds": 407.705,
+   "rate": 7091.676579880061,
+   "param_bits": 64000,
+   "param_exact": 64000
+  },
+  "camp_dwn_md_s2": {
+   "injected": 2891177,
+   "seconds": 403.207,
+   "rate": 7170.453389946108,
+   "param_bits": 64000,
+   "param_exact": 64000
+  },
+  "camp_dwn_md_tmr": {
+   "injected": 4465948,
+   "seconds": 580.408,
+   "rate": 7694.497663712423,
+   "param_bits": 64000,
+   "param_exact": 64000
+  },
+  "camp_dwn_md_tmr_s1": {
+   "injected": 4465843,
+   "seconds": 583.183,
+   "rate": 7657.70435695142,
+   "param_bits": 64000,
+   "param_exact": 64000
+  },
+  "camp_dwn_md_tmr_s2": {
+   "injected": 4465828,
+   "seconds": 585.164,
+   "rate": 7631.754516682503,
+   "param_bits": 64000,
+   "param_exact": 64000
+  },
+  "camp_dwn_mnist": {
+   "injected": 2890547,
+   "seconds": 364.425,
+   "rate": 7931.802154078342,
+   "param_bits": 192000,
+   "param_exact": 192000
+  },
+  "camp_dwn_sm": {
+   "injected": 1109588,
+   "seconds": 153.949,
+   "rate": 7207.503783720582,
+   "param_bits": 12800,
+   "param_exact": 12800
+  },
+  "camp_mlp_32_16": {
+   "injected": 10326050,
+   "seconds": 1282.7710000000002,
+   "rate": 8049.800003274161
+  }
+ }
+}

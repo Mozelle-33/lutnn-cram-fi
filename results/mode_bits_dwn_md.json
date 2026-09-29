@@ -1,0 +1,138 @@
+{
+ "build": "dwn_md",
+ "slicem_tiles": 312,
+ "used_luts_in_slicems": 1059,
+ "test_vectors": 4096,
+ "by_feature": {
+  "RAM|unused": {
+   "bits": 189,
+   "critical": 3,
+   "severe": 1,
+   "catastrophic": 1,
+   "persistent": 3,
+   "persistent_silent_in_test": 0,
+   "recovered_by_restore": 0,
+   "mean_mism_critical": 458.0
+  },
+  "RAM|used": {
+   "bits": 1059,
+   "critical": 270,
+   "severe": 35,
+   "catastrophic": 2,
+   "persistent": 269,
+   "persistent_silent_in_test": 3,
+   "recovered_by_restore": 4,
+   "mean_mism_critical": 31.003703703703703
+  },
+  "SMALL|unused": {
+   "bits": 189,
+   "critical": 0,
+   "severe": 0,
+   "catastrophic": 0,
+   "persistent": 0,
+   "persistent_silent_in_test": 0,
+   "recovered_by_restore": 0,
+   "mean_mism_critical": 0.0
+  },
+  "SMALL|used": {
+   "bits": 1059,
+   "critical": 0,
+   "severe": 0,
+   "catastrophic": 0,
+   "persistent": 0,
+   "persistent_silent_in_test": 0,
+   "recovered_by_restore": 0,
+   "mean_mism_critical": 0.0
+  },
+  "SRL|unused": {
+   "bits": 189,
+   "critical": 6,
+   "severe": 4,
+   "catastrophic": 1,
+   "persistent": 6,
+   "persistent_silent_in_test": 0,
+   "recovered_by_restore": 0,
+   "mean_mism_critical": 286.6666666666667
+  },
+  "SRL|used": {
+   "bits": 1059,
+   "critical": 923,
+   "severe": 99,
+   "catastrophic": 5,
+   "persistent": 919,
+   "persistent_silent_in_test": 1,
+   "recovered_by_restore": 5,
+   "mean_mism_critical": 25.306608884073672
+  },
+  "WA7USED|unused": {
+   "bits": 15,
+   "critical": 0,
+   "severe": 0,
+   "catastrophic": 0,
+   "persistent": 0,
+   "persistent_silent_in_test": 0,
+   "recovered_by_restore": 0,
+   "mean_mism_critical": 0.0
+  },
+  "WA7USED|used": {
+   "bits": 297,
+   "critical": 0,
+   "severe": 0,
+   "catastrophic": 0,
+   "persistent": 0,
+   "persistent_silent_in_test": 0,
+   "recovered_by_restore": 0,
+   "mean_mism_critical": 0.0
+  },
+  "WA8USED|unused": {
+   "bits": 15,
+   "critical": 0,
+   "severe": 0,
+   "catastrophic": 0,
+   "persistent": 0,
+   "persistent_silent_in_test": 0,
+   "recovered_by_restore": 0,
+   "mean_mism_critical": 0.0
+  },
+  "WA8USED|used": {
+   "bits": 297,
+   "critical": 0,
+   "severe": 0,
+   "catastrophic": 0,
+   "persistent": 0,
+   "persistent_silent_in_test": 0,
+   "recovered_by_restore": 0,
+   "mean_mism_critical": 0.0
+  },
+  "WEMUX.CE|unused": {
+   "bits": 15,
+   "critical": 0,
+   "severe": 0,
+   "catastrophic": 0,
+   "persistent": 0,
+   "persistent_silent_in_test": 0,
+   "recovered_by_restore": 0,
+   "mean_mism_critical": 0.0
+  },
+  "WEMUX.CE|used": {
+   "bits": 297,
+   "critical": 0,
+   "severe": 0,
+   "catastrophic": 0,
+   "persistent": 0,
+   "persistent_silent_in_test": 0,
+   "recovered_by_restore": 0,
+   "mean_mism_critical": 0.0
+  },
+  "all": {
+   "bits": 4680,
+   "critical": 1202,
+   "severe": 139,
+   "catastrophic": 9,
+   "persistent": 1197,
+   "persistent_silent_in_test": 4,
+   "recovered_by_restore": 9,
+   "mean_mism_critical": 28.97088186356073
+  }
+ }
+}

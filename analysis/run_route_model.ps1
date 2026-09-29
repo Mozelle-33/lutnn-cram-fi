@@ -3,7 +3,7 @@
 # Usage: powershell -File analysis\run_route_model.ps1 "<build>:<model>:<campaign dir>" ...
 Set-Location (Split-Path -Parent $PSScriptRoot)          # repository root
 # Vivado installation: $env:XILINX_VIVADO if set (e.g. by settings64.bat), else the local default
-$vivado = if ($env:XILINX_VIVADO) { $env:XILINX_VIVADO } else { 'G:\AMDDesignTools\2026.1.1\Vivado' }
+$vivado = if ($env:XILINX_VIVADO) { $env:XILINX_VIVADO } else { throw 'Set XILINX_VIVADO to the Vivado installation directory (settings64.bat sets it)' }
 $viv = "$vivado\bin\vivado.bat"
 $py = 'env\venv\Scripts\python.exe'
 foreach ($spec in $args) {

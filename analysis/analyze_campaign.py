@@ -19,7 +19,7 @@ from cram_map import CramMap, load_farlist
 
 ROOT = Path(__file__).resolve().parents[1]
 DB = ROOT / "tools/prjxray-db/kintex7"
-FIT_PER_MB = 67.0          # UG116 v10.9 Table 1-19, 28 nm Kintex-7 CRAM, real-time (NYC sea level)
+FIT_PER_MB = 40.0          # UG116 v10.21 (2026) Table 1, 28 nm Kintex-7 CRAM, real-time SER (NYC sea level)
 XS_PER_BIT = 5.69e-15      # cm^2, LANSCE neutron cross-section per CRAM bit, same table
 CLASSES = ["LUT_INIT", "ROUTING", "CLB_OTHER", "HCLK", "BRAM_DSP", "OTHER", "UNMAPPED"]
 

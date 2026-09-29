@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 
 ROOT = Path(__file__).resolve().parents[1]
 PAPER = ROOT / "paper"
+FIT_PER_MB = 40.0   # UG116 v10.21 (2026) Table 1: 28 nm Kintex-7 CRAM real-time SER, as in analyze_campaign.py
 CAMPAIGNS = [  # (label, campaign dir, model, build)
     ("DWN-S", "camp_dwn_sm", "dwn_sm", "dwn_sm"),
     ("DWN-M", "camp_dwn_md", "dwn_md", "dwn_md"),
@@ -142,6 +143,49 @@ def tail_counts(cdir, ntest=4096):
     return n, s, t1, t10
 
 
+# Hardening variants of DWN-M with their training replicas: (label, [(campaign dir, model, build)])
+SEEDED = [
+    ("DWN-M", [("camp_dwn_md", "dwn_md", "dwn_md"), ("camp_dwn_md_s1", "dwn_md_s1", "dwn_md_s1"),
+               ("camp_dwn_md_s2", "dwn_md_s2", "dwn_md_s2")]),
+    ("+ don't-care fill", [("camp_dwn_md_dc", "dwn_md_dc", "dwn_md_dc")]),
+    ("+ fault-aware (2\\,\\%)", [("camp_dwn_md_fa2", "dwn_md_fa2", "dwn_md_fa2"),
+                                ("camp_dwn_md_fa2_s1", "dwn_md_fa2_s1", "dwn_md_fa2_s1"),
+                                ("camp_dwn_md_fa2_s2", "dwn_md_fa2_s2", "dwn_md_fa2_s2")]),
+    ("+ fault-aware (5\\,\\%)", [("camp_dwn_md_fa5", "dwn_md_fa5", "dwn_md_fa5")]),
+    ("+ phys.\\ fault-aware (2\\,\\%)", [("camp_dwn_md_pf2", "dwn_md_pf2", "dwn_md_pf2")]),
+    ("+ phys.\\ fault-aware (5\\,\\%)", [("camp_dwn_md_pf5", "dwn_md_pf5", "dwn_md_pf5"),
+                                        ("camp_dwn_md_pf5_s1", "dwn_md_pf5_s1", "dwn_md_pf5_s1"),
+                                        ("camp_dwn_md_pf5_s2", "dwn_md_pf5_s2", "dwn_md_pf5_s2")]),
+    ("+ output-stage TMR", [("camp_dwn_md_tmr", "dwn_md", "dwn_md_tmr"),
+                            ("camp_dwn_md_tmr_s1", "dwn_md_s1", "dwn_md_tmr_s1"),
+                            ("camp_dwn_md_tmr_s2", "dwn_md_s2", "dwn_md_tmr_s2")]),
+    ("+ fault-aware (2\\,\\%) + TMR", [("camp_dwn_md_fa2_tmr", "dwn_md_fa2", "dwn_md_fa2_tmr"),
+                                      ("camp_dwn_md_fa2_tmr_s1", "dwn_md_fa2_s1", "dwn_md_fa2_tmr_s1"),
+                                      ("camp_dwn_md_fa2_tmr_s2", "dwn_md_fa2_s2", "dwn_md_fa2_tmr_s2")]),
+]
+METRICS = ["crit", "smism", "gt1", "gt10"]
+
+
+def run_metrics(cdir, model, build):
+    """Accuracy, DUT LUTs, essential bits and the four vulnerability metrics of one campaign."""
+    spec = json.loads((ROOT / f"models/{model}.json").read_text())
+    pb = dict(kv.split("=") for kv in (ROOT / f"hw/build/{build}/pblock.txt").read_text().split() if "=" in kv)
+    a = json.loads((ROOT / "results" / cdir / "analysis.json").read_text())
+    n, s, t1, t10 = tail_counts(cdir)
+    return {"acc": 100 * spec["meta"]["test_acc"], "luts": int(pb["dut_luts"]), "ess": a["essential_in_range"],
+            "crit": n, "smism": s, "gt1": t1, "gt10": t10}
+
+
+def seeded_runs():
+    """[(label, [metrics of each available replica])] for the SEEDED variants."""
+    out = []
+    for label, runs in SEEDED:
+        ms = [run_metrics(*r) for r in runs if event_files(r[0]) and (ROOT / "results" / r[0] / "analysis.json").exists()]
+        if ms:
+            out.append((label, ms))
+    return out
+
+
 def hardening_table():
     """Hardening table of the old conference draft; returns the per-variant numbers."""
     L = [r"\begin{tabular}{lrrrrr}", r"\toprule",
@@ -172,84 +216,157 @@ def table_models_tvlsi(rows):
     for r in rows:
         a, spec, res = r["a"], r["spec"], r["res"]
         data = "MNIST" if "mnist" in r["label"].lower() else "JSC"
+        fit = a["critical"] * FIT_PER_MB / 1e6       # recomputed with the current UG116 rate
         L.append(f"{r['label']} & {data} & {100 * spec['meta']['test_acc']:.1f} & {int(res['dut_luts'])} & {int(res['dut_ffs'])} & "
                  f"{res['latency']} & {a['injected'] / 1e6:.2f} & {a['essential_in_range'] / 1e3:.0f} & {a['critical'] / 1e3:.1f} & "
-                 f"{100 * a['critical_frac_essential']:.1f} & {a['critical'] / int(res['dut_luts']):.1f} & {a['fit_sea_level']:.1f} \\\\")
+                 f"{100 * a['critical_frac_essential']:.1f} & {a['critical'] / int(res['dut_luts']):.1f} & {fit:.1f} \\\\")
     L += [r"\bottomrule", r"\end{tabular}"]
     TVLSI.mkdir(exist_ok=True)
     (TVLSI / "table_models_tvlsi.tex").write_text("\n".join(L))
 
 
 def hardening_table_tvlsi():
-    """Hardening table for the journal paper: accuracy, LUTs, critical bits, summed mispredictions and
-    severe / catastrophic upsets per variant (paper_tvlsi/table_hardening_tvlsi.tex)."""
-    # the two retrained replicas (other seeds, no hardening) show the variation between training runs
-    harden = HARDEN[:1] + [("\\quad retrained, seed 1", "camp_dwn_md_s1", "dwn_md_s1"),
-                           ("\\quad retrained, seed 2", "camp_dwn_md_s2", "dwn_md_s2")] + HARDEN[1:] + [
-        ("+ phys.\\ fault-aware (2\\,\\%)", "camp_dwn_md_pf2", "dwn_md_pf2"),
-        ("+ phys.\\ fault-aware (5\\,\\%)", "camp_dwn_md_pf5", "dwn_md_pf5"),
-        ("+ output-stage TMR", "camp_dwn_md_tmr", "dwn_md", "dwn_md_tmr"),
-        ("+ fault-aware (2\\,\\%) + TMR", "camp_dwn_md_fa2_tmr", "dwn_md_fa2", "dwn_md_fa2_tmr")]
-    L = [r"\begin{tabular}{lrrrrrr}", r"\toprule",
-         r"Variant & Acc. & LUTs & Crit. & $\sum$mism. & $>$1\,\% & $>$10\,\% \\",
-         r" & [\%] & & [k] & [M] & [k] & \\", r"\midrule"]
-    for item in harden:
-        label, cdir, model = item[:3]
-        build = item[3] if len(item) > 3 else model
-        if not event_files(cdir):
-            continue
-        spec = json.loads((ROOT / f"models/{model}.json").read_text())
-        pb = (ROOT / f"hw/build/{build}/pblock.txt").read_text()
-        luts = int(dict(kv.split("=") for kv in pb.split() if "=" in kv)["dut_luts"])
-        n, s, t1, t10 = tail_counts(cdir)
-        L.append(f"{label} & {100 * spec['meta']['test_acc']:.2f} & {luts} & {n / 1e3:.1f} & {s / 1e6:.2f} & {t1 / 1e3:.1f} & {t10} \\\\")
+    """Hardening table for the journal paper (double column): per variant the number of training
+    replicas, accuracy, LUTs, essential and critical bits, summed mispredictions and severe /
+    catastrophic upsets; mean and standard deviation where there are several replicas
+    (paper_tvlsi/table_hardening_tvlsi.tex)."""
+    import numpy as np
+
+    def fmt(vals, scale, digits):
+        v = np.array(vals, dtype=float) / scale
+        if len(v) == 1:
+            return f"{v[0]:.{digits}f}"
+        return f"{v.mean():.{digits}f}$\\pm${v.std(ddof=1):.{digits}f}"
+
+    L = [r"\begin{tabular}{lrrrrrrrrr}", r"\toprule",
+         r"Variant & Runs & Acc. & LUTs & Ess. & Crit. & Crit./Ess. & $\sum$mism. & $>$1\,\% & $>$10\,\% \\",
+         r" & & [\%] & & [k] & [k] & [\%] & [M] & [k] & \\", r"\midrule"]
+    for label, ms in seeded_runs():
+        col = lambda k: [m[k] for m in ms]          # noqa: E731
+        ratio = [100 * m["crit"] / m["ess"] for m in ms]
+        L.append(" & ".join([label, str(len(ms)), fmt(col("acc"), 1, 2), fmt(col("luts"), 1, 0), fmt(col("ess"), 1e3, 0),
+                             fmt(col("crit"), 1e3, 1), fmt(ratio, 1, 1), fmt(col("smism"), 1e6, 2),
+                             fmt(col("gt1"), 1e3, 1), fmt(col("gt10"), 1, 0)]) + r" \\")
     L += [r"\bottomrule", r"\end{tabular}"]
     TVLSI.mkdir(exist_ok=True)
     (TVLSI / "table_hardening_tvlsi.tex").write_text("\n".join(L))
 
 
-def fig_hardening():
-    """Relative change of each metric versus DWN-M for the hardening variants (double-column figure).
-    The first two groups are DWN-M retrained with other seeds and no hardening: the variation between
-    training runs against which the retrained variants (fault-aware training) must be judged."""
-    import numpy as np
-    variants = [("Retrained\nseed 1", "camp_dwn_md_s1", "dwn_md_s1"), ("Retrained\nseed 2", "camp_dwn_md_s2", "dwn_md_s2"),
-                ("Don't-care\nfill", "camp_dwn_md_dc", "dwn_md_dc"), ("Fault-aware\n2%", "camp_dwn_md_fa2", "dwn_md_fa2"),
-                ("Fault-aware\n5%", "camp_dwn_md_fa5", "dwn_md_fa5"),
-                ("Physical\nFA 2%", "camp_dwn_md_pf2", "dwn_md_pf2"), ("Physical\nFA 5%", "camp_dwn_md_pf5", "dwn_md_pf5"),
-                ("Output\nTMR", "camp_dwn_md_tmr", "dwn_md_tmr"),
-                ("Fault-aware\n2% + TMR", "camp_dwn_md_fa2_tmr", "dwn_md_fa2_tmr")]
-    base = tail_counts("camp_dwn_md")
-    base_luts = int(dict(kv.split("=") for kv in (ROOT / "hw/build/dwn_md/pblock.txt").read_text().split() if "=" in kv)["dut_luts"])
-    rows, labels = [], []
-    for label, cdir, build in variants:
-        if not event_files(cdir):
+def composition_check():
+    """Does fault-aware training (2 %) compose multiplicatively with output-stage TMR in every training
+    replica? For each seed: remaining fraction FA2 x TMR (predicted) vs FA2+TMR (measured), relative to
+    the unhardened network of the same seed. Writes results/composition_seeds.json."""
+    groups = {label: runs for label, runs in SEEDED}
+    names = ["DWN-M", "+ fault-aware (2\\,\\%)", "+ output-stage TMR", "+ fault-aware (2\\,\\%) + TMR"]
+    out = []
+    for s in range(3):
+        runs = [groups[n][s] for n in names]
+        if not all(event_files(r[0]) for r in runs):
             continue
-        n, s, t1, t10 = tail_counts(cdir)
-        luts = int(dict(kv.split("=") for kv in (ROOT / f"hw/build/{build}/pblock.txt").read_text().split() if "=" in kv)["dut_luts"])
-        rows.append([100 * (n / base[0] - 1), 100 * (s / base[1] - 1), 100 * (t1 / base[2] - 1), 100 * (t10 / base[3] - 1),
-                     100 * (luts / base_luts - 1)])
-        labels.append(label)
-    rows = np.array(rows)
+        base, fa, tmr, both = [run_metrics(*r) for r in runs]
+        row = {"seed": s}
+        for k in METRICS:
+            pred, meas = (fa[k] / base[k]) * (tmr[k] / base[k]), both[k] / base[k]
+            row[k] = {"pred_remaining": pred, "meas_remaining": meas, "diff_pts": 100 * (meas - pred)}
+        out.append(row)
+    (ROOT / "results/composition_seeds.json").write_text(json.dumps(out, indent=1))
+    return out
+
+
+def hardening_stats():
+    """Statistics behind the hardening section (results/hardening_stats.json).
+    Every variant: change of each metric relative to the mean of the unhardened replicas (accuracy:
+    difference in points), mean and standard deviation over its replicas, and for variants with
+    several replicas Welch's t-test against the unhardened ones. TMR leaves the trained network
+    unchanged, so it is also compared per seed with the same network without TMR."""
+    import numpy as np
+    from scipy import stats
+    runs = dict(seeded_runs())
+    base = runs["DWN-M"]
+    out = {}
+    for label, ms in runs.items():
+        row = {"runs": len(ms)}
+        for k in METRICS + ["luts", "ess", "acc"]:
+            b = np.array([m[k] for m in base], float)
+            v = np.array([m[k] for m in ms], float)
+            rel = v - b.mean() if k == "acc" else 100 * (v / b.mean() - 1)
+            e = {"mean": float(rel.mean()), "sd": float(rel.std(ddof=1)) if len(v) > 1 else None}
+            if len(v) > 1 and label != "DWN-M":
+                e["welch_p"] = float(stats.ttest_ind(v, b, equal_var=False).pvalue)
+            row[k] = e
+        out[label] = row
+    groups = dict(SEEDED)
+    paired = {}
+    for hard, plain in [("+ output-stage TMR", "DWN-M"), ("+ fault-aware (2\\,\\%) + TMR", "+ fault-aware (2\\,\\%)")]:
+        rows = []
+        for h, p in zip(groups[hard], groups[plain]):
+            if event_files(h[0]) and event_files(p[0]):
+                mh, mp = run_metrics(*h), run_metrics(*p)
+                rows.append({k: 100 * (mh[k] / mp[k] - 1) for k in METRICS + ["luts"]})
+        if rows:
+            paired[f"{hard} vs {plain}"] = {
+                k: {"mean": float(np.mean([r[k] for r in rows])),
+                    "sd": float(np.std([r[k] for r in rows], ddof=1)) if len(rows) > 1 else None,
+                    "per_seed": [r[k] for r in rows]} for k in rows[0]}
+    res = {"vs_unhardened_mean": out, "tmr_per_seed": paired}
+    (ROOT / "results/hardening_stats.json").write_text(json.dumps(res, indent=1))
+    return res
+
+
+def campaign_totals():
+    """Injections, board time and average rate of every complete exhaustive campaign (the directories
+    with an analysis.json), and their totals; results/campaign_totals.json."""
+    runs = {}
+    for a in sorted((ROOT / "results").glob("camp_*/analysis.json")):
+        j = json.loads(a.read_text())
+        runs[a.parent.name] = {"injected": j["injected"], "seconds": j["seconds"], "rate": j["injected"] / j["seconds"]}
+        hs = j.get("dwn_lut_layer_hw_vs_sw")         # DWN: table bits compared with the parameter model
+        if hs:
+            runs[a.parent.name].update(param_bits=hs["bits"], param_exact=hs["exact_agree"])
+    rates = [r["rate"] for r in runs.values()]
+    dwn = [r for r in runs.values() if "param_bits" in r]
+    out = {"campaigns": len(runs), "injected": sum(r["injected"] for r in runs.values()),
+           "hours": sum(r["seconds"] for r in runs.values()) / 3600, "rate_min": min(rates), "rate_max": max(rates),
+           "dwn_builds": len(dwn), "param_bits": sum(r["param_bits"] for r in dwn),
+           "param_exact": sum(r["param_exact"] for r in dwn), "runs": runs}
+    (ROOT / "results/campaign_totals.json").write_text(json.dumps(out, indent=1))
+    return {k: v for k, v in out.items() if k != "runs"}
+
+
+def fig_hardening():
+    """Relative change of each metric versus the mean of the unhardened DWN-M replicas (double-column
+    figure). Bars: mean over the training replicas of a variant; error bars: their standard deviation.
+    The first group shows the replicas of the unhardened network themselves, i.e. the variation
+    between training runs against which every retrained variant must be judged."""
+    import numpy as np
+    short = {"DWN-M": "DWN-M\n(3 runs)", "+ don't-care fill": "Don't-care\nfill",
+             "+ fault-aware (2\\,\\%)": "Fault-aware\n2%", "+ fault-aware (5\\,\\%)": "Fault-aware\n5%",
+             "+ phys.\\ fault-aware (2\\,\\%)": "Physical\nFA 2%", "+ phys.\\ fault-aware (5\\,\\%)": "Physical\nFA 5%",
+             "+ output-stage TMR": "Output\nTMR", "+ fault-aware (2\\,\\%) + TMR": "Fault-aware\n2% + TMR"}
+    runs = seeded_runs()
+    base = {k: np.mean([m[k] for m in runs[0][1]]) for k in METRICS + ["luts"]}
+    labels, mean, sd = [], [], []
+    for label, ms in runs:
+        rel = np.array([[100 * (m[k] / base[k] - 1) for k in METRICS + ["luts"]] for m in ms])
+        labels.append(short.get(label, label))
+        mean.append(rel.mean(0))
+        sd.append(rel.std(0, ddof=1) if len(ms) > 1 else np.zeros(rel.shape[1]))
+    mean, sd = np.array(mean), np.array(sd)
     metrics = ["Critical bits", "$\\sum$ mispredictions", "Severe ($>$1%)", "Catastrophic ($>$10%)", "LUTs"]
     colors = ["#2b6cb0", "#90cdf4", "#dd6b20", "#c53030", "#a0aec0"]
-    nctl = sum(1 for l in labels if l.startswith("Retrained"))
     fig, ax = plt.subplots(figsize=(7.16, 1.85))
     w = 0.16
     x = np.arange(len(labels))
     for k, (mname, col) in enumerate(zip(metrics, colors)):
-        bars = ax.bar(x + (k - 2) * w, rows[:, k], width=w, color=col, label=mname)
-        for b in list(bars)[:nctl]:          # controls drawn lighter
-            b.set_alpha(0.45)
-    if nctl:
-        ax.axvline(nctl - 0.5, color="gray", lw=0.6, ls="--")
+        ax.bar(x + (k - 2) * w, mean[:, k], width=w, color=col, label=mname,
+               yerr=sd[:, k], error_kw={"elinewidth": 0.6, "capsize": 1.2, "ecolor": "#333333"})
+    ax.axvline(0.5, color="gray", lw=0.6, ls="--")
     ax.axhline(0, color="black", lw=0.5)
     ax.set_xticks(x, labels, fontsize=6.3)
     ax.tick_params(axis="x", length=0)
     ax.set_ylabel("Change vs. DWN-M [%]")
-    from matplotlib.patches import Patch        # legend patches at full opacity (the controls are faded)
-    ax.legend(handles=[Patch(color=c, label=m) for m, c in zip(metrics, colors)], fontsize=6, frameon=False, ncol=5,
-              loc="lower center", bbox_to_anchor=(0.5, 1.0), handlelength=1.2, columnspacing=1.0)
+    ax.legend(fontsize=6, frameon=False, ncol=5, loc="lower center", bbox_to_anchor=(0.5, 1.0), handlelength=1.2,
+              columnspacing=1.0)
     ax.spines[["top", "right"]].set_visible(False)
     fig.tight_layout(pad=0.2)
     fig.savefig(PAPER / "fig_hardening.pdf")
@@ -310,3 +427,6 @@ if __name__ == "__main__":
         table_models_tvlsi(rows)
         hardening_table_tvlsi()
         fig_hardening()
+        print(json.dumps(composition_check(), indent=1))
+        print(json.dumps(campaign_totals(), indent=1))
+        hardening_stats()

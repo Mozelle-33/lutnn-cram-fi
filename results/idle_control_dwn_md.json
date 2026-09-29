@@ -1,0 +1,11 @@
+{
+ "build": "dwn_md",
+ "idle_vector": 1479,
+ "bits": 12000,
+ "frozen_value_changed": 10356,
+ "exact_with_new_idle": 0.973,
+ "exact_with_old_idle": 0.338,
+ "critical_campaign_idle1024": 7296,
+ "critical_control": 6890,
+ "critical_status_changed": 3732
+}
