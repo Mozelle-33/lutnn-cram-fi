@@ -1,0 +1,97 @@
+{
+ "model": "dwn_md_fa2",
+ "build": "dwn_md_fa2",
+ "campaign": "results\\camp_dwn_md_fa2",
+ "subcampaigns": [
+  "results\\camp_dwn_md_fa2"
+ ],
+ "ranges": [
+  [
+   72,
+   967
+  ]
+ ],
+ "injected": 2891432,
+ "reported_injections": 2891432,
+ "seconds": 400.079,
+ "skipped_mode_bits": 4440,
+ "skipped_by_class": {
+  "CLB_OTHER": 4440
+ },
+ "skipped_essential": 4440,
+ "essential_in_range": 755124,
+ "ebd_lead_pad_frames": 1,
+ "ebd_probe_hits": "2000/2000",
+ "critical": 208690,
+ "critical_frac_injected": 0.07217530967354584,
+ "critical_frac_essential": 0.27636520624427247,
+ "fit_sea_level": 13.98223,
+ "cross_section_cm2": 1.1874460999999999e-09,
+ "acc_degrading": 104660,
+ "persistent": 0,
+ "timeouts": 0,
+ "golden_corr": 3128,
+ "ntest": 4096,
+ "mean_mism_critical": 16.498533710287987,
+ "mean_acc_drop_critical": 0.001392749207107432,
+ "classes": {
+  "LUT_INIT": {
+   "injected": 537600,
+   "essential": 231360,
+   "critical": 33599,
+   "acc_degrading": 15117,
+   "mean_mism": 7.107473436709426
+  },
+  "ROUTING": {
+   "injected": 2077400,
+   "essential": 492336,
+   "critical": 162397,
+   "acc_degrading": 82733,
+   "mean_mism": 16.102871358461055
+  },
+  "CLB_OTHER": {
+   "injected": 148260,
+   "essential": 31116,
+   "critical": 12551,
+   "acc_degrading": 6672,
+   "mean_mism": 33.98016094335113
+  },
+  "HCLK": {
+   "injected": 2704,
+   "essential": 312,
+   "critical": 143,
+   "acc_degrading": 138,
+   "mean_mism": 1137.986013986014
+  },
+  "BRAM_DSP": {
+   "injected": 17600,
+   "essential": 0,
+   "critical": 0,
+   "acc_degrading": 0,
+   "mean_mism": 0.0
+  },
+  "UNMAPPED": {
+   "injected": 107868,
+   "essential": 0,
+   "critical": 0,
+   "acc_degrading": 0,
+   "mean_mism": 0.0
+  }
+ },
+ "lut_init_critical_by_module": {
+  "encoder": 12036,
+  "popcount": 15441,
+  "lut_layer": 5202,
+  "other": 47,
+  "argmax": 873
+ },
+ "dwn_lut_layer_hw_vs_sw": {
+  "bits": 64000,
+  "exact_agree": 64000,
+  "tp": 5202,
+  "fp": 0,
+  "fn": 0,
+  "tn": 58798,
+  "examples_diff": []
+ }
+}

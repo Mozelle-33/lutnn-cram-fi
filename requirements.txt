@@ -1,0 +1,5 @@
+# Python 3.12; versions used for the paper. A CUDA build of torch speeds up training but is optional.
+numpy>=2.0
+torch>=2.4
+scikit-learn>=1.4      # fetch_openml for the JSC and MNIST datasets
+matplotlib>=3.8

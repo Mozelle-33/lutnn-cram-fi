@@ -1,0 +1,97 @@
+{
+ "model": "dwn_md_s1",
+ "build": "dwn_md_s1",
+ "campaign": "results\\camp_dwn_md_s1",
+ "subcampaigns": [
+  "results\\camp_dwn_md_s1"
+ ],
+ "ranges": [
+  [
+   72,
+   967
+  ]
+ ],
+ "injected": 2891312,
+ "reported_injections": 2891312,
+ "seconds": 407.705,
+ "skipped_mode_bits": 4560,
+ "skipped_by_class": {
+  "CLB_OTHER": 4560
+ },
+ "skipped_essential": 4560,
+ "essential_in_range": 782698,
+ "ebd_lead_pad_frames": 1,
+ "ebd_probe_hits": "2000/2000",
+ "critical": 241534,
+ "critical_frac_injected": 0.08353785409530344,
+ "critical_frac_essential": 0.3085915640515243,
+ "fit_sea_level": 16.182778,
+ "cross_section_cm2": 1.37432846e-09,
+ "acc_degrading": 152341,
+ "persistent": 0,
+ "timeouts": 0,
+ "golden_corr": 3161,
+ "ntest": 4096,
+ "mean_mism_critical": 17.079417390512308,
+ "mean_acc_drop_critical": 0.0015624124654163595,
+ "classes": {
+  "LUT_INIT": {
+   "injected": 537600,
+   "essential": 238976,
+   "critical": 39848,
+   "acc_degrading": 20516,
+   "mean_mism": 7.128739208994178
+  },
+  "ROUTING": {
+   "injected": 2077400,
+   "essential": 511617,
+   "critical": 188343,
+   "acc_degrading": 122358,
+   "mean_mism": 17.198876517842447
+  },
+  "CLB_OTHER": {
+   "injected": 148140,
+   "essential": 31801,
+   "critical": 13205,
+   "acc_degrading": 9329,
+   "mean_mism": 34.84180234759561
+  },
+  "HCLK": {
+   "injected": 2704,
+   "essential": 304,
+   "critical": 138,
+   "acc_degrading": 138,
+   "mean_mism": 1027.6811594202898
+  },
+  "BRAM_DSP": {
+   "injected": 17600,
+   "essential": 0,
+   "critical": 0,
+   "acc_degrading": 0,
+   "mean_mism": 0.0
+  },
+  "UNMAPPED": {
+   "injected": 107868,
+   "essential": 0,
+   "critical": 0,
+   "acc_degrading": 0,
+   "mean_mism": 0.0
+  }
+ },
+ "lut_init_critical_by_module": {
+  "encoder": 16462,
+  "popcount": 16420,
+  "other": 81,
+  "lut_layer": 6018,
+  "argmax": 867
+ },
+ "dwn_lut_layer_hw_vs_sw": {
+  "bits": 64000,
+  "exact_agree": 64000,
+  "tp": 6018,
+  "fp": 0,
+  "fn": 0,
+  "tn": 57982,
+  "examples_diff": []
+ }
+}

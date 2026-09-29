@@ -1,0 +1,101 @@
+{
+ "model": "dwn_md_fa2",
+ "build": "dwn_md_fa2_tmr",
+ "campaign": "results\\camp_dwn_md_fa2_tmr",
+ "subcampaigns": [
+  "results\\camp_dwn_md_fa2_tmr\\r1",
+  "results\\camp_dwn_md_fa2_tmr\\r2"
+ ],
+ "ranges": [
+  [
+   72,
+   1455
+  ],
+  [
+   72,
+   1455
+  ]
+ ],
+ "injected": 4466053,
+ "reported_injections": 4466053,
+ "seconds": 577.6030000000001,
+ "skipped_mode_bits": 7035,
+ "skipped_by_class": {
+  "CLB_OTHER": 7035
+ },
+ "skipped_essential": 7035,
+ "essential_in_range": 1139768,
+ "ebd_lead_pad_frames": 1,
+ "ebd_probe_hits": "2000/2000",
+ "critical": 164061,
+ "critical_frac_injected": 0.03673512159394436,
+ "critical_frac_essential": 0.14394245144625925,
+ "fit_sea_level": 10.992087,
+ "cross_section_cm2": 9.335070899999999e-10,
+ "acc_degrading": 81618,
+ "persistent": 0,
+ "timeouts": 0,
+ "golden_corr": 3128,
+ "ntest": 4096,
+ "mean_mism_critical": 13.079781300857608,
+ "mean_acc_drop_critical": 0.0010502640667000385,
+ "classes": {
+  "LUT_INIT": {
+   "injected": 844800,
+   "essential": 366272,
+   "critical": 17266,
+   "acc_degrading": 7669,
+   "mean_mism": 3.11844086644272
+  },
+  "ROUTING": {
+   "injected": 3196000,
+   "essential": 725820,
+   "critical": 137017,
+   "acc_degrading": 68827,
+   "mean_mism": 12.740586934467986
+  },
+  "CLB_OTHER": {
+   "injected": 234465,
+   "essential": 47244,
+   "critical": 9585,
+   "acc_degrading": 4944,
+   "mean_mism": 20.988941053729786
+  },
+  "HCLK": {
+   "injected": 4160,
+   "essential": 432,
+   "critical": 193,
+   "acc_degrading": 178,
+   "mean_mism": 752.2435233160621
+  },
+  "BRAM_DSP": {
+   "injected": 26400,
+   "essential": 0,
+   "critical": 0,
+   "acc_degrading": 0,
+   "mean_mism": 0.0
+  },
+  "UNMAPPED": {
+   "injected": 160228,
+   "essential": 0,
+   "critical": 0,
+   "acc_degrading": 0,
+   "mean_mism": 0.0
+  }
+ },
+ "lut_init_critical_by_module": {
+  "encoder": 12027,
+  "lut_layer": 5202,
+  "other": 27,
+  "argmax": 10
+ },
+ "dwn_lut_layer_hw_vs_sw": {
+  "bits": 64000,
+  "exact_agree": 64000,
+  "tp": 5202,
+  "fp": 0,
+  "fn": 0,
+  "tn": 58798,
+  "examples_diff": []
+ }
+}

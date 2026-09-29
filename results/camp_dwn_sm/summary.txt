@@ -1,0 +1,1 @@
+golden_corr=3044 ntest=4096 inj=1109588 nonsilent=49803 persist=0 timeouts=0 events=49803 skipped=2220 sessions=1 seconds=153.949 far_first=72 far_last=415 word_lo=0 word_hi=100 start_lin=0 end_lin=1111808 skipfile=results\camp_dwn_sm\skip.txt

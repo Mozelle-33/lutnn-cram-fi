@@ -1,0 +1,1 @@
+name=dlgn_a rows=1 ncols=26 slice_x=0..51 y=200..249 dut_luts=5391 dut_ffs=4903 dut_carry4=35 latency=9

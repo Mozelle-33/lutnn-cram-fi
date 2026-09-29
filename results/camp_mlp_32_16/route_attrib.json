@@ -1,0 +1,41 @@
+{
+ "model": "mlp_32_16",
+ "critical_routing_bits": 445083,
+ "by_group": {
+  "MAC/activation": {
+   "critical": 408657,
+   "share": 0.9181590849347201,
+   "mean_mism": 97.0716615645884
+  },
+  "constant": {
+   "critical": 17060,
+   "share": 0.038329929473828475,
+   "mean_mism": 127.29613130128956
+  },
+  "clock": {
+   "critical": 9285,
+   "share": 0.020861277559466436,
+   "mean_mism": 232.08260635433496
+  },
+  "encoder": {
+   "critical": 4423,
+   "share": 0.009937472336620361,
+   "mean_mism": 11.6151933077097
+  },
+  "inputs": {
+   "critical": 3605,
+   "share": 0.008099612881192946,
+   "mean_mism": 95.30429958391123
+  },
+  "argmax/output": {
+   "critical": 1465,
+   "share": 0.0032915209073363844,
+   "mean_mism": 169.98430034129692
+  },
+  "unused wire": {
+   "critical": 588,
+   "share": 0.0013211019068353543,
+   "mean_mism": 381.9047619047619
+  }
+ }
+}

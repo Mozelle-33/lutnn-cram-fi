@@ -1,0 +1,97 @@
+{
+ "model": "dwn_md",
+ "build": "dwn_md_tmr",
+ "campaign": "results\\camp_dwn_md_tmr",
+ "subcampaigns": [
+  "results\\camp_dwn_md_tmr"
+ ],
+ "ranges": [
+  [
+   72,
+   1455
+  ]
+ ],
+ "injected": 4465948,
+ "reported_injections": 4465948,
+ "seconds": 580.408,
+ "skipped_mode_bits": 7140,
+ "skipped_by_class": {
+  "CLB_OTHER": 7140
+ },
+ "skipped_essential": 7140,
+ "essential_in_range": 1155100,
+ "ebd_lead_pad_frames": 1,
+ "ebd_probe_hits": "2000/2000",
+ "critical": 179413,
+ "critical_frac_injected": 0.04017355329708273,
+ "critical_frac_essential": 0.15532248290191325,
+ "fit_sea_level": 12.020671,
+ "cross_section_cm2": 1.02085997e-09,
+ "acc_degrading": 61246,
+ "persistent": 0,
+ "timeouts": 0,
+ "golden_corr": 3133,
+ "ntest": 4096,
+ "mean_mism_critical": 14.101402908373418,
+ "mean_acc_drop_critical": 0.0009080815261958442,
+ "classes": {
+  "LUT_INIT": {
+   "injected": 844800,
+   "essential": 369920,
+   "critical": 20349,
+   "acc_degrading": 6799,
+   "mean_mism": 3.3534326011106197
+  },
+  "ROUTING": {
+   "injected": 3196000,
+   "essential": 736944,
+   "critical": 148889,
+   "acc_degrading": 50765,
+   "mean_mism": 13.840592656274136
+  },
+  "CLB_OTHER": {
+   "injected": 234360,
+   "essential": 47804,
+   "critical": 9991,
+   "acc_degrading": 3513,
+   "mean_mism": 23.854769292363127
+  },
+  "HCLK": {
+   "injected": 4160,
+   "essential": 432,
+   "critical": 184,
+   "acc_degrading": 169,
+   "mean_mism": 884.1902173913044
+  },
+  "BRAM_DSP": {
+   "injected": 26400,
+   "essential": 0,
+   "critical": 0,
+   "acc_degrading": 0,
+   "mean_mism": 0.0
+  },
+  "UNMAPPED": {
+   "injected": 160228,
+   "essential": 0,
+   "critical": 0,
+   "acc_degrading": 0,
+   "mean_mism": 0.0
+  }
+ },
+ "lut_init_critical_by_module": {
+  "encoder": 14870,
+  "lut_layer": 5451,
+  "other": 16,
+  "argmax": 10,
+  "popcount": 2
+ },
+ "dwn_lut_layer_hw_vs_sw": {
+  "bits": 64000,
+  "exact_agree": 64000,
+  "tp": 5451,
+  "fp": 0,
+  "fn": 0,
+  "tn": 58549,
+  "examples_diff": []
+ }
+}

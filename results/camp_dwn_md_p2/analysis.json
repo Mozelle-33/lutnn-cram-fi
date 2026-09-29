@@ -1,0 +1,97 @@
+{
+ "model": "dwn_md",
+ "build": "dwn_md_p2",
+ "campaign": "results\\camp_dwn_md_p2",
+ "subcampaigns": [
+  "results\\camp_dwn_md_p2"
+ ],
+ "ranges": [
+  [
+   1808,
+   2703
+  ]
+ ],
+ "injected": 2891342,
+ "reported_injections": 2891342,
+ "seconds": 427.654,
+ "skipped_mode_bits": 4530,
+ "skipped_by_class": {
+  "CLB_OTHER": 4530
+ },
+ "skipped_essential": 4530,
+ "essential_in_range": 775857,
+ "ebd_lead_pad_frames": 1,
+ "ebd_probe_hits": "2000/2000",
+ "critical": 228578,
+ "critical_frac_injected": 0.07905602312005983,
+ "critical_frac_essential": 0.2946135692530969,
+ "fit_sea_level": 15.314726,
+ "cross_section_cm2": 1.30060882e-09,
+ "acc_degrading": 86873,
+ "persistent": 0,
+ "timeouts": 0,
+ "golden_corr": 3133,
+ "ntest": 4096,
+ "mean_mism_critical": 17.53330591745487,
+ "mean_acc_drop_critical": 0.0012425048663639983,
+ "classes": {
+  "LUT_INIT": {
+   "injected": 537600,
+   "essential": 235136,
+   "critical": 37602,
+   "acc_degrading": 14467,
+   "mean_mism": 7.123424285942237
+  },
+  "ROUTING": {
+   "injected": 2077400,
+   "essential": 508831,
+   "critical": 177899,
+   "acc_degrading": 67129,
+   "mean_mism": 17.475640672516427
+  },
+  "CLB_OTHER": {
+   "injected": 148170,
+   "essential": 31578,
+   "critical": 12934,
+   "acc_degrading": 5144,
+   "mean_mism": 36.114659038193906
+  },
+  "HCLK": {
+   "injected": 2704,
+   "essential": 312,
+   "critical": 143,
+   "acc_degrading": 133,
+   "mean_mism": 1145.923076923077
+  },
+  "BRAM_DSP": {
+   "injected": 17600,
+   "essential": 0,
+   "critical": 0,
+   "acc_degrading": 0,
+   "mean_mism": 0.0
+  },
+  "UNMAPPED": {
+   "injected": 107868,
+   "essential": 0,
+   "critical": 0,
+   "acc_degrading": 0,
+   "mean_mism": 0.0
+  }
+ },
+ "lut_init_critical_by_module": {
+  "popcount": 16402,
+  "other": 40,
+  "encoder": 14813,
+  "lut_layer": 5451,
+  "argmax": 896
+ },
+ "dwn_lut_layer_hw_vs_sw": {
+  "bits": 64000,
+  "exact_agree": 64000,
+  "tp": 5451,
+  "fp": 0,
+  "fn": 0,
+  "tn": 58549,
+  "examples_diff": []
+ }
+}

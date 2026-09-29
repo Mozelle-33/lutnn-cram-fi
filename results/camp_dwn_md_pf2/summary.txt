@@ -1,0 +1,1 @@
+golden_corr=3140 ntest=4096 inj=2891042 nonsilent=235804 persist=0 timeouts=0 events=235804 skipped=4830 sessions=1 seconds=407.567 far_first=72 far_last=967 word_lo=0 word_hi=100 start_lin=0 end_lin=2895872 skipfile=results\camp_dwn_md_pf2\skip.txt

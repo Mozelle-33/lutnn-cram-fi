@@ -1,0 +1,1 @@
+name=mlp_32_16 rows=2 ncols=38 slice_x=0..77 y=200..299 dut_luts=15998 dut_ffs=10306 dut_carry4=3248 latency=16

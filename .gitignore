@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.pyc
+env/
+.venv/
+
+# downloaded or generated inputs
+data/
+tools/
+hw/ip/
+
+# Vivado outputs (only the small exports listed in the README are tracked)
+hw/build/**/*.bit
+hw/build/**/*.dcp
+hw/build/**/*.ebd
+hw/build/**/*.ebc
+hw/build/**/*.ll
+hw/build/**/*.rpt
+hw/build/**/*.log
+hw/build/**/*.jou
+hw/build/**/vectors.mem
+hw/build/**/farlist.mem
+hw/build/**/dut_pips.csv
+hw/build/**/lut_pins.csv
+hw/build/**/route_pips.csv
+hw/build/**/route_sinks.csv
+hw/build/**/wire_nets.csv
+hw/build/**/bridge_wires.txt
+hw/gen/**/xsim/
+.Xil/
+*.jou
+vivado*.log
+
+# model weights (the JSON specs are tracked) and regenerated per-bit analysis files
+models/*.pt
+results/*_bits.json
+results/*_unused.json
+results/*.npz

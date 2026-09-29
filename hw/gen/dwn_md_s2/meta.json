@@ -1,0 +1,14 @@
+{
+ "name": "dwn_md_s2",
+ "model": "dwn_md_s2",
+ "type": "dwn",
+ "LATENCY": 8,
+ "IN_W": 160,
+ "QBITS": 10,
+ "CW": 3,
+ "TMR_OUT": false,
+ "DATASET": "jsc",
+ "NVEC": 4096,
+ "sw_acc_nvec": 0.767333984375,
+ "test_acc_full": 0.7641144578313253
+}

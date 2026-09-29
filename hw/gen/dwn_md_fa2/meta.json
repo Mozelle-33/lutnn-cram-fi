@@ -1,0 +1,10 @@
+{
+ "name": "dwn_md_fa2",
+ "type": "dwn",
+ "LATENCY": 8,
+ "IN_W": 160,
+ "QBITS": 10,
+ "NVEC": 4096,
+ "sw_acc_nvec": 0.763671875,
+ "test_acc_full": 0.7628072289156627
+}

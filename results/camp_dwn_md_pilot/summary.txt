@@ -1,0 +1,1 @@
+golden_corr=3133 ntest=4096 inj=20000 nonsilent=16 persist=0 timeouts=0 events=16 segments=1 seconds=2.147 far_first=72 far_last=967 word_lo=0 word_hi=100 stride=1 start=72/0/0 max_inj=20000

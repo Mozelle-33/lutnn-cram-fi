@@ -1,0 +1,10 @@
+{
+ "name": "mlp_32_16",
+ "type": "qmlp",
+ "LATENCY": 16,
+ "IN_W": 160,
+ "QBITS": 10,
+ "NVEC": 4096,
+ "sw_acc_nvec": 0.75634765625,
+ "test_acc_full": 0.7545361445783133
+}

@@ -1,0 +1,1 @@
+name=dwn_mnist rows=1 ncols=21 slice_x=0..41 y=200..249 dut_luts=4313 dut_ffs=4738 dut_carry4=32 latency=9

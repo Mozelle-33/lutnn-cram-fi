@@ -1,0 +1,1 @@
+golden_corr=3050 ntest=4096 inj=3563268 nonsilent=190545 persist=0 timeouts=0 events=190545 skipped=4860 sessions=1 seconds=478.317 far_first=72 far_last=1175 word_lo=0 word_hi=100 start_lin=0 end_lin=3568128 skipfile=results\camp_dlgn_a\skip.txt

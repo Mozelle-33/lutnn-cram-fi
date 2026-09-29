@@ -1,0 +1,15 @@
+foreign_nets=14
+<const1>
+u_ctrl/<const1>
+u_ctrl/VCC_cooolDelFlop_1
+u_jtag/<const1>
+u_mon/<const1>
+u_sem/inst/<const1>
+u_sem/inst/controller_dbuffer/<const1>
+u_sem/inst/controller_dbuffer/controller_dbuffer_mem/<const1>
+u_sem/inst/controller_kcpsm3/<const1>
+u_sem/inst/controller_kcpsm3/VCC_2
+u_sem/inst/controller_kcpsm3/not_active_interrupt
+u_sem/inst/orig.controller_instrom/VCC_1
+u_sem/inst/orig.controller_instrom/fw0/<const1>
+u_sem/inst/orig.controller_instrom/fw1/<const1>

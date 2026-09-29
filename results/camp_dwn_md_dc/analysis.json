@@ -1,0 +1,97 @@
+{
+ "model": "dwn_md_dc",
+ "build": "dwn_md_dc",
+ "campaign": "results\\camp_dwn_md_dc",
+ "subcampaigns": [
+  "results\\camp_dwn_md_dc"
+ ],
+ "ranges": [
+  [
+   72,
+   967
+  ]
+ ],
+ "injected": 2891192,
+ "reported_injections": 2891192,
+ "seconds": 407.653,
+ "skipped_mode_bits": 4680,
+ "skipped_by_class": {
+  "CLB_OTHER": 4680
+ },
+ "skipped_essential": 4680,
+ "essential_in_range": 776712,
+ "ebd_lead_pad_frames": 1,
+ "ebd_probe_hits": "2000/2000",
+ "critical": 221306,
+ "critical_frac_injected": 0.07654489912811048,
+ "critical_frac_essential": 0.2849267167238307,
+ "fit_sea_level": 14.827502,
+ "cross_section_cm2": 1.25923114e-09,
+ "acc_degrading": 84541,
+ "persistent": 0,
+ "timeouts": 0,
+ "golden_corr": 3133,
+ "ntest": 4096,
+ "mean_mism_critical": 17.901557120005783,
+ "mean_acc_drop_critical": 0.001316342318441434,
+ "classes": {
+  "LUT_INIT": {
+   "injected": 537600,
+   "essential": 235456,
+   "critical": 36378,
+   "acc_degrading": 13950,
+   "mean_mism": 7.330666886579801
+  },
+  "ROUTING": {
+   "injected": 2077400,
+   "essential": 509341,
+   "critical": 172007,
+   "acc_degrading": 65356,
+   "mean_mism": 17.716395262983482
+  },
+  "CLB_OTHER": {
+   "injected": 148020,
+   "essential": 31603,
+   "critical": 12778,
+   "acc_degrading": 5102,
+   "mean_mism": 36.692440131475976
+  },
+  "HCLK": {
+   "injected": 2704,
+   "essential": 312,
+   "critical": 143,
+   "acc_degrading": 133,
+   "mean_mism": 1250.6783216783217
+  },
+  "BRAM_DSP": {
+   "injected": 17600,
+   "essential": 0,
+   "critical": 0,
+   "acc_degrading": 0,
+   "mean_mism": 0.0
+  },
+  "UNMAPPED": {
+   "injected": 107868,
+   "essential": 0,
+   "critical": 0,
+   "acc_degrading": 0,
+   "mean_mism": 0.0
+  }
+ },
+ "lut_init_critical_by_module": {
+  "popcount": 16366,
+  "encoder": 13615,
+  "argmax": 896,
+  "other": 50,
+  "lut_layer": 5451
+ },
+ "dwn_lut_layer_hw_vs_sw": {
+  "bits": 64000,
+  "exact_agree": 64000,
+  "tp": 5451,
+  "fp": 0,
+  "fn": 0,
+  "tn": 58549,
+  "examples_diff": []
+ }
+}

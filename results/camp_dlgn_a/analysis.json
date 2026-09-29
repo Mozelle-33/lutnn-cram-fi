@@ -1,0 +1,88 @@
+{
+ "model": "dlgn_a",
+ "build": "dlgn_a",
+ "campaign": "results\\camp_dlgn_a",
+ "subcampaigns": [
+  "results\\camp_dlgn_a"
+ ],
+ "ranges": [
+  [
+   72,
+   1175
+  ]
+ ],
+ "injected": 3563268,
+ "reported_injections": 3563268,
+ "seconds": 478.317,
+ "skipped_mode_bits": 4860,
+ "skipped_by_class": {
+  "CLB_OTHER": 4860
+ },
+ "skipped_essential": 4860,
+ "essential_in_range": 723719,
+ "ebd_lead_pad_frames": 1,
+ "ebd_probe_hits": "2000/2000",
+ "critical": 190545,
+ "critical_frac_injected": 0.05347478775101957,
+ "critical_frac_essential": 0.2632858885838288,
+ "fit_sea_level": 12.766515,
+ "cross_section_cm2": 1.08420105e-09,
+ "acc_degrading": 88272,
+ "persistent": 0,
+ "timeouts": 0,
+ "golden_corr": 3050,
+ "ntest": 4096,
+ "mean_mism_critical": 15.750137762733212,
+ "mean_acc_drop_critical": 0.001196786838000866,
+ "classes": {
+  "LUT_INIT": {
+   "injected": 665600,
+   "essential": 267840,
+   "critical": 33880,
+   "acc_degrading": 15070,
+   "mean_mism": 6.86676505312869
+  },
+  "ROUTING": {
+   "injected": 2556800,
+   "essential": 416636,
+   "critical": 140721,
+   "acc_degrading": 65495,
+   "mean_mism": 15.402484348462561
+  },
+  "CLB_OTHER": {
+   "injected": 184540,
+   "essential": 38875,
+   "critical": 15778,
+   "acc_degrading": 7546,
+   "mean_mism": 25.81581949550006
+  },
+  "HCLK": {
+   "injected": 3328,
+   "essential": 368,
+   "critical": 166,
+   "acc_degrading": 161,
+   "mean_mism": 1166.801204819277
+  },
+  "BRAM_DSP": {
+   "injected": 21940,
+   "essential": 0,
+   "critical": 0,
+   "acc_degrading": 0,
+   "mean_mism": 0.0
+  },
+  "UNMAPPED": {
+   "injected": 131060,
+   "essential": 0,
+   "critical": 0,
+   "acc_degrading": 0,
+   "mean_mism": 0.0
+  }
+ },
+ "lut_init_critical_by_module": {
+  "encoder": 10693,
+  "popcount": 15718,
+  "gate_layers": 6597,
+  "other": 24,
+  "argmax": 848
+ }
+}

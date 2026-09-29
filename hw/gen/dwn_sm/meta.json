@@ -1,0 +1,10 @@
+{
+ "name": "dwn_sm",
+ "type": "dwn",
+ "LATENCY": 7,
+ "IN_W": 160,
+ "QBITS": 10,
+ "NVEC": 4096,
+ "sw_acc_nvec": 0.7431640625,
+ "test_acc_full": 0.7430240963855421
+}

@@ -1,0 +1,23 @@
+{
+ "dwn_md": {
+  "campaign": "camp_dwn_md",
+  "N": 2891192,
+  "golden": 3133,
+  "dcorr_per_bit": 0.4137625588338651,
+  "mism_per_bit": 1.405890373243977
+ },
+ "dlgn_a": {
+  "campaign": "camp_dlgn_a",
+  "N": 3563268,
+  "golden": 3050,
+  "dcorr_per_bit": 0.26213548910719037,
+  "mism_per_bit": 0.8422352739114768
+ },
+ "mlp_32_16": {
+  "campaign": "camp_mlp_32_16",
+  "N": 10326050,
+  "golden": 3098,
+  "dcorr_per_bit": 2.8628585954939205,
+  "mism_per_bit": 5.8070667873969235
+ }
+}

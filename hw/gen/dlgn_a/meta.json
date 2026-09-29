@@ -1,0 +1,10 @@
+{
+ "name": "dlgn_a",
+ "type": "dlgn",
+ "LATENCY": 9,
+ "IN_W": 160,
+ "QBITS": 10,
+ "NVEC": 4096,
+ "sw_acc_nvec": 0.74462890625,
+ "test_acc_full": 0.7407409638554217
+}
