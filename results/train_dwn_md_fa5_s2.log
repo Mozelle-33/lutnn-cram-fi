@@ -1,0 +1,4 @@
+thermometer: 2915 bits (200/feature requested)
+ep   0 loss 0.7341 test 0.7503 best 0.7503 (542s)
+ep   1 loss 0.7170 test 0.7524 best 0.7524 (871s)
+ep   2 loss 0.7120 test 0.7476 best 0.7524 (1205s)

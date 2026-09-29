@@ -22,6 +22,7 @@ CAMPAIGNS = [  # (label, campaign dir, model, build)
     ("DWN-M", "camp_dwn_md", "dwn_md", "dwn_md"),
     ("DLGN", "camp_dlgn_a", "dlgn_a", "dlgn_a"),
     ("MLP", "camp_mlp_32_16", "mlp_32_16", "mlp_32_16"),
+    ("MLP-P", "camp_mlp_32_16_p70", "mlp_32_16_p70", "mlp_32_16_p70"),   # 70 % of the weights pruned
     ("DWN-MNIST", "camp_dwn_mnist", "dwn_mnist", "dwn_mnist"),
 ]
 TVLSI = ROOT / "paper_tvlsi"
@@ -147,12 +148,13 @@ def tail_counts(cdir, ntest=4096):
 SEEDED = [
     ("DWN-M", [("camp_dwn_md", "dwn_md", "dwn_md"), ("camp_dwn_md_s1", "dwn_md_s1", "dwn_md_s1"),
                ("camp_dwn_md_s2", "dwn_md_s2", "dwn_md_s2")]),
-    ("+ don't-care fill", [("camp_dwn_md_dc", "dwn_md_dc", "dwn_md_dc")]),
+    ("+ don't-care fill", [("camp_dwn_md_dc", "dwn_md_dc", "dwn_md_dc"),
+                           ("camp_dwn_md_dc_s1", "dwn_md_dc_s1", "dwn_md_dc_s1"),
+                           ("camp_dwn_md_dc_s2", "dwn_md_dc_s2", "dwn_md_dc_s2")]),
+    ("+ SLICEL-only placement", [("camp_dwn_md_sl", "dwn_md", "dwn_md_sl")]),
     ("+ fault-aware (2\\,\\%)", [("camp_dwn_md_fa2", "dwn_md_fa2", "dwn_md_fa2"),
                                 ("camp_dwn_md_fa2_s1", "dwn_md_fa2_s1", "dwn_md_fa2_s1"),
                                 ("camp_dwn_md_fa2_s2", "dwn_md_fa2_s2", "dwn_md_fa2_s2")]),
-    ("+ fault-aware (5\\,\\%)", [("camp_dwn_md_fa5", "dwn_md_fa5", "dwn_md_fa5")]),
-    ("+ phys.\\ fault-aware (2\\,\\%)", [("camp_dwn_md_pf2", "dwn_md_pf2", "dwn_md_pf2")]),
     ("+ phys.\\ fault-aware (5\\,\\%)", [("camp_dwn_md_pf5", "dwn_md_pf5", "dwn_md_pf5"),
                                         ("camp_dwn_md_pf5_s1", "dwn_md_pf5_s1", "dwn_md_pf5_s1"),
                                         ("camp_dwn_md_pf5_s2", "dwn_md_pf5_s2", "dwn_md_pf5_s2")]),
@@ -164,6 +166,9 @@ SEEDED = [
                                       ("camp_dwn_md_fa2_tmr_s2", "dwn_md_fa2_s2", "dwn_md_fa2_tmr_s2")]),
 ]
 METRICS = ["crit", "smism", "gt1", "gt10"]
+# exploratory single runs (fault-aware 5 %, physical fault-aware 2 %) whose data are released but not
+# reported in the journal paper
+NOT_REPORTED = {"camp_dwn_md_fa5", "camp_dwn_md_pf2"}
 
 
 def run_metrics(cdir, model, build):
@@ -223,6 +228,25 @@ def table_models_tvlsi(rows):
     L += [r"\bottomrule", r"\end{tabular}"]
     TVLSI.mkdir(exist_ok=True)
     (TVLSI / "table_models_tvlsi.tex").write_text("\n".join(L))
+
+
+def table_composition_tvlsi(rows):
+    """Critical bits by fabric resource for every network (the numbers behind the composition result;
+    paper_tvlsi/table_composition_tvlsi.tex). DLGN has no parameter column: its gate parameters do not
+    map one-to-one to CRAM bits."""
+    L = [r"\begin{tabular}{lrrrrrr}", r"\toprule",
+         r"Network & Crit. & Param. & Other & Routing & Other & Clock \\",
+         r" & [k] & [\%] & LUT [\%] & [\%] & CLB [\%] & [\%] \\", r"\midrule"]
+    for r in rows:
+        comp = composition(r)
+        tot = sum(comp.values())
+        sh = {k: 100 * v / tot for k, v in comp.items()}
+        param = "--" if r["spec"]["type"] != "dwn" else f"{sh['Parameters (LUT tables)']:.1f}"
+        L.append(f"{r['label']} & {tot / 1e3:.1f} & {param} & {sh['Other LUT logic']:.1f} & {sh['Routing']:.1f} & "
+                 f"{sh['Other CLB config.']:.1f} & {sh['Clock']:.1f} \\\\")
+    L += [r"\bottomrule", r"\end{tabular}"]
+    TVLSI.mkdir(exist_ok=True)
+    (TVLSI / "table_composition_tvlsi.tex").write_text("\n".join(L))
 
 
 def hardening_table_tvlsi():
@@ -297,7 +321,9 @@ def hardening_stats():
         out[label] = row
     groups = dict(SEEDED)
     paired = {}
-    for hard, plain in [("+ output-stage TMR", "DWN-M"), ("+ fault-aware (2\\,\\%) + TMR", "+ fault-aware (2\\,\\%)")]:
+    # variants that keep the trained network, compared with that network (same seed)
+    for hard, plain in [("+ output-stage TMR", "DWN-M"), ("+ fault-aware (2\\,\\%) + TMR", "+ fault-aware (2\\,\\%)"),
+                        ("+ don't-care fill", "DWN-M"), ("+ SLICEL-only placement", "DWN-M")]:
         rows = []
         for h, p in zip(groups[hard], groups[plain]):
             if event_files(h[0]) and event_files(p[0]):
@@ -318,6 +344,8 @@ def campaign_totals():
     with an analysis.json), and their totals; results/campaign_totals.json."""
     runs = {}
     for a in sorted((ROOT / "results").glob("camp_*/analysis.json")):
+        if a.parent.name in NOT_REPORTED:
+            continue
         j = json.loads(a.read_text())
         runs[a.parent.name] = {"injected": j["injected"], "seconds": j["seconds"], "rate": j["injected"] / j["seconds"]}
         hs = j.get("dwn_lut_layer_hw_vs_sw")         # DWN: table bits compared with the parameter model
@@ -340,6 +368,7 @@ def fig_hardening():
     between training runs against which every retrained variant must be judged."""
     import numpy as np
     short = {"DWN-M": "DWN-M\n(3 runs)", "+ don't-care fill": "Don't-care\nfill",
+             "+ SLICEL-only placement": "SLICEL\nonly",
              "+ fault-aware (2\\,\\%)": "Fault-aware\n2%", "+ fault-aware (5\\,\\%)": "Fault-aware\n5%",
              "+ phys.\\ fault-aware (2\\,\\%)": "Physical\nFA 2%", "+ phys.\\ fault-aware (5\\,\\%)": "Physical\nFA 5%",
              "+ output-stage TMR": "Output\nTMR", "+ fault-aware (2\\,\\%) + TMR": "Fault-aware\n2% + TMR"}
@@ -376,7 +405,8 @@ def fig_severity():
     """Complementary CDF of mispredictions per critical bit (4096 vectors)."""
     import numpy as np
     runs = [("DWN-S", "camp_dwn_sm", "#90cdf4"), ("DWN-M", "camp_dwn_md", "#2b6cb0"),
-            ("DLGN", "camp_dlgn_a", "#68d391"), ("MLP", "camp_mlp_32_16", "#dd6b20")]
+            ("DLGN", "camp_dlgn_a", "#68d391"), ("MLP", "camp_mlp_32_16", "#dd6b20"),
+            ("MLP-P", "camp_mlp_32_16_p70", "#b7791f")]
     fig, ax = plt.subplots(figsize=(3.45, 1.45))
     for label, cdir, col in runs:
         m = np.array([int(l.split("\t")[3]) for fp in event_files(cdir) for l in fp.read_text().splitlines()])
@@ -425,6 +455,7 @@ if __name__ == "__main__":
         print(json.dumps(hardening_table(), indent=1))
         fig_severity()
         table_models_tvlsi(rows)
+        table_composition_tvlsi(rows)
         hardening_table_tvlsi()
         fig_hardening()
         print(json.dumps(composition_check(), indent=1))

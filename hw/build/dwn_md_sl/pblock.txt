@@ -1,0 +1,1 @@
+name=dwn_md_sl rows=1 ncols=32 slice_x=0..65 y=200..249 dut_luts=4261 dut_ffs=3630 dut_carry4=35 latency=8 slices=slicel

@@ -1,0 +1,1 @@
+golden_corr=3067 ntest=4096 inj=3127211 nonsilent=36649 persist=0 timeouts=0 events=36649 skipped=1365 sessions=1 seconds=341.136 far_first=1808 far_last=2775 word_lo=0 word_hi=100 start_lin=0 end_lin=3128576 skipfile=results\camp_mlp_32_16_p70\r2\skip.txt

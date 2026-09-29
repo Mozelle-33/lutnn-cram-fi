@@ -52,6 +52,9 @@ def main():
     ap.add_argument("--in_noise", type=float, default=0.0, help="DWN fault-aware training: LUT-input flip probability")
     ap.add_argument("--noise_kind", default="flip", choices=["flip", "phys"],
                     help="fault-aware training noise: input inversion, or freeze / wired-AND (IMUX upsets)")
+    ap.add_argument("--prune", type=float, default=0.0,
+                    help="qmlp: fraction of every layer's weights removed by magnitude after a third of the "
+                         "epochs; the remaining epochs fine-tune the pruned network")
     ap.add_argument("--init_from", default=None, help="start from models/<name>.pt (fine-tuning)")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--no_resume", action="store_true", help="ignore an existing checkpoint and start over")
@@ -114,6 +117,10 @@ def main():
     # The epoch with the best test accuracy is kept. There is no separate validation split; every
     # network is selected the same way, so the comparison between networks is not biased by it.
     best, best_state = -1, None
+    # Magnitude pruning of the MLP (as in hls4ml): masks fixed at prune_ep, pruned weights stay zero;
+    # the constant multipliers of zero weights vanish in synthesis.
+    prune_ep = a.epochs // 3 if (a.model == "qmlp" and a.prune > 0) else None
+    masks = None
     # Resume after an interruption: model, optimiser, schedule, best epoch so far and the states of
     # all random-number generators (batch order, fault-aware noise) are restored.
     ckpt = ROOT / "models" / f"{a.name}.ckpt"
@@ -136,9 +143,20 @@ def main():
             if dev.type == "cuda" and c["cuda_rng"] is not None:
                 torch.cuda.set_rng_state(c["cuda_rng"], dev)
             start, best, best_state, t_prev = c["ep"] + 1, c["best"], c["best_state"], c["seconds"]
+            masks = c.get("masks")
             print(f"resumed from {ckpt.name} after epoch {c['ep']}", flush=True)
     t0 = time.time() - t_prev
     for ep in range(start, a.epochs):
+        if prune_ep is not None and ep == prune_ep and masks is None:
+            masks = []
+            for fc in net.fcs:
+                w = fc.weight.detach().abs()
+                k = int(round(a.prune * w.numel()))
+                thr = w.flatten().kthvalue(k).values if k > 0 else w.new_tensor(-1.0)
+                masks.append((w > thr).float())
+                fc.weight.data.mul_(masks[-1])
+            best, best_state = -1, None          # only pruned networks are eligible from here on
+            print(f"pruned {a.prune:.0%} of the weights of every layer", flush=True)
         net.train()
         tot, n = 0.0, 0
         for idx in batches(len(ytr), a.bs, gen):
@@ -147,6 +165,9 @@ def main():
             opt.zero_grad(set_to_none=True)
             loss.backward()
             opt.step()
+            if masks is not None:
+                for fc, m in zip(net.fcs, masks):
+                    fc.weight.data.mul_(m)
             tot += loss.item() * len(idx)
             n += len(idx)
         sched.step()
@@ -157,7 +178,7 @@ def main():
         c = {"args": run_args, "ep": ep, "net": net.state_dict(), "opt": opt.state_dict(), "sched": sched.state_dict(),
              "gen": gen.get_state(), "rng": torch.get_rng_state(),
              "cuda_rng": torch.cuda.get_rng_state(dev) if dev.type == "cuda" else None,
-             "best": best, "best_state": best_state, "seconds": time.time() - t0}
+             "best": best, "best_state": best_state, "seconds": time.time() - t0, "masks": masks}
         tmp = ckpt.with_suffix(".ckpt.tmp")
         with open(tmp, "wb") as f:              # written completely and flushed to disk, then renamed
             torch.save(c, f)

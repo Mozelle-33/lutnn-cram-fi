@@ -1,0 +1,29 @@
+{
+ "model": "dwn_md_s1",
+ "entries": 64000,
+ "dont_care_entries": 35589,
+ "dont_care_frac": 0.556078125,
+ "entries_changed": 9074,
+ "test_acc_before": 0.7646987951807229,
+ "test_acc_after": 0.7646987951807229,
+ "input_faults": {
+  "stuck0": {
+   "critical_before": 3606,
+   "critical_after": 3322,
+   "mism_sum_before": 20050,
+   "mism_sum_after": 16437
+  },
+  "stuck1": {
+   "critical_before": 3931,
+   "critical_after": 3563,
+   "mism_sum_before": 25144,
+   "mism_sum_after": 19372
+  },
+  "invert": {
+   "critical_before": 4813,
+   "critical_after": 4392,
+   "mism_sum_before": 45194,
+   "mism_sum_after": 35809
+  }
+ }
+}

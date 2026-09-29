@@ -9,21 +9,23 @@ This repository contains the platform, models, scripts and measurement data of
 On an AMD/Xilinx Kintex-7 XC7K325T, an autonomous on-chip injector built around the Soft Error
 Mitigation (SEM) controller flips, tests, restores and verifies **every** configuration-memory
 (CRAM) bit of the region that holds a neural network, at up to 10,000 injections per second
-(6,800–8,000 averaged over complete campaigns). The study covers differentiable weightless networks
-(DWNs), differentiable logic-gate networks (DLGNs) and an iso-accuracy fixed-point MLP on the JSC
-and MNIST benchmarks (23 exhaustive campaigns, 82 M injections), and adds:
+(5,900–8,400 averaged over complete campaigns). The study covers differentiable weightless networks
+(DWNs), differentiable logic-gate networks (DLGNs) and iso-accuracy fixed-point MLPs (dense and 70 %
+pruned) on the JSC and MNIST benchmarks (25 exhaustive campaigns, 92.5 M injections), and adds:
 
 * bit-level attribution of every critical bit to its fabric resource and net (Project X-Ray database),
-* the exactness of the parameter bit-flip model for the LUT tables (1.42 M table bits in 21 builds),
+* the exactness of the parameter bit-flip model for the LUT tables (1.48 M table bits in 22 builds),
   and the test-set coverage of critical-bit counts,
 * the persistent upsets of the LUT-mode bits (shift register, LUT-RAM), injected exhaustively with
-  reconfiguration after every persistent error,
+  reconfiguration after every persistent error, and a SLICEL-only placement that removes them,
 * accumulated-upset experiments in hardware versus the parameter bit-flip model,
 * a functional model of interconnect-multiplexer upsets (a disconnected multiplexer freezes, a
   doubly selected one forms a wired-AND, an undriven wire acts as logic one), validated bit by bit,
   with a control experiment on the frozen values,
-* hardening measured exhaustively over three training runs per retrained variant: don't-care
-  filling, fault-aware training (inverted and physically modelled input faults), selective TMR.
+* hardening measured exhaustively over three training runs per variant: don't-care filling,
+  fault-aware training (inverted and physically modelled input faults), selective TMR. Two
+  exploratory single runs (fault-aware 5 %, physical 2 %) are included in `results/` but not in
+  the paper.
 
 ## Layout
 
@@ -69,7 +71,10 @@ python analysis/analyze_campaign.py dwn_md results/camp_dwn_md
 python analysis/make_figures.py
 ```
 
-`train/pipeline_models.ps1` and `fi/run_campaigns.ps1` chain these steps for several models;
+`train/pipeline_models.ps1` and `fi/run_campaigns.ps1` chain these steps for several models (a DUT
+over two clock regions, like the MLPs, is injected as two sub-campaigns `r1`, `r2`); the
+SLICEL-only build uses the optional `slices` argument `slicel` of `hw/tcl/build.tcl`, the pruned MLP
+`train/train.py --prune 0.7` and `fi/run_pruned_mlp.ps1`;
 `fi/board_queue.ps1` runs campaigns as their builds finish and injects the LUT-mode bits of a design
 in between, and resumes after an interruption (as does `train/train.py`, which checkpoints every
 epoch). The other experiments have their own scripts: LUT-mode bits (`fi/inject_list.tcl`,

@@ -1,0 +1,92 @@
+{
+ "model": "mlp_32_16_p70",
+ "build": "mlp_32_16_p70",
+ "campaign": "results\\camp_mlp_32_16_p70",
+ "subcampaigns": [
+  "results\\camp_mlp_32_16_p70\\r1",
+  "results\\camp_mlp_32_16_p70\\r2"
+ ],
+ "ranges": [
+  [
+   72,
+   1039
+  ],
+  [
+   1808,
+   2775
+  ]
+ ],
+ "injected": 6247402,
+ "reported_injections": 6247402,
+ "seconds": 745.34,
+ "skipped_mode_bits": 9750,
+ "skipped_by_class": {
+  "CLB_OTHER": 9750
+ },
+ "skipped_essential": 9750,
+ "essential_in_range": 1298931,
+ "ebd_lead_pad_frames": 1,
+ "ebd_probe_hits": "2000/2000",
+ "critical": 281861,
+ "critical_frac_injected": 0.045116514032553054,
+ "critical_frac_essential": 0.2169945901668372,
+ "fit_sea_level": 11.27444,
+ "cross_section_cm2": 1.60378909e-09,
+ "acc_degrading": 172041,
+ "persistent": 0,
+ "timeouts": 0,
+ "golden_corr": 3067,
+ "ntest": 4096,
+ "mean_mism_critical": 131.87339859008517,
+ "mean_acc_drop_critical": 0.016388287113650434,
+ "classes": {
+  "LUT_INIT": {
+   "injected": 1177600,
+   "essential": 565440,
+   "critical": 42613,
+   "acc_degrading": 24280,
+   "mean_mism": 86.65191373524512
+  },
+  "ROUTING": {
+   "injected": 4474400,
+   "essential": 656173,
+   "critical": 206054,
+   "acc_degrading": 126250,
+   "mean_mism": 127.59362594271404
+  },
+  "CLB_OTHER": {
+   "injected": 324650,
+   "essential": 76758,
+   "critical": 32956,
+   "acc_degrading": 21273,
+   "mean_mism": 202.60841728365094
+  },
+  "HCLK": {
+   "injected": 5824,
+   "essential": 560,
+   "critical": 238,
+   "acc_degrading": 238,
+   "mean_mism": 2139.201680672269
+  },
+  "BRAM_DSP": {
+   "injected": 35200,
+   "essential": 0,
+   "critical": 0,
+   "acc_degrading": 0,
+   "mean_mism": 0.0
+  },
+  "UNMAPPED": {
+   "injected": 229728,
+   "essential": 0,
+   "critical": 0,
+   "acc_degrading": 0,
+   "mean_mism": 0.0
+  }
+ },
+ "lut_init_critical_by_module": {
+  "mac": 38704,
+  "other": 1909,
+  "activation": 975,
+  "argmax": 1025
+ }
+}

@@ -32,5 +32,17 @@
    1.2502152301728249
   ]
  },
- "advantage_hw_dwn_over_mlp": 32.894157087658705
+ "mlp_32_16_p70": {
+  "trials": 990,
+  "p_1pt_hw": 1.5117294062674178e-06,
+  "p_1pt_param": null,
+  "K_1pt": 9.444381316173878,
+  "loss_at_1e-3": null,
+  "measured_over_additive": [
+   0.903760800064885,
+   1.308117341138134
+  ]
+ },
+ "advantage_hw_dwn_over_mlp": 32.894157087658705,
+ "advantage_hw_dwn_over_pruned_mlp": 25.967443542725363
 }

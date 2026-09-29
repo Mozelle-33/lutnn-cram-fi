@@ -7,10 +7,15 @@
    "share": 0.4218155831781368,
    "mean_mism": 2.1927448584600535
   },
+  "LUT layer->LUT layer": {
+   "critical": 62440,
+   "share": 0.27043180735415134,
+   "mean_mism": 1.3767136450992954
+  },
   "LUT layer->popcount": {
-   "critical": 89207,
-   "share": 0.3863614708302655,
-   "mean_mism": 1.4538208884952974
+   "critical": 26767,
+   "share": 0.11592966347611416,
+   "mean_mism": 1.6336907385960324
   },
   "popcount": {
    "critical": 25862,

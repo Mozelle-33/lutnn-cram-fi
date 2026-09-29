@@ -25,7 +25,9 @@ from sw_faults import load_vectors  # noqa: E402
 # the parameter model is evaluated over a wider range (P_SW)
 P_HW = {"camp_dwn_md": [3e-6, 1e-5, 3e-5, 1e-4, 3e-4, 1e-3],
         "camp_dlgn_a": [3e-6, 1e-5, 3e-5, 1e-4, 3e-4, 1e-3],
-        "camp_mlp_32_16": [1e-6, 3e-6, 1e-5, 3e-5, 1e-4]}
+        "camp_mlp_32_16": [1e-6, 3e-6, 1e-5, 3e-5, 1e-4],
+        "camp_mlp_32_16_p70": [1e-6, 3e-6, 1e-5, 3e-5, 1e-4]}
+NETS = ["dwn_md", "dlgn_a", "mlp_32_16", "mlp_32_16_p70"]
 TRIALS = {1e-6: 100, 3e-6: 100, 1e-5: 60, 3e-5: 40, 1e-4: 30, 3e-4: 20, 1e-3: 10}
 P_SW = [1e-6, 3e-6, 1e-5, 3e-5, 1e-4, 3e-4, 1e-3, 3e-3, 1e-2, 3e-2, 1e-1]
 MLP_BIAS_BITS = [14, 8, 8]   # two's-complement width of the biases of the three MLP layers
@@ -212,10 +214,17 @@ def pred(model, cdir):
 
 def hw_summary():
     """Per network and p: accuracy loss mean / standard error over all hardware trial batches."""
+    import re
     out = {}
-    for m in ["dwn_md", "dlgn_a", "mlp_32_16"]:
+    for m in NETS:
         by = {}
-        for fp in sorted((ROOT / "results/multi").glob(f"hw_{m}*.tsv")):
+        # hw_<model>.tsv and further batches hw_<model>_b*.tsv (not the files of another model
+        # whose name merely starts with this one, e.g. the pruned MLP)
+        files = [fp for fp in sorted((ROOT / "results/multi").glob(f"hw_{m}*.tsv"))
+                 if re.fullmatch(rf"hw_{re.escape(m)}(_b\d*)?\.tsv", fp.name)]
+        if not files:
+            continue
+        for fp in files:
             golden = None
             for line in fp.read_text().splitlines():
                 if line.startswith("#"):
@@ -245,19 +254,23 @@ def plot():
     pr = json.loads((ROOT / "results/multi_upset_pred.json").read_text())
     from matplotlib.lines import Line2D
     fig, ax = plt.subplots(figsize=(3.45, 1.85))
-    nets = [("dwn_md", "DWN-M", "#2b6cb0"), ("dlgn_a", "DLGN", "#38a169"), ("mlp_32_16", "MLP", "#dd6b20")]
+    nets = [("dwn_md", "DWN-M", "#2b6cb0"), ("dlgn_a", "DLGN", "#38a169"), ("mlp_32_16", "MLP", "#dd6b20"),
+            ("mlp_32_16_p70", "MLP, 70 % pruned", "#b7791f")]
+    nets = [n for n in nets if n[0] in hw]
     for m, lab, col in nets:
         ps = sorted(float(p) for p in hw[m])
         mu = [hw[m][f"{p:g}"]["dacc_mean"] for p in ps]
         se = [hw[m][f"{p:g}"]["dacc_se"] for p in ps]
         ax.errorbar(ps, mu, yerr=se, color=col, lw=1.1, marker="o", ms=2.5, capsize=1.5)
-        s = sw_[m]
-        pp = sorted(float(p) for p in s["p"])
-        ax.plot(pp, [100 * (s["correct0"] - s["p"][f"{p:g}"]["correct_mean"]) / s["ntest"] for p in pp],
-                color=col, lw=1.0, ls="--")
-        xa = np.logspace(-6, np.log10(max(ps)), 40)
-        ya = np.array([100 * p * pr[m]["N"] * pr[m]["dcorr_per_bit"] / 4096 for p in xa])
-        ax.plot(xa[ya < 45], ya[ya < 45], color=col, lw=0.7, ls=":")
+        if m in sw_:                         # parameter model (not evaluated for the pruned MLP)
+            s = sw_[m]
+            pp = sorted(float(p) for p in s["p"])
+            ax.plot(pp, [100 * (s["correct0"] - s["p"][f"{p:g}"]["correct_mean"]) / s["ntest"] for p in pp],
+                    color=col, lw=1.0, ls="--")
+        if m in pr:
+            xa = np.logspace(-6, np.log10(max(ps)), 40)
+            ya = np.array([100 * p * pr[m]["N"] * pr[m]["dcorr_per_bit"] / 4096 for p in xa])
+            ax.plot(xa[ya < 45], ya[ya < 45], color=col, lw=0.7, ls=":")
     ax.set_xscale("log")
     ax.set_xlim(8e-7, 1.2e-1)
     ax.set_ylim(-2, 60)
@@ -295,16 +308,23 @@ def numbers():
     for m in hw:
         ps = sorted(float(p) for p in hw[m])
         loss = [hw[m][f"{p:g}"]["dacc_mean"] for p in ps]
-        s = sw_[m]
-        pp = sorted(float(p) for p in s["p"])
-        sl = [100 * (s["correct0"] - s["p"][f"{p:g}"]["correct_mean"]) / s["ntest"] for p in pp]
-        add = [100 * p * pr[m]["N"] * pr[m]["dcorr_per_bit"] / 4096 for p in ps]
-        ratio = [l / a for l, a in zip(loss, add) if 0.5 < l < 20]
+        p_param = None
+        if m in sw_:
+            s = sw_[m]
+            pp = sorted(float(p) for p in s["p"])
+            p_param = p_at_loss(pp, [100 * (s["correct0"] - s["p"][f"{p:g}"]["correct_mean"]) / s["ntest"] for p in pp])
+        ratio = []
+        if m in pr:
+            add = [100 * p * pr[m]["N"] * pr[m]["dcorr_per_bit"] / 4096 for p in ps]
+            ratio = [l / a for l, a in zip(loss, add) if 0.5 < l < 20]
         p1 = p_at_loss(ps, loss)
-        out[m] = {"trials": sum(hw[m][f"{p:g}"]["n"] for p in ps), "p_1pt_hw": p1, "p_1pt_param": p_at_loss(pp, sl),
-                  "K_1pt": p1 * pr[m]["N"] if p1 else None, "loss_at_1e-3": hw[m].get("0.001", {}).get("dacc_mean"),
+        out[m] = {"trials": sum(hw[m][f"{p:g}"]["n"] for p in ps), "p_1pt_hw": p1, "p_1pt_param": p_param,
+                  "K_1pt": p1 * pr[m]["N"] if (p1 and m in pr) else None,
+                  "loss_at_1e-3": hw[m].get("0.001", {}).get("dacc_mean"),
                   "measured_over_additive": [min(ratio), max(ratio)] if ratio else None}
     out["advantage_hw_dwn_over_mlp"] = out["dwn_md"]["p_1pt_hw"] / out["mlp_32_16"]["p_1pt_hw"]
+    if out.get("mlp_32_16_p70", {}).get("p_1pt_hw"):
+        out["advantage_hw_dwn_over_pruned_mlp"] = out["dwn_md"]["p_1pt_hw"] / out["mlp_32_16_p70"]["p_1pt_hw"]
     (ROOT / "results/multi_upset_numbers.json").write_text(json.dumps(out, indent=1))
     print(json.dumps(out, indent=1))
 

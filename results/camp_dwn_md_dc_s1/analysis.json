@@ -1,0 +1,97 @@
+{
+ "model": "dwn_md_dc_s1",
+ "build": "dwn_md_dc_s1",
+ "campaign": "results\\camp_dwn_md_dc_s1",
+ "subcampaigns": [
+  "results\\camp_dwn_md_dc_s1"
+ ],
+ "ranges": [
+  [
+   72,
+   967
+  ]
+ ],
+ "injected": 2891312,
+ "reported_injections": 2891312,
+ "seconds": 407.827,
+ "skipped_mode_bits": 4560,
+ "skipped_by_class": {
+  "CLB_OTHER": 4560
+ },
+ "skipped_essential": 4560,
+ "essential_in_range": 782698,
+ "ebd_lead_pad_frames": 1,
+ "ebd_probe_hits": "2000/2000",
+ "critical": 235520,
+ "critical_frac_injected": 0.08145782952514291,
+ "critical_frac_essential": 0.3009078852890898,
+ "fit_sea_level": 9.4208,
+ "cross_section_cm2": 1.3401087999999999e-09,
+ "acc_degrading": 147985,
+ "persistent": 0,
+ "timeouts": 0,
+ "golden_corr": 3161,
+ "ntest": 4096,
+ "mean_mism_critical": 17.085317595108695,
+ "mean_acc_drop_critical": 0.001579247350278108,
+ "classes": {
+  "LUT_INIT": {
+   "injected": 537600,
+   "essential": 238976,
+   "critical": 38709,
+   "acc_degrading": 19918,
+   "mean_mism": 7.2463509778087785
+  },
+  "ROUTING": {
+   "injected": 2077400,
+   "essential": 511617,
+   "critical": 183603,
+   "acc_degrading": 118719,
+   "mean_mism": 17.155901592021916
+  },
+  "CLB_OTHER": {
+   "injected": 148140,
+   "essential": 31801,
+   "critical": 13070,
+   "acc_degrading": 9210,
+   "mean_mism": 34.690665646518745
+  },
+  "HCLK": {
+   "injected": 2704,
+   "essential": 304,
+   "critical": 138,
+   "acc_degrading": 138,
+   "mean_mism": 1015.6014492753624
+  },
+  "BRAM_DSP": {
+   "injected": 17600,
+   "essential": 0,
+   "critical": 0,
+   "acc_degrading": 0,
+   "mean_mism": 0.0
+  },
+  "UNMAPPED": {
+   "injected": 107868,
+   "essential": 0,
+   "critical": 0,
+   "acc_degrading": 0,
+   "mean_mism": 0.0
+  }
+ },
+ "lut_init_critical_by_module": {
+  "encoder": 15323,
+  "popcount": 16420,
+  "other": 81,
+  "lut_layer": 6018,
+  "argmax": 867
+ },
+ "dwn_lut_layer_hw_vs_sw": {
+  "bits": 64000,
+  "exact_agree": 64000,
+  "tp": 6018,
+  "fp": 0,
+  "fn": 0,
+  "tn": 57982,
+  "examples_diff": []
+ }
+}

@@ -119,6 +119,11 @@ def main():
     new["meta"] = dict(spec["meta"], name=out, test_acc=acc1, derived_from=a.model, dontcare_filled=True)
     (ROOT / f"models/{out}.json").write_text(json.dumps(new))
     (ROOT / f"results/dontcare_{a.model}.json").write_text(json.dumps(rep, indent=1))
+    # INIT of every layer-0 LUT6 (bit a = table entry a, identity pin mapping) for hw/tcl/reinit_luts.tcl,
+    # which rewrites them in the routed checkpoint of the source build (same placement and routing)
+    lines = [f"u_dut/lut_l0_{j},64'h{sum(int(v) << e for e, v in enumerate(t)):016X}"
+             for j, t in enumerate(new["layers"][0]["tables"])]
+    (ROOT / f"hw/gen/{out}_init.csv").write_text("\n".join(lines) + "\n")
 
 
 if __name__ == "__main__":

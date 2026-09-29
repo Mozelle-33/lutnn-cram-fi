@@ -1,0 +1,95 @@
+{
+ "model": "dwn_md",
+ "build": "dwn_md_sl",
+ "campaign": "results\\camp_dwn_md_sl",
+ "subcampaigns": [
+  "results\\camp_dwn_md_sl"
+ ],
+ "ranges": [
+  [
+   72,
+   1455
+  ]
+ ],
+ "injected": 4473088,
+ "reported_injections": 4473088,
+ "seconds": 759.668,
+ "skipped_mode_bits": 0,
+ "skipped_by_class": {},
+ "skipped_essential": 0,
+ "essential_in_range": 802396,
+ "ebd_lead_pad_frames": 1,
+ "ebd_probe_hits": "2000/2000",
+ "critical": 227409,
+ "critical_frac_injected": 0.050839375393464205,
+ "critical_frac_essential": 0.2834124297728304,
+ "fit_sea_level": 9.09636,
+ "cross_section_cm2": 1.29395721e-09,
+ "acc_degrading": 86920,
+ "persistent": 0,
+ "timeouts": 0,
+ "golden_corr": 3133,
+ "ntest": 4096,
+ "mean_mism_critical": 18.71445281409267,
+ "mean_acc_drop_critical": 0.0013733708627681842,
+ "classes": {
+  "LUT_INIT": {
+   "injected": 844800,
+   "essential": 237312,
+   "critical": 37669,
+   "acc_degrading": 14502,
+   "mean_mism": 7.261620961533357
+  },
+  "ROUTING": {
+   "injected": 3196000,
+   "essential": 533638,
+   "critical": 176583,
+   "acc_degrading": 67105,
+   "mean_mism": 18.95607164902624
+  },
+  "CLB_OTHER": {
+   "injected": 241500,
+   "essential": 31046,
+   "critical": 12975,
+   "acc_degrading": 5137,
+   "mean_mism": 34.913217726396915
+  },
+  "HCLK": {
+   "injected": 4160,
+   "essential": 400,
+   "critical": 182,
+   "acc_degrading": 176,
+   "mean_mism": 999.8791208791209
+  },
+  "BRAM_DSP": {
+   "injected": 26400,
+   "essential": 0,
+   "critical": 0,
+   "acc_degrading": 0,
+   "mean_mism": 0.0
+  },
+  "UNMAPPED": {
+   "injected": 160228,
+   "essential": 0,
+   "critical": 0,
+   "acc_degrading": 0,
+   "mean_mism": 0.0
+  }
+ },
+ "lut_init_critical_by_module": {
+  "other": 114,
+  "encoder": 14792,
+  "popcount": 16416,
+  "lut_layer": 5451,
+  "argmax": 896
+ },
+ "dwn_lut_layer_hw_vs_sw": {
+  "bits": 64000,
+  "exact_agree": 64000,
+  "tp": 5451,
+  "fp": 0,
+  "fn": 0,
+  "tn": 58549,
+  "examples_diff": []
+ }
+}

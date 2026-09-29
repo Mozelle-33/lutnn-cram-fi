@@ -1,9 +1,12 @@
 # Non-project build of the FI platform for one DUT.
-# Usage: vivado -mode batch -source hw/tcl/build.tcl -tclargs <name> <latency> <in_w> <build_id> <dut_id> [rows]
+# Usage: vivado -mode batch -source hw/tcl/build.tcl -tclargs <name> <latency> <in_w> <build_id> <dut_id>
+#            [rows] [y0] [gen_name] [cw] [nvec] [slices]
 #   rows: auto | 1 | 2   (DUT pblock height in clock regions starting at X0Y4)
+#   slices: all (default) | slicel (the DUT may not use SLICEMs, so it has no LUT-mode bits)
 # Outputs in hw/build/<name>/: fi_<name>.bit (+ .ebd/.ebc essential bits), routed.dcp, reports,
 # dut_cells.csv (every DUT leaf cell with BEL/site/INIT), pblock.txt, isolation_audit.txt.
-lassign $argv name lat in_w bid did rows y0 gen_name cw nvec
+lassign $argv name lat in_w bid did rows y0 gen_name cw nvec slices
+if {$slices eq ""} { set slices all }
 if {$rows eq ""} { set rows auto }
 if {$y0 eq ""} { set y0 200 }
 if {$gen_name eq ""} { set gen_name $name }
@@ -51,6 +54,8 @@ if {$rows eq "auto"} { set rows [expr {$dut_luts > 7000 ? 2 : 1}] }
 set y1 [expr {$y0 + 50 * $rows - 1}]
 set capacity_per_col [expr {400 * $rows}]
 set ncols [expr {int(ceil(double(max($dut_luts, $dut_ffs / 2)) / (0.55 * $capacity_per_col))) + 1}]
+# SLICEL only: every CLBLM column loses its SLICEM, so the rectangle is made wider
+if {$slices eq "slicel"} { set ncols [expr {int(ceil(1.5 * $ncols))}] }
 set xs [lsort -integer -unique [lmap s [get_sites -of_objects [get_clock_regions X0Y[expr {$y0 / 50}]] -filter {SITE_TYPE =~ SLICE*}] {regsub {SLICE_X(\d+)Y\d+} $s {\1}}]]
 set nsx [expr {min(2 * $ncols, [llength $xs])}]
 # The right edge must be an *_R CLB tile: an *_L tile's interconnect (INT_L) sits to its right and
@@ -65,12 +70,16 @@ add_cells_to_pblock pb_dut [get_cells u_dut]
 resize_pblock pb_dut -add "SLICE_X${xmin}Y${y0}:SLICE_X${xmax}Y${y1}"
 set_property CONTAIN_ROUTING true [get_pblocks pb_dut]
 set_property EXCLUDE_PLACEMENT true [get_pblocks pb_dut]
+if {$slices eq "slicel"} {
+    # no DUT cell (and no LUT route-through) in a SLICEM: the LUT-mode bits of the region stay unused
+    set_property PROHIBIT true [get_sites -of_objects [get_pblocks pb_dut] -filter {SITE_TYPE == SLICEM}]
+}
 create_pblock pb_harness
 add_cells_to_pblock pb_harness [get_cells {u_ctrl u_jtag u_sem u_mon}]
 resize_pblock pb_harness -add {CLOCKREGION_X0Y0:CLOCKREGION_X0Y2}
 set_property CONTAIN_ROUTING true [get_pblocks pb_harness]
 set fp [open $out/pblock.txt w]
-puts $fp "name=$name rows=$rows ncols=$ncols slice_x=$xmin..$xmax y=$y0..$y1 dut_luts=$dut_luts dut_ffs=$dut_ffs dut_carry4=$dut_carry latency=$lat"
+puts $fp "name=$name rows=$rows ncols=$ncols slice_x=$xmin..$xmax y=$y0..$y1 dut_luts=$dut_luts dut_ffs=$dut_ffs dut_carry4=$dut_carry latency=$lat slices=$slices"
 close $fp
 
 opt_design

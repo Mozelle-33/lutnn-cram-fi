@@ -1,0 +1,14 @@
+{
+ "name": "mlp_32_16_p70",
+ "model": "mlp_32_16_p70",
+ "type": "qmlp",
+ "LATENCY": 16,
+ "IN_W": 160,
+ "QBITS": 10,
+ "CW": 3,
+ "TMR_OUT": false,
+ "DATASET": "jsc",
+ "NVEC": 4096,
+ "sw_acc_nvec": 0.748779296875,
+ "test_acc_full": 0.7522168674698795
+}

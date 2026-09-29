@@ -1,0 +1,3 @@
+ep   0 loss 0.9160 test 0.7253 best 0.7253 (218s)
+ep   1 loss 0.7849 test 0.7339 best 0.7339 (534s)
+ep   2 loss 0.7634 test 0.7345 best 0.7345 (692s)
