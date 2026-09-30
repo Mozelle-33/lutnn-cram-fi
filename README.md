@@ -101,7 +101,10 @@ dwn_mnist_r:dwn_mnist` for the repeat; the 200 MHz build with `hw/rtl/fi_top_dua
 `hw/tcl/eco_fastdiv.tcl dwn_md_f200 dwn_md_f200_100 10`; `analysis/clock_control.py`), injection timing
 (`fi/throughput.tcl`), frozen-input hold test
 (`analysis/freeze_hold.py`, `analysis/hold_stage.py`, `fi/hold_test.tcl`, die temperature
-`fi/read_temp.tcl`), critical bits by network stage (`analysis/stage_breakdown.py`), common-mode
+`fi/read_temp.tcl`), retest about a millisecond after the upset (`analysis/lag_test.py` for the bit
+lists of DWN-M, `fi/hold_test.tcl` with the single time 0, and the estimate in `results/lag_dwn_md.json`;
+`results/lag_dwn_md_f200_top.tsv`: the bits of the 200 MHz build that changed most between 200 and
+100 MHz, retested at 0, 0.1 and 1 s), critical bits by network stage (`analysis/stage_breakdown.py`), common-mode
 failures of the TMR (`analysis/tmr_cmf.py`), effective rate of the physical training faults
 (`analysis/pf_effective.py`), don't-care filling (`analysis/dontcare_fill.py`,
 `hw/tcl/reinit_luts.tcl`), test-set coverage and sampling spread (`analysis/test_coverage.py`,

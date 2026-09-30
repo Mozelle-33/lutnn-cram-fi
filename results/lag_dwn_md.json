@@ -1,0 +1,45 @@
+{
+ "campaign": {
+  "critical": 227533,
+  "sum_mism": 4064699,
+  "severe": 13246,
+  "catastrophic": 1394
+ },
+ "delayed_estimate": {
+  "critical": 227540.95371265823,
+  "sum_mism": 4149508.184148729,
+  "severe": 13619.082278481013,
+  "catastrophic": 1434.0
+ },
+ "change": {
+  "critical": 3.495630373717695e-05,
+  "sum_mism": 0.020864812904652696,
+  "severe": 0.028165655932433475,
+  "catastrophic": 0.02869440459110484
+ },
+ "change_ci95": {
+  "critical": [
+   -0.003796547297326147,
+   0.0037778469107305757
+  ],
+  "sum_mism": [
+   0.015348031286911423,
+   0.027667446829948483
+  ],
+  "severe": [
+   0.0025683655156465424,
+   0.06229537648814931
+  ],
+  "catastrophic": [
+   0.02869440459110484,
+   0.02869440459110484
+  ]
+ },
+ "retested": {
+  "severe_all": 13246,
+  "critical_sample": 2000,
+  "silent_sample": 20000
+ },
+ "severe_bits_unchanged": 12406,
+ "silent_sample_critical_when_delayed": 6
+}
