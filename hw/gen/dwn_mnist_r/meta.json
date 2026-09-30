@@ -1,0 +1,14 @@
+{
+ "name": "dwn_mnist_r",
+ "model": "dwn_mnist",
+ "type": "dwn",
+ "LATENCY": 9,
+ "IN_W": 784,
+ "QBITS": 1,
+ "CW": 4,
+ "TMR_OUT": false,
+ "DATASET": "mnist",
+ "NVEC": 2048,
+ "sw_acc_nvec": 0.9794921875,
+ "test_acc_full": 0.9782
+}

@@ -23,7 +23,7 @@ CAMPAIGNS = [  # (label, campaign dir, model, build)
     ("DLGN", "camp_dlgn_a", "dlgn_a", "dlgn_a"),
     ("MLP", "camp_mlp_32_16", "mlp_32_16", "mlp_32_16"),
     ("MLP-P", "camp_mlp_32_16_p70", "mlp_32_16_p70", "mlp_32_16_p70"),   # 70 % of the weights pruned
-    ("DWN-MNIST", "camp_dwn_mnist", "dwn_mnist", "dwn_mnist"),
+    ("DWN-MNIST", "camp_dwn_mnist_r", "dwn_mnist", "dwn_mnist_r"),  # 2048 randomly drawn test images
 ]
 TVLSI = ROOT / "paper_tvlsi"
 plt.rcParams.update({"font.size": 7, "font.family": "serif", "axes.linewidth": 0.6})
@@ -166,9 +166,13 @@ SEEDED = [
                                       ("camp_dwn_md_fa2_tmr_s2", "dwn_md_fa2_s2", "dwn_md_fa2_tmr_s2")]),
 ]
 METRICS = ["crit", "smism", "gt1", "gt10"]
-# exploratory single runs (fault-aware 5 %, physical fault-aware 2 %) whose data are released but not
-# reported in the journal paper
-NOT_REPORTED = {"camp_dwn_md_fa5", "camp_dwn_md_pf2"}
+# exploratory single runs (fault-aware 5 %, physical fault-aware 2 %) and the first DWN-MNIST campaign
+# (first 2048 test images, replaced by a random sample) whose data are released but not reported in the
+# journal paper
+NOT_REPORTED = {"camp_dwn_md_fa5", "camp_dwn_md_pf2", "camp_dwn_mnist"}
+# second campaign of an already reported build (another idle input vector): counted in the injections,
+# not as a further build in the parameter-model comparison
+CONTROL = {"camp_dwn_md_idle1479"}
 
 
 def run_metrics(cdir, model, build):
@@ -194,7 +198,7 @@ def seeded_runs():
 def hardening_table():
     """Hardening table of the old conference draft; returns the per-variant numbers."""
     L = [r"\begin{tabular}{lrrrrr}", r"\toprule",
-         r"Variant & Acc. & Crit. & $\sum$mism. & $>$1\,\% & $>$10\,\% \\",
+         r"Variant & Acc. & Crit. & $\sum$mism. & $\geq$1\,\% & $\geq$10\,\% \\",
          r" & [\%] & [k] & [M] & [k] & \\", r"\midrule"]
     base = None
     out = {}
@@ -263,7 +267,7 @@ def hardening_table_tvlsi():
         return f"{v.mean():.{digits}f}$\\pm${v.std(ddof=1):.{digits}f}"
 
     L = [r"\begin{tabular}{lrrrrrrrrr}", r"\toprule",
-         r"Variant & Runs & Acc. & LUTs & Ess. & Crit. & Crit./Ess. & $\sum$mism. & $>$1\,\% & $>$10\,\% \\",
+         r"Variant & Runs & Acc. & LUTs & Ess. & Crit. & Crit./Ess. & $\sum$mism. & $\geq$1\,\% & $\geq$10\,\% \\",
          r" & & [\%] & & [k] & [k] & [\%] & [M] & [k] & \\", r"\midrule"]
     for label, ms in seeded_runs():
         col = lambda k: [m[k] for m in ms]          # noqa: E731
@@ -349,7 +353,7 @@ def campaign_totals():
         j = json.loads(a.read_text())
         runs[a.parent.name] = {"injected": j["injected"], "seconds": j["seconds"], "rate": j["injected"] / j["seconds"]}
         hs = j.get("dwn_lut_layer_hw_vs_sw")         # DWN: table bits compared with the parameter model
-        if hs:
+        if hs and a.parent.name not in CONTROL:
             runs[a.parent.name].update(param_bits=hs["bits"], param_exact=hs["exact_agree"])
     rates = [r["rate"] for r in runs.values()]
     dwn = [r for r in runs.values() if "param_bits" in r]
@@ -381,7 +385,7 @@ def fig_hardening():
         mean.append(rel.mean(0))
         sd.append(rel.std(0, ddof=1) if len(ms) > 1 else np.zeros(rel.shape[1]))
     mean, sd = np.array(mean), np.array(sd)
-    metrics = ["Critical bits", "$\\sum$ mispredictions", "Severe ($>$1%)", "Catastrophic ($>$10%)", "LUTs"]
+    metrics = ["Critical bits", "$\\sum$ mispredictions", "Severe ($\\geq$1%)", "Catastrophic ($\\geq$10%)", "LUTs"]
     colors = ["#2b6cb0", "#90cdf4", "#dd6b20", "#c53030", "#a0aec0"]
     fig, ax = plt.subplots(figsize=(7.16, 1.6))
     w = 0.16

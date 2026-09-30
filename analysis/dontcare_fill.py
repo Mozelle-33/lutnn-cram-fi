@@ -1,9 +1,11 @@
 """Zero-overhead hardening of DWN LUTs by filling never-addressed ("don't care") entries.
 
-  python analysis/dontcare_fill.py <model> [--out <new model name>]
+  python analysis/dontcare_fill.py <model> [--out <new model name>] [--mode sym|up]
 Entries of a layer-0 LUT that no training sample addresses are set to the visit-weighted majority
 of their Hamming-distance-1 addressed neighbours, so a fault that corrupts one LUT input (a routing
-upset feeding the LUT, the dominant CRAM failure) tends to return the same output.
+upset feeding the LUT, the dominant CRAM failure) tends to return the same output. --mode up uses
+only the neighbours with one more address bit set (a wired-AND or a frozen 0 clears an input, so it
+moves an addressed entry to the don't-care entry below it) and falls back to all neighbours.
 Reports fault-free accuracy before/after on the full test set, and a software LUT-input fault model
 (stuck-at-0, stuck-at-1, inversion of every LUT input) on the 4096 hardware test vectors.
 Writes models/<out>.json (same mapping, filled tables).
@@ -31,7 +33,7 @@ def addresses(spec, X):
     return addr
 
 
-def fill(spec, Xtr):
+def fill(spec, Xtr, mode="sym"):
     """Fill the never-visited entries of each LUT; returns the new spec, the number of don't-care
     entries, the number of entries that changed value, and the visit counts."""
     t = np.asarray(spec["layers"][0]["tables"], dtype=np.int64).copy()
@@ -47,9 +49,11 @@ def fill(spec, Xtr):
         dc = np.nonzero(visits[j] == 0)[0]
         dc_total += len(dc)
         for a in dc:
+            nbs = [a | (1 << l) for l in range(n) if not (a >> l) & 1] if mode == "up" else []
+            if not any(visits[j, nb] > 0 for nb in nbs):
+                nbs = [a ^ (1 << l) for l in range(n)]
             w1 = w0 = 0
-            for l in range(n):
-                nb = a ^ (1 << l)
+            for nb in nbs:
                 if visits[j, nb] > 0:
                     if t[j, nb]:
                         w1 += visits[j, nb]
@@ -98,10 +102,11 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("model")
     ap.add_argument("--out", default=None)
+    ap.add_argument("--mode", choices=["sym", "up"], default="sym")
     a = ap.parse_args()
     spec = json.loads((ROOT / f"models/{a.model}.json").read_text())
     d = data_jsc.load(spec["meta"]["qbits"])
-    new, dc_total, changed, visits = fill(spec, d["Xtr"])
+    new, dc_total, changed, visits = fill(spec, d["Xtr"], a.mode)
     L, A = visits.shape
     acc0 = float((M.predict_spec(spec, d["Xte"])[1] == d["yte"]).mean())
     acc1 = float((M.predict_spec(new, d["Xte"])[1] == d["yte"]).mean())
@@ -116,9 +121,11 @@ def main():
                             for i, nm in enumerate(names)}}
     print(json.dumps(rep, indent=1))
     out = a.out or f"{a.model}_dc"
-    new["meta"] = dict(spec["meta"], name=out, test_acc=acc1, derived_from=a.model, dontcare_filled=True)
+    new["meta"] = dict(spec["meta"], name=out, test_acc=acc1, derived_from=a.model, dontcare_filled=True,
+                       dontcare_mode=a.mode)
     (ROOT / f"models/{out}.json").write_text(json.dumps(new))
-    (ROOT / f"results/dontcare_{a.model}.json").write_text(json.dumps(rep, indent=1))
+    suffix = "" if a.mode == "sym" else f"_{a.mode}"
+    (ROOT / f"results/dontcare_{a.model}{suffix}.json").write_text(json.dumps(rep, indent=1))
     # INIT of every layer-0 LUT6 (bit a = table entry a, identity pin mapping) for hw/tcl/reinit_luts.tcl,
     # which rewrites them in the routed checkpoint of the source build (same placement and routing)
     lines = [f"u_dut/lut_l0_{j},64'h{sum(int(v) << e for e, v in enumerate(t)):016X}"

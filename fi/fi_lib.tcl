@@ -9,11 +9,19 @@ set ::FI_WINN 128                                    ;# records per window (WIN_
 set ::FI_WINW [expr {64 + 64 * $::FI_WINN}]          ;# window width (USER3)
 set ::FI_MONW [expr {32 + 256 * 8}]                  ;# SEM monitor ring width (USER4)
 
-# Connect to the local hw_server and select the FPGA as the JTAG target.
+# Connect to the local hw_server and select the FPGA as the JTAG target. Right after programming, the
+# first attempt occasionally fails; it is retried a few times.
 proc fi_connect {} {
-    connect -url tcp:localhost:3121
-    after 200
-    jtag targets -set -filter {name == "xc7k325t"}
+    for {set i 0} {$i < 5} {incr i} {
+        if {![catch {
+            connect -url tcp:localhost:3121
+            after 200
+            jtag targets -set -filter {name == "xc7k325t"}
+        } err]} { return }
+        catch {disconnect}
+        after 2000
+    }
+    error "fi_connect: $err"
 }
 
 # Read a w-bit USER data register: select it (IR), capture and shift it out with TDI = 0, and put

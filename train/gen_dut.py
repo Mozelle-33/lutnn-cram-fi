@@ -259,14 +259,22 @@ def main():
     ap.add_argument("--tmr_out", action="store_true", help="DWN: triplicate population count + arg-max")
     ap.add_argument("--out", default=None, help="output name (default: model name)")
     ap.add_argument("--dataset", default="jsc")
+    ap.add_argument("--sample_seed", type=int, default=None,
+                    help="draw the nvec hardware test vectors at random (this seed) instead of taking the first "
+                         "nvec, for test sets in a non-random order such as MNIST")
     a = ap.parse_args()
     global TMR_OUT
     TMR_OUT = a.tmr_out
     spec = json.loads((ROOT / "models" / f"{a.name}.json").read_text())
     qbits = spec["meta"]["qbits"]
     d = data_jsc.load(qbits) if a.dataset == "jsc" else __import__(f"data_{a.dataset}").load(qbits)
-    # the hardware test set is the first nvec samples of the test split
-    Xte, yte = d["Xte"][: a.nvec], d["yte"][: a.nvec]
+    # the hardware test set is the first nvec samples of the (randomly split) JSC test set, or a random
+    # sample of nvec test samples in their original order
+    if a.sample_seed is None:
+        Xte, yte = d["Xte"][: a.nvec], d["yte"][: a.nvec]
+    else:
+        idx = np.sort(np.random.default_rng(a.sample_seed).choice(len(d["yte"]), a.nvec, replace=False))
+        Xte, yte = d["Xte"][idx], d["yte"][idx]
     nfeat = Xte.shape[1]
     in_w = nfeat * qbits
     cw = max(1, int(np.ceil(np.log2(spec["classes"]))))

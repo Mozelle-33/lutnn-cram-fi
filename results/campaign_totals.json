@@ -1,7 +1,7 @@
 {
- "campaigns": 25,
- "injected": 92527039,
- "hours": 3.4776058333333335,
+ "campaigns": 26,
+ "injected": 95418336,
+ "hours": 3.5952811111111114,
  "rate_min": 5888.214325205221,
  "rate_max": 8381.949177556551,
  "dwn_builds": 22,
@@ -83,6 +83,11 @@
    "param_bits": 64000,
    "param_exact": 64000
   },
+  "camp_dwn_md_idle1479": {
+   "injected": 2891192,
+   "seconds": 422.709,
+   "rate": 6839.674575180561
+  },
   "camp_dwn_md_p2": {
    "injected": 2891342,
    "seconds": 427.654,
@@ -153,10 +158,10 @@
    "param_bits": 64000,
    "param_exact": 64000
   },
-  "camp_dwn_mnist": {
-   "injected": 2890547,
-   "seconds": 364.425,
-   "rate": 7931.802154078342,
+  "camp_dwn_mnist_r": {
+   "injected": 2890652,
+   "seconds": 365.347,
+   "rate": 7912.072632319412,
    "param_bits": 192000,
    "param_exact": 192000
   },

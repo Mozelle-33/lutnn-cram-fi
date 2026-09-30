@@ -1,9 +1,10 @@
 """How much do the hardware test vectors miss? Parameter bits evaluated on the full test set.
 
-  python analysis/test_coverage.py [model ...]
+  python analysis/test_coverage.py [model | build:model ...]
 For every table bit of a DWN, the parameter fault model gives the number of changed predictions on
-the full test set (JSC 166 k, MNIST 10 k) and on the first NVEC vectors used in hardware (4096 for
-JSC, 2048 for MNIST; hw/gen/<model>/meta.json). Because
+the full test set (JSC 166 k, MNIST 10 k) and on the vectors used in hardware (hw/gen/<build>/
+vectors.mem: 4096 for JSC, 2048 for MNIST; the first ones of the test set, or a random sample for a
+build generated with --sample_seed). Because
 the hardware result equals the model for these bits (Section "exact"), the comparison measures the
 detection coverage of the 4096-vector campaign for critical, severe and catastrophic bits.
 Writes results/test_coverage.json.
@@ -15,7 +16,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "analysis"))
-from sw_faults import dwn_single_flips, dwn2_single_flips  # noqa: E402
+from sw_faults import dwn_single_flips, dwn2_single_flips, load_vectors  # noqa: E402
 
 DATA = {"dwn_sm": "jsc_q10", "dwn_md": "jsc_q10", "dwn_md_fa2": "jsc_q10", "dwn_mnist": "mnist_q1"}
 
@@ -33,14 +34,18 @@ def main():
     """Coverage statistics per model, merged into results/test_coverage.json."""
     names = sys.argv[1:] or ["dwn_sm", "dwn_md", "dwn_mnist"]
     out = {}
-    for name in names:
-        spec = json.loads((ROOT / f"models/{name}.json").read_text())
-        d = np.load(ROOT / f"data/{DATA[name]}.npz")
+    for arg in names:
+        # <model> (hardware vectors: its generated test set) or <build>:<model>
+        name, _, model = arg.partition(":")
+        model = model or name
+        spec = json.loads((ROOT / f"models/{model}.json").read_text())
+        d = np.load(ROOT / f"data/{DATA[model]}.npz")
         X, y = d["Xte"].astype(np.int64), d["yte"]
         n_full = len(y)
-        n_hw = json.loads((ROOT / f"hw/gen/{name}/meta.json").read_text())["NVEC"]
+        Xh, yh = load_vectors(name)
+        n_hw = len(yh)
         m_full, _, _ = flips(spec, X, y)
-        m_hw, _, _ = flips(spec, X[:n_hw], y[:n_hw])
+        m_hw, _, _ = flips(spec, Xh, yh)
         crit_f, crit_h = m_full > 0, m_hw > 0
         assert not (crit_h & ~crit_f).any()          # the hardware vectors are a subset
         rate = m_full / n_full

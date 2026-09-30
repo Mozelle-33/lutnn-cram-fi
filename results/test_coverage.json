@@ -55,5 +55,24 @@
   "catastrophic_full": 0,
   "catastrophic_hw": 0,
   "catastrophic_both": 0
+ },
+ "dwn_mnist_r": {
+  "bits": 192000,
+  "n_full": 10000,
+  "n_hw": 2048,
+  "critical_full": 14052,
+  "critical_hw": 2844,
+  "coverage": 0.20239111870196413,
+  "coverage_expected_random_subset": 0.2148989420880689,
+  "missed": 11208,
+  "missed_rate_mean": 0.00011741613133476091,
+  "missed_rate_max": 0.0008,
+  "missed_share_of_mispredictions": 0.7732079905992949,
+  "severe_full": 0,
+  "severe_hw": 0,
+  "severe_both": 0,
+  "catastrophic_full": 0,
+  "catastrophic_hw": 0,
+  "catastrophic_both": 0
  }
 }

@@ -1,0 +1,36 @@
+{
+ "orig_i1024": {
+  "idle 0": {
+   "held": 8523,
+   "other": 354,
+   "flipped": 99,
+   "distinguishable": 8976,
+   "held_frac": 0.9495320855614974,
+   "flipped_frac": 0.011029411764705883
+  },
+  "idle 1": {
+   "held": 26785,
+   "flipped": 24,
+   "distinguishable": 26809,
+   "held_frac": 0.9991047782461114,
+   "flipped_frac": 0.0008952217538886195
+  }
+ },
+ "orig_i1479": {
+  "idle 0": {
+   "held": 28915,
+   "other": 1794,
+   "flipped": 516,
+   "distinguishable": 31225,
+   "held_frac": 0.9260208166533227,
+   "flipped_frac": 0.01652522017614091
+  },
+  "idle 1": {
+   "held": 4548,
+   "flipped": 12,
+   "distinguishable": 4560,
+   "held_frac": 0.9973684210526316,
+   "flipped_frac": 0.002631578947368421
+  }
+ }
+}

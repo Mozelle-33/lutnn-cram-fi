@@ -1,0 +1,172 @@
+{
+ "build": "dwn_md",
+ "corr0": 3133,
+ "muxes": 22882,
+ "bits": 201603,
+ "idle": 1479,
+ "tables": "dwn_md_dcu",
+ "predicted": {
+  "evaluable": 151525,
+  "critical": 46098,
+  "sum_mism": 251949
+ },
+ "stats": {
+  "2-hot/freeze": {
+   "n": 28585,
+   "crit": 20113,
+   "exact": 20856,
+   "crit_exact": 12638
+  },
+  "all/freeze": {
+   "n": 43139,
+   "crit": 28489,
+   "exact": 32908,
+   "crit_exact": 18590
+  },
+  "2+ sinks/freeze": {
+   "n": 12317,
+   "crit": 10356,
+   "exact": 7608,
+   "crit_exact": 5752
+  },
+  "2-hot/and-unused-clbout": {
+   "n": 18370,
+   "crit": 6266
+  },
+  "all/and-unused-clbout": {
+   "n": 22342,
+   "crit": 7185
+  },
+  "2+ sinks/and-unused-clbout": {
+   "n": 8253,
+   "crit": 3395
+  },
+  "2-hot/and": {
+   "n": 28274,
+   "crit": 12427,
+   "exact": 25170,
+   "crit_exact": 9413
+  },
+  "all/and": {
+   "n": 56264,
+   "crit": 21791,
+   "exact": 51315,
+   "crit_exact": 16936
+  },
+  "2+ sinks/and": {
+   "n": 12333,
+   "crit": 6689,
+   "exact": 10288,
+   "crit_exact": 4708
+  },
+  "2-hot/and-unused": {
+   "n": 37059,
+   "crit": 387,
+   "exact": 36668,
+   "crit_exact": 9
+  },
+  "all/and-unused": {
+   "n": 52034,
+   "crit": 441,
+   "exact": 51589,
+   "crit_exact": 9
+  },
+  "2+ sinks/and-unused": {
+   "n": 15656,
+   "crit": 114,
+   "exact": 15542,
+   "crit_exact": 0
+  },
+  "2-hot/and-other-net": {
+   "n": 16457,
+   "crit": 9680
+  },
+  "all/and-other-net": {
+   "n": 27736,
+   "crit": 14931
+  },
+  "2+ sinks/and-other-net": {
+   "n": 6911,
+   "crit": 5058
+  },
+  "IMUX-type/and": {
+   "n": 27990,
+   "crit": 9364,
+   "exact": 26145,
+   "crit_exact": 7523
+  },
+  "1 sink/and": {
+   "n": 43931,
+   "crit": 15102,
+   "exact": 41027,
+   "crit_exact": 12228
+  },
+  "IMUX-type/freeze": {
+   "n": 14554,
+   "crit": 8376,
+   "exact": 12052,
+   "crit_exact": 5952
+  },
+  "1 sink/freeze": {
+   "n": 30822,
+   "crit": 18133,
+   "exact": 25300,
+   "crit_exact": 12838
+  },
+  "IMUX-type/and-unused": {
+   "n": 14975,
+   "crit": 54,
+   "exact": 14921,
+   "crit_exact": 0
+  },
+  "1 sink/and-unused": {
+   "n": 36378,
+   "crit": 327,
+   "exact": 36047,
+   "crit_exact": 9
+  },
+  "1 sink/and-unused-clbout": {
+   "n": 14089,
+   "crit": 3790
+  },
+  "2-hot/none": {
+   "n": 88,
+   "crit": 33,
+   "exact": 55,
+   "crit_exact": 0
+  },
+  "all/none": {
+   "n": 88,
+   "crit": 33,
+   "exact": 55,
+   "crit_exact": 0
+  },
+  "1 sink/none": {
+   "n": 80,
+   "crit": 28,
+   "exact": 52,
+   "crit_exact": 0
+  },
+  "IMUX-type/and-other-net": {
+   "n": 11279,
+   "crit": 5251
+  },
+  "1 sink/and-other-net": {
+   "n": 20825,
+   "crit": 9873
+  },
+  "IMUX-type/and-unused-clbout": {
+   "n": 3972,
+   "crit": 919
+  },
+  "?/no-model": {
+   "n": 1277
+  },
+  "2+ sinks/none": {
+   "n": 8,
+   "crit": 5,
+   "exact": 3,
+   "crit_exact": 0
+  }
+ }
+}

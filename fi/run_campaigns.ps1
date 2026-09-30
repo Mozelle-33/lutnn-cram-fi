@@ -13,6 +13,9 @@ foreach ($a in $args) {
     if (-not $m) { $m = $b }
     $bit = "hw\build\$b\fi_$b.bit"
     if (-not (Test-Path $bit)) { "MISSING $bit"; continue }
+    # test length: the vectors in the test ROM of the generated network (4096; 2048 for MNIST)
+    $meta = "hw\gen\$b\meta.json"
+    $ntest = if ((Test-Path $meta) -and (Get-Content $meta -Raw | ConvertFrom-Json).NVEC) { (Get-Content $meta -Raw | ConvertFrom-Json).NVEC } else { 4096 }
     # one FAR range per clock-region row of the pblock; a DUT over two rows (the MLPs) is covered by
     # two sub-campaigns r1, r2, which the analysis scripts merge
     $ranges = @(& $py analysis\campaign_range.py $b | Where-Object { $_ -match '^\s*\d+\s+\d+' })
@@ -26,8 +29,8 @@ foreach ($a in $args) {
         New-Item -ItemType Directory -Force $sub | Out-Null
         & $py analysis\skiplist.py $b $f0 $f1 0 100 "$sub\skip.txt" | Select-Object -Last 1
         & $xsdb fi\program.tcl $bit 2>&1 | Select-Object -Last 1
-        # 4096 test vectors, 1024 verify vectors, flags 4 = stop (and reprogram) on a persistent error
-        & $xsdb fi\run_campaign.tcl $sub $bit $f0 $f1 0 100 4096 1024 4 "$sub\skip.txt" 2>&1 | Select-Object -Last 1
+        # $ntest test vectors, 1024 verify vectors, flags 4 = stop (and reprogram) on a persistent error
+        & $xsdb fi\run_campaign.tcl $sub $bit $f0 $f1 0 100 $ntest 1024 4 "$sub\skip.txt" 2>&1 | Select-Object -Last 1
     }
     $f0, $f1 = $ranges[0].Trim().Split()[0..1]
     # DWN: the parameter model's prediction for every table bit, compared bit by bit by the analysis

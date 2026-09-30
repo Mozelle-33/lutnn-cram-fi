@@ -1,8 +1,13 @@
 # Does a disconnected multiplexer keep its value? Inject one bit, then run the test set repeatedly for
 # up to a minute (the other routing keeps toggling) and compare every run with the campaign result.
-# Usage: xsdb fi/hold_test.tcl <bitfile> <list file> <out.tsv> <ntest> <far_first> <far_last>
-# List lines: "fi w b expected_mism expected_corr". Output: fi w b t_s mism corr expected_mism
+# Usage: xsdb fi/hold_test.tcl <bitfile> <list file> <out.tsv> <ntest> <far_first> <far_last> [t1,t2,...]
+# List lines: "fi w b expected_mism expected_corr [...]" (further fields ignored; analysis/freeze_hold.py
+# writes the outcomes of a frozen 0 and a frozen 1). Output: fi w b t_s mism corr expected_mism
 lassign $argv bitfile listf outf ntest far_first far_last
+# optional: the test times in seconds after the upset, e.g. 0,0.1,1,10 (the batch wrapper of xsdb may
+# split the list at the commas into separate arguments, so all remaining arguments are joined)
+set times [split [join [lrange $argv 6 end] ,] ,]
+if {![llength $times]} { set times {0 1 2 5 10 20 30 60} }
 set root [file normalize [file join [file dirname [info script]] ..]]
 source [file join $root fi fi_lib.tcl]
 set fl [open [file join $root hw gen farlist.mem] r]
@@ -36,8 +41,8 @@ foreach line [split [string trim [read $f]] "\n"] {
     set a [sem_cmd $fi $w $b]
     fi_raw_inject $a
     set t0 [clock milliseconds]
-    foreach t {0 1 2 5 10 20 30 60} {
-        while {[clock milliseconds] - $t0 < $t * 1000} { after 20 }
+    foreach t $times {
+        while {[clock milliseconds] - $t0 < $t * 1000} { after 5 }
         set s1 [fi_test]
         set el [expr {([clock milliseconds] - $t0) / 1000.0}]
         puts $o [format "%d\t%d\t%d\t%.1f\t%d\t%d\t%d" $fi $w $b $el [dict get $s1 last_mism] [dict get $s1 last_corr] $em]

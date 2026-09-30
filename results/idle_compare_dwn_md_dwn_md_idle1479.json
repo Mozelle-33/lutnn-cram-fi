@@ -1,0 +1,29 @@
+{
+ "A": "camp_dwn_md",
+ "B": "camp_dwn_md_idle1479",
+ "injected": [
+  2891192,
+  2891192
+ ],
+ "A_totals": {
+  "critical": 227533,
+  "sum_mism": 4064699,
+  "severe": 13246,
+  "catastrophic": 1394,
+  "acc_loss_sum": 292.057373046875
+ },
+ "B_totals": {
+  "critical": 226555,
+  "sum_mism": 3581168,
+  "severe": 12202,
+  "catastrophic": 1239,
+  "acc_loss_sum": 237.066162109375
+ },
+ "critical_both": 218530,
+ "critical_only_A": 9003,
+ "critical_only_B": 8025,
+ "changed_status": 17028,
+ "changed_status_frac_of_union": 0.07228792908752833,
+ "both_same_mism": 177369,
+ "both_diff_mism": 41161
+}

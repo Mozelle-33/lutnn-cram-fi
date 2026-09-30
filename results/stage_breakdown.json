@@ -1,0 +1,92 @@
+{
+ "camp_dwn_sm": {
+  "learned connectivity": {
+   "critical": 12404,
+   "share": 0.2490613015280204
+  },
+  "encoder": {
+   "critical": 16788,
+   "share": 0.33708812722125175
+  },
+  "read-out": {
+   "critical": 14426,
+   "share": 0.2896612653856193
+  },
+  "parameters": {
+   "critical": 1087,
+   "share": 0.021825994418006946
+  },
+  "clock": {
+   "critical": 1191,
+   "share": 0.02391422203481718
+  },
+  "other CLB settings": {
+   "critical": 3505,
+   "share": 0.07037728650884485
+  },
+  "rest": {
+   "critical": 402,
+   "share": 0.008071802903439552
+  }
+ },
+ "camp_dwn_md": {
+  "learned connectivity": {
+   "critical": 73538,
+   "share": 0.32319707471004205
+  },
+  "encoder": {
+   "critical": 59105,
+   "share": 0.2597645176743593
+  },
+  "read-out": {
+   "critical": 70318,
+   "share": 0.3090452813438051
+  },
+  "parameters": {
+   "critical": 5451,
+   "share": 0.023956964484272612
+  },
+  "clock": {
+   "critical": 4686,
+   "share": 0.020594814818070347
+  },
+  "other CLB settings": {
+   "critical": 12915,
+   "share": 0.0567609973058853
+  },
+  "rest": {
+   "critical": 1520,
+   "share": 0.006680349663565285
+  }
+ },
+ "camp_dwn_mnist_r": {
+  "learned connectivity": {
+   "critical": 92807,
+   "share": 0.5637205177576792
+  },
+  "encoder": {
+   "critical": 6772,
+   "share": 0.04113391604356356
+  },
+  "read-out": {
+   "critical": 45085,
+   "share": 0.27385153644773524
+  },
+  "parameters": {
+   "critical": 2844,
+   "share": 0.017274786950368395
+  },
+  "clock": {
+   "critical": 5201,
+   "share": 0.03159147922955908
+  },
+  "other CLB settings": {
+   "critical": 9888,
+   "share": 0.060060862646006574
+  },
+  "rest": {
+   "critical": 2036,
+   "share": 0.012366900925087923
+  }
+ }
+}

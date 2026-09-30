@@ -1,0 +1,38 @@
+{
+ "camp_dwn_sm": {
+  "critical": 49803,
+  "table_critical": 1087,
+  "table_share": 0.021825994418006946,
+  "table_share_bound": 0.05282600664942741,
+  "sum_mism": 1287651,
+  "table_mism": 3062,
+  "table_mism_share": 0.0023779735347543704
+ },
+ "camp_dwn_md": {
+  "critical": 227533,
+  "table_critical": 5451,
+  "table_share": 0.023956964484272612,
+  "table_share_bound": 0.06722332592707708,
+  "sum_mism": 4064699,
+  "table_mism": 16483,
+  "table_mism_share": 0.0040551588198781754
+ },
+ "camp_dwn_mnist": {
+  "critical": 260629,
+  "table_critical": 6586,
+  "table_share": 0.025269636149469168,
+  "table_share_bound": 0.05241425614054719,
+  "sum_mism": 1310084,
+  "table_mism": 7137,
+  "table_mism_share": 0.005447742282174273
+ },
+ "camp_dwn_mnist_r": {
+  "critical": 164633,
+  "table_critical": 2844,
+  "table_share": 0.017274786950368395,
+  "table_share_bound": 0.07991310331492656,
+  "sum_mism": 961642,
+  "table_mism": 2931,
+  "table_mism_share": 0.0030479118008572836
+ }
+}

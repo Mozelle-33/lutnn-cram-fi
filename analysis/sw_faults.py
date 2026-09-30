@@ -117,8 +117,9 @@ def dwn2_single_flips(spec, X, y):
 
 
 if __name__ == "__main__":
-    name = sys.argv[1] if len(sys.argv) > 1 else "dwn_md"
-    spec = json.loads((ROOT / f"models/{name}.json").read_text())
+    # <name> or <build>:<model>: a build that tests a model with its own vectors (e.g. a random sample)
+    name, _, model = (sys.argv[1] if len(sys.argv) > 1 else "dwn_md").partition(":")
+    spec = json.loads((ROOT / f"models/{model or name}.json").read_text())
     X, y = load_vectors(name)
     if len(spec["layers"]) == 1:
         mism, corr, corr0 = dwn_single_flips(spec, X, y)

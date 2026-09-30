@@ -1,6 +1,9 @@
 """Connectivity fault model for every multiplexer on the routes of the thermometer nets of a DWN.
 
-  python analysis/route_model.py <model> <campaign dir> [build]
+  python analysis/route_model.py <model> <campaign dir> [build] [--idle N] [--tables MODEL] [--tag TAG]
+--idle: the input vector the upsets were injected on (default 1024); --tables: predict with the tables
+of another model with the same mapping (e.g., a don't-care-filled variant on the same routing); --frozen
+0|1: value of a disconnected input instead of the idle-vector value; --tag: suffix of the output files.
 Extends imux_model.py from the last hop to whole routing trees (hw/build/<build>/route_pips.csv and
 route_sinks.csv from hw/tcl/export_routetree.tcl). For each INT-tile multiplexer that a thermometer
 net t_r[k] passes through, each configuration bit is flipped in the model:
@@ -74,14 +77,25 @@ class Mux:
 
 
 def main():
-    model, cdir = sys.argv[1], Path(sys.argv[2])
-    build = sys.argv[3] if len(sys.argv) > 3 else model
+    args, opt = [], {}
+    it = iter(sys.argv[1:])
+    for a in it:
+        if a.startswith("--"):
+            opt[a[2:]] = next(it)
+        else:
+            args.append(a)
+    model, cdir = args[0], Path(args[1])
+    build = args[2] if len(args) > 2 else model
+    idle = int(opt.get("idle", IDLE_VECTOR))
+    tag = f"_{opt['tag']}" if "tag" in opt else ""
     spec = json.loads((ROOT / f"models/{model}.json").read_text())
     X, y = load_vectors(build if (ROOT / f"hw/gen/{build}/vectors.mem").exists() else model)
     # fault-free forward pass of the single-layer DWN on the hardware test vectors
     tb = M._thermo_np(spec, X)
     mp = np.asarray(spec["layers"][0]["mapping"])
-    tab = np.asarray(spec["layers"][0]["tables"], dtype=np.int64)
+    tspec = json.loads((ROOT / f"models/{opt['tables']}.json").read_text()) if "tables" in opt else spec
+    assert np.array_equal(np.asarray(tspec["layers"][0]["mapping"]), mp)
+    tab = np.asarray(tspec["layers"][0]["tables"], dtype=np.int64)
     L, n = mp.shape
     g = L // spec["classes"]
     addr = np.zeros((len(X), L), dtype=np.int64)
@@ -207,7 +221,7 @@ def main():
         state = mux.state_of(src)
         base = cm.tg[tile]["bits"]["CLB_IO_CLK"]
         b0, off = int(base["baseaddr"], 16), base["offset"]
-        frozen = tb[IDLE_VECTOR, k]          # value of the net while the upset was injected
+        frozen = tb[idle, k] if opt.get("frozen", "idle") == "idle" else int(opt["frozen"])
         for x in mux.bits:
             # CRAM address of the bit: frame = tile base + frame offset, word/bit from the bit offset
             addr_x = (far_index.get(b0 + x[0]), off + x[1] // 32, x[1] % 32)
@@ -256,12 +270,18 @@ def main():
                     c["exact"] += tuple(hw) == tuple(pred)
                     c["crit_exact"] += hw[0] > 0 and tuple(hw) == tuple(pred)
             per_bit.append([k, tile, dst, f"{x[0]}_{x[1]}", why, len(sinks), list(hw), list(pred) if pred else None])
-    (ROOT / f"hw/build/{build}/bridge_wires.txt").write_text("\n".join(sorted(cand)) + "\n")
-    res = {"build": build, "corr0": corr0, "muxes": len(muxes), "bits": len(per_bit),
+    if not tag:
+        (ROOT / f"hw/build/{build}/bridge_wires.txt").write_text("\n".join(sorted(cand)) + "\n")
+    ev_pred = [b[7] for b in per_bit if b[7] is not None]
+    res = {"build": build, "corr0": corr0, "muxes": len(muxes), "bits": len(per_bit), "idle": idle,
+           "tables": opt.get("tables", model),
+           "predicted": {"evaluable": len(ev_pred), "critical": sum(p[0] > 0 for p in ev_pred),
+                         "sum_mism": sum(p[0] for p in ev_pred)},
            "stats": {f"{a}/{b}": dict(v) for (a, b), v in stats.items()}}
-    (ROOT / f"results/route_model_{build}.json").write_text(json.dumps(res, indent=1))
-    (ROOT / f"results/route_model_{build}_bits.json").write_text(json.dumps(per_bit))
-    (ROOT / f"results/route_model_{build}_unused.json").write_text(json.dumps(per_bit_unused))
+    (ROOT / f"results/route_model_{build}{tag}.json").write_text(json.dumps(res, indent=1))
+    (ROOT / f"results/route_model_{build}{tag}_bits.json").write_text(json.dumps(per_bit))
+    (ROOT / f"results/route_model_{build}{tag}_unused.json").write_text(json.dumps(per_bit_unused))
+    print("predicted over the evaluable bits:", res["predicted"])
     for (a, b), v in sorted(stats.items()):
         ex = f"exact {100 * v['exact'] / v['n']:6.2f}%  critical {v['crit_exact']}/{v['crit']}" if "exact" in v or b in ("none", "freeze", "and", "and-unused") else ""
         print(f"{a:10s} {b:14s} n={v['n']:6d} crit={v['crit']:6d}  {ex}")

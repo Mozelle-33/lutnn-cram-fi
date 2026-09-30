@@ -209,7 +209,9 @@ def main():
     }
     # DWN: hardware vs software for every LUT-layer INIT bit
     spec = json.loads((ROOT / f"models/{model}.json").read_text())
-    swf = ROOT / f"results/sw_single_flips_{model}.npz"
+    # the build's own prediction if it tests the model with other vectors (sw_faults.py <build>:<model>)
+    swf = ROOT / f"results/sw_single_flips_{build}.npz"
+    swf = swf if swf.exists() else ROOT / f"results/sw_single_flips_{model}.npz"
     if spec["type"] == "dwn" and swf.exists():
         swd = np.load(swf)
         sw_l = [swd[f"mism_l{li}"] for li in range(len(spec["layers"]))] if "mism_l0" in swd.files else [swd["mism"]]
