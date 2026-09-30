@@ -1,0 +1,8 @@
+# recovered from the console output of the training run; only the last epochs were kept
+ep  24 loss 0.7028 test 0.7522 best 0.7545 (41s)
+ep  25 loss 0.7027 test 0.7523 best 0.7545 (43s)
+ep  26 loss 0.7029 test 0.7527 best 0.7545 (44s)
+ep  27 loss 0.7010 test 0.7531 best 0.7545 (46s)
+ep  28 loss 0.7005 test 0.7538 best 0.7545 (47s)
+ep  29 loss 0.6965 test 0.7538 best 0.7545 (49s)
+torch eval acc 0.75454  integer reference acc 0.75454

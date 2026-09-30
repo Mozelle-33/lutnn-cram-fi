@@ -7,5 +7,58 @@
   "held": 64,
   "flip by first run": 12,
   "flip later": 5
+ },
+ "by_time": {
+  "row": {
+   "0": {
+    "held": 99
+   },
+   "0.1": {
+    "flipped": 7,
+    "held": 75
+   },
+   "1": {
+    "flipped": 7,
+    "held": 75
+   },
+   "10": {
+    "flipped": 8,
+    "held": 91
+   },
+   "30": {
+    "held": 16,
+    "flipped": 1
+   },
+   "60": {
+    "held": 16,
+    "flipped": 1
+   }
+  },
+  "column": {
+   "0": {
+    "held": 69,
+    "flipped": 12
+   },
+   "0.1": {
+    "held": 55,
+    "flipped": 13
+   },
+   "1": {
+    "held": 55,
+    "flipped": 13
+   },
+   "10": {
+    "held": 64,
+    "flipped": 17
+   },
+   "30": {
+    "held": 9,
+    "flipped": 4
+   },
+   "60": {
+    "held": 9,
+    "flipped": 4
+   }
+  }
  }
 }

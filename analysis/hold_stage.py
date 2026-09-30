@@ -39,6 +39,7 @@ def main():
         stage[key] = "row" if (ff, bb) in rows_of[(tt, wire)] else "column"
     exp = {k: (o0, o1) for k, o0, o1 in FH.candidates()}
     res = defaultdict(Counter)
+    by_time = defaultdict(lambda: defaultdict(Counter))    # stage -> nominal test time -> held / flipped
     for f in ("freeze_hold_a.tsv", "freeze_hold_b.tsv"):
         runs = defaultdict(list)
         for line in (ROOT / "results" / f).read_text().splitlines():
@@ -46,11 +47,16 @@ def main():
             k = (int(fi), int(w), int(b))
             o0, o1 = exp[k]
             h = (int(m), int(c))
-            runs[k].append("0" if h == o0 else "1" if h == o1 else "mixed")
+            tn = min((0, 0.1, 1, 10, 30, 60), key=lambda x: abs(x - float(t)))
+            runs[k].append((tn, "0" if h == o0 else "1" if h == o1 else "mixed"))
         for k, rr in runs.items():
-            cls = "flip by first run" if rr[0] != "0" else ("flip later" if rr[-1] != "0" else "held")
+            cls = "flip by first run" if rr[0][1] != "0" else ("flip later" if rr[-1][1] != "0" else "held")
             res[stage[k]][cls] += 1
+            for tn, v in rr:
+                by_time[stage[k]][str(tn)]["held" if v == "0" else "flipped"] += 1
     out = {s: dict(v) for s, v in res.items()}
+    out["by_time"] = {s: {t: dict(c) for t, c in sorted(v.items(), key=lambda kv: float(kv[0]))}
+                      for s, v in by_time.items()}
     (ROOT / "results/hold_stage_dwn_md.json").write_text(json.dumps(out, indent=1))
     print(json.dumps(out, indent=1))
 

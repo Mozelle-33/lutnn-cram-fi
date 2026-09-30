@@ -254,19 +254,20 @@ def plot():
     pr = json.loads((ROOT / "results/multi_upset_pred.json").read_text())
     from matplotlib.lines import Line2D
     fig, ax = plt.subplots(figsize=(3.45, 1.85))
-    nets = [("dwn_md", "DWN-M", "#2b6cb0"), ("dlgn_a", "DLGN", "#38a169"), ("mlp_32_16", "MLP", "#dd6b20"),
-            ("mlp_32_16_p70", "MLP-P", "#b7791f")]
+    # a marker per network as well as a colour, so that the curves stay apart in greyscale
+    nets = [("dwn_md", "DWN-M", "#2b6cb0", "o"), ("dlgn_a", "DLGN", "#38a169", "s"),
+            ("mlp_32_16", "MLP", "#dd6b20", "^"), ("mlp_32_16_p70", "MLP-P", "#b7791f", "D")]
     nets = [n for n in nets if n[0] in hw]
-    for m, lab, col in nets:
+    for m, lab, col, mk in nets:
         ps = sorted(float(p) for p in hw[m])
         mu = [hw[m][f"{p:g}"]["dacc_mean"] for p in ps]
         se = [hw[m][f"{p:g}"]["dacc_se"] for p in ps]
-        ax.errorbar(ps, mu, yerr=se, color=col, lw=1.1, marker="o", ms=2.5, capsize=1.5)
+        ax.errorbar(ps, mu, yerr=se, color=col, lw=1.1, marker=mk, ms=3, capsize=1.5)
         if m in sw_:                         # parameter model
             s = sw_[m]
             pp = sorted(float(p) for p in s["p"])
             ax.plot(pp, [100 * (s["correct0"] - s["p"][f"{p:g}"]["correct_mean"]) / s["ntest"] for p in pp],
-                    color=col, lw=1.0, ls="--")
+                    color=col, lw=1.0, ls="--", marker=mk, ms=3, mfc="none", markevery=2)
         if m in pr:
             xa = np.logspace(-6, np.log10(max(ps)), 40)
             ya = np.array([100 * p * pr[m]["N"] * pr[m]["dcorr_per_bit"] / 4096 for p in xa])
@@ -276,8 +277,8 @@ def plot():
     ax.set_ylim(-2, 60)
     ax.set_xlabel("Per-bit upset probability $p$")
     ax.set_ylabel("Accuracy loss [points]")
-    h = [Line2D([], [], color=c, lw=1.1, label=l) for _, l, c in nets]
-    h += [Line2D([], [], color="black", lw=1.1, marker="o", ms=2.5, label="Hardware (CRAM of region)"),
+    h = [Line2D([], [], color=c, lw=1.1, marker=mk, ms=3, label=l) for _, l, c, mk in nets]
+    h += [Line2D([], [], color="black", lw=1.1, label="Hardware (CRAM of region)"),
           Line2D([], [], color="black", lw=1.0, ls="--", label="Parameter bit-flip model"),
           Line2D([], [], color="black", lw=0.7, ls=":", label="Sum of single-bit effects")]
     ax.legend(handles=h, fontsize=5.3, frameon=False, ncol=2, loc="lower center", bbox_to_anchor=(0.5, 1.0),
