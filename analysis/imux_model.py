@@ -84,6 +84,7 @@ def main():
             ev[(fi, w, b)] = (mm, cc)
 
     stats = defaultdict(Counter)
+    alt = defaultdict(Counter)        # alternative hypotheses per (row/col, effect, hypothesis)
     per_bit = []
     with open(ROOT / f"hw/build/{build}/lut_pins.csv") as f:
         pins = [r for r in csv.DictReader(f) if re.match(r"u_dut/lut_l0_\d+$", r["cell"]) and r["imux_wire"]]
@@ -118,11 +119,14 @@ def main():
             on = [gname for gname, fn in GATES.items() if fn(rv)]
             conn = [src_at[(c, gname)] for c in cols if st[c] for gname in on if (c, gname) in src_at]
             kind = "row" if x in rows else "col"
+            alts = {}                                # alternative hypotheses, scored like the model
+            zeros, ones = np.zeros(len(X), np.uint8), np.ones(len(X), np.uint8)
             if conn == [cur_src]:
                 pred, why = (0, corr0), "none"
             elif not conn:
                 # no source: the pin keeps the value it had at the upset (idle input vector)
                 pred, why = effect(j, l, np.full(len(X), tb[IDLE_VECTOR, k_cur], np.uint8)), "open"
+                alts = {"stuck-at-0": effect(j, l, zeros), "stuck-at-1": effect(j, l, ones)}
             else:
                 # several sources: wired-AND; exact only if every source carries a thermometer bit
                 ks = [thermo.get(wire_net[tile].get(s)) for s in conn]
@@ -131,15 +135,28 @@ def main():
                     pred, why = None, "bridge-" + "+".join(sorted(others))
                 else:
                     v = np.ones(len(X), np.uint8)
+                    vo = np.zeros(len(X), np.uint8)
                     for k in ks:
                         v &= tb[:, k]
+                        vo |= tb[:, k]
                     pred, why = effect(j, l, v), "bridge"
+                    k_new = [k for s, k in zip(conn, ks) if s != cur_src]
+                    alts = {"wired-OR": effect(j, l, vo), "stuck-at-0": effect(j, l, zeros),
+                            "stuck-at-1": effect(j, l, ones)}
+                    if len(k_new) == 1:
+                        alts["replacement"] = effect(j, l, tb[:, k_new[0]].astype(np.uint8))
             # CRAM address of the bit: frame = tile base address + frame offset ff, word/bit from bb
             fi = far_index.get(b0 + x[0])
             hw = ev.get((fi, off + x[1] // 32, x[1] % 32), (0, corr0))
             key = (kind, why)
             stats[key]["n"] += 1
             stats[key]["crit"] += hw[0] > 0
+            for name, ap in alts.items():
+                ak = f"{kind}/{why}/{name}"
+                alt[ak]["n"] += 1
+                alt[ak]["crit"] += hw[0] > 0
+                alt[ak]["exact"] += tuple(hw) == tuple(ap)
+                alt[ak]["crit_exact"] += hw[0] > 0 and tuple(hw) == tuple(ap)
             if pred is not None:
                 stats[key]["exact"] += tuple(hw) == tuple(pred)
                 stats[key]["crit_exact"] += hw[0] > 0 and tuple(hw) == tuple(pred)
@@ -149,7 +166,8 @@ def main():
             sa0 = effect(j, l, np.zeros(len(X), np.uint8)) if why.startswith("bridge-") else None
             per_bit.append([j, l, tile, wire, f"{x[0]}_{x[1]}", why, list(hw), list(pred) if pred else None, extra,
                             list(sa0) if sa0 else None])
-    res = {"build": build, "corr0": corr0, "stats": {f"{k[0]}/{k[1]}": dict(v) for k, v in stats.items()}}
+    res = {"build": build, "corr0": corr0, "stats": {f"{k[0]}/{k[1]}": dict(v) for k, v in stats.items()},
+           "alternatives": {k: dict(v) for k, v in sorted(alt.items())}}
     tot = Counter()
     for k, v in stats.items():
         if not k[1].startswith("bridge-"):

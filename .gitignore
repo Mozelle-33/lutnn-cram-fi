@@ -16,6 +16,7 @@ hw/build/**/*.ebd
 hw/build/**/*.ebc
 hw/build/**/*.ll
 hw/build/**/*.rpt
+!hw/build/**/util_pblock_dut.rpt
 hw/build/**/*.log
 hw/build/**/*.jou
 hw/build/**/vectors.mem

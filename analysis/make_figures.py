@@ -27,6 +27,7 @@ CAMPAIGNS = [  # (label, campaign dir, model, build)
 ]
 TVLSI = ROOT / "paper_tvlsi"
 plt.rcParams.update({"font.size": 7, "font.family": "serif", "axes.linewidth": 0.6})
+plt.rcParams.update({"pdf.fonttype": 42, "ps.fonttype": 42})   # no Type 3 fonts in the PDFs
 
 
 def event_files(cdir):
@@ -37,8 +38,23 @@ def event_files(cdir):
     return sorted(s.parent / "events.tsv" for s in d.glob("*/summary.txt"))
 
 
+def util_pblock(build):
+    """Post-route resources of the DUT pblock from Vivado's utilisation report
+    (hw/build/<build>/util_pblock_dut.rpt): occupied Slice LUTs and Slice Registers. pblock.txt holds
+    the post-synthesis cell counts, which count a fractured LUT6_2 twice and precede opt_design."""
+    import re
+    rpt = ROOT / f"hw/build/{build}/util_pblock_dut.rpt"
+    if not rpt.exists() and "_dc" in build:     # don't-care filling rewrites the tables of a routed build
+        rpt = ROOT / f"hw/build/{build.replace('_dc', '')}/util_pblock_dut.rpt"
+    txt = rpt.read_text()
+    luts = int(re.search(r"^\|\s*Slice LUTs\s*\|\s*(\d+)", txt, re.M).group(1))
+    ffs = int(re.search(r"^\|\s*Slice Registers\s*\|\s*(\d+)", txt, re.M).group(1))
+    return luts, ffs
+
+
 def load():
-    """Per-network rows: campaign analysis, model spec, DUT resources (pblock.txt), routing attribution."""
+    """Per-network rows: campaign analysis, model spec, DUT resources (pblock.txt; LUTs and FFs from
+    the post-route utilisation report), routing attribution."""
     rows = []
     for label, cdir, model, build in CAMPAIGNS:
         p = ROOT / "results" / cdir / "analysis.json"
@@ -48,6 +64,8 @@ def load():
         spec = json.loads((ROOT / f"models/{model}.json").read_text())
         pb = (ROOT / f"hw/build/{build}/pblock.txt").read_text()
         res = dict(kv.split("=") for kv in pb.split() if "=" in kv)
+        res["synth_luts"], res["synth_ffs"] = res["dut_luts"], res["dut_ffs"]
+        res["dut_luts"], res["dut_ffs"] = util_pblock(build)
         ra = ROOT / "results" / cdir / "route_attrib.json"
         rows.append({"label": label, "a": a, "spec": spec, "res": res,
                      "route": json.loads(ra.read_text()) if ra.exists() else None})
@@ -191,8 +209,8 @@ def fig_routing(rows):
 HARDEN = [  # (label, campaign dir, model)
     ("DWN-M", "camp_dwn_md", "dwn_md"),
     ("+ don't-care fill", "camp_dwn_md_dc", "dwn_md_dc"),
-    ("+ fault-aware (2\\,\\%)", "camp_dwn_md_fa2", "dwn_md_fa2"),
-    ("+ fault-aware (5\\,\\%)", "camp_dwn_md_fa5", "dwn_md_fa5"),
+    ("+ fault-aware (2\\%)", "camp_dwn_md_fa2", "dwn_md_fa2"),
+    ("+ fault-aware (5\\%)", "camp_dwn_md_fa5", "dwn_md_fa5"),
 ]
 
 
@@ -215,19 +233,19 @@ SEEDED = [
                            ("camp_dwn_md_dc_s1", "dwn_md_dc_s1", "dwn_md_dc_s1"),
                            ("camp_dwn_md_dc_s2", "dwn_md_dc_s2", "dwn_md_dc_s2")]),
     ("+ SLICEL-only placement", [("camp_dwn_md_sl", "dwn_md", "dwn_md_sl")]),
-    ("+ fault-aware (2\\,\\%)", [("camp_dwn_md_fa2", "dwn_md_fa2", "dwn_md_fa2"),
+    ("+ fault-aware (2\\%)", [("camp_dwn_md_fa2", "dwn_md_fa2", "dwn_md_fa2"),
                                 ("camp_dwn_md_fa2_s1", "dwn_md_fa2_s1", "dwn_md_fa2_s1"),
                                 ("camp_dwn_md_fa2_s2", "dwn_md_fa2_s2", "dwn_md_fa2_s2")]),
-    ("+ phys.\\ fault-aware (5\\,\\%)", [("camp_dwn_md_pf5", "dwn_md_pf5", "dwn_md_pf5"),
+    ("+ phys.\\ fault-aware (5\\%)", [("camp_dwn_md_pf5", "dwn_md_pf5", "dwn_md_pf5"),
                                         ("camp_dwn_md_pf5_s1", "dwn_md_pf5_s1", "dwn_md_pf5_s1"),
                                         ("camp_dwn_md_pf5_s2", "dwn_md_pf5_s2", "dwn_md_pf5_s2")]),
     ("+ output-stage TMR", [("camp_dwn_md_tmr", "dwn_md", "dwn_md_tmr"),
                             ("camp_dwn_md_tmr_s1", "dwn_md_s1", "dwn_md_tmr_s1"),
                             ("camp_dwn_md_tmr_s2", "dwn_md_s2", "dwn_md_tmr_s2")]),
-    ("+ fault-aware (2\\,\\%) + TMR", [("camp_dwn_md_fa2_tmr", "dwn_md_fa2", "dwn_md_fa2_tmr"),
+    ("+ fault-aware (2\\%) + TMR", [("camp_dwn_md_fa2_tmr", "dwn_md_fa2", "dwn_md_fa2_tmr"),
                                       ("camp_dwn_md_fa2_tmr_s1", "dwn_md_fa2_s1", "dwn_md_fa2_tmr_s1"),
                                       ("camp_dwn_md_fa2_tmr_s2", "dwn_md_fa2_s2", "dwn_md_fa2_tmr_s2")]),
-    ("+ phys.\\ fault-aware (5\\,\\%) + TMR", [("camp_dwn_md_pf5_tmr", "dwn_md_pf5", "dwn_md_pf5_tmr"),
+    ("+ phys.\\ fault-aware (5\\%) + TMR", [("camp_dwn_md_pf5_tmr", "dwn_md_pf5", "dwn_md_pf5_tmr"),
                                               ("camp_dwn_md_pf5_tmr_s1", "dwn_md_pf5_s1", "dwn_md_pf5_tmr_s1"),
                                               ("camp_dwn_md_pf5_tmr_s2", "dwn_md_pf5_s2", "dwn_md_pf5_tmr_s2")]),
 ]
@@ -244,10 +262,9 @@ CONTROL = {p.name for p in (ROOT / "results").glob("camp_*_idle1479")}
 def run_metrics(cdir, model, build):
     """Accuracy, DUT LUTs, essential bits and the four vulnerability metrics of one campaign."""
     spec = json.loads((ROOT / f"models/{model}.json").read_text())
-    pb = dict(kv.split("=") for kv in (ROOT / f"hw/build/{build}/pblock.txt").read_text().split() if "=" in kv)
     a = json.loads((ROOT / "results" / cdir / "analysis.json").read_text())
     n, s, t1, t10 = tail_counts(cdir)
-    return {"acc": 100 * spec["meta"]["test_acc"], "luts": int(pb["dut_luts"]), "ess": a["essential_in_range"],
+    return {"acc": 100 * spec["meta"]["test_acc"], "luts": util_pblock(build)[0], "ess": a["essential_in_range"],
             "crit": n, "smism": s, "gt1": t1, "gt10": t10}
 
 
@@ -264,7 +281,7 @@ def seeded_runs():
 def hardening_table():
     """Hardening table of the old conference draft; returns the per-variant numbers."""
     L = [r"\begin{tabular}{lrrrrr}", r"\toprule",
-         r"Variant & Acc. & Crit. & $\sum$mism. & $\geq$1\,\% & $\geq$10\,\% \\",
+         r"Variant & Acc. & Crit. & $\sum$mism. & $\geq$1\% & $\geq$10\% \\",
          r" & [\%] & [k] & [M] & [k] & \\", r"\midrule"]
     base = None
     out = {}
@@ -285,9 +302,9 @@ def hardening_table():
 
 def table_models_tvlsi(rows):
     """Table of networks and campaigns for the journal paper (paper_tvlsi/table_models_tvlsi.tex)."""
-    L = [r"\begin{tabular}{llrrrrrrrrrr}", r"\toprule",
+    L = [r"\begin{tabular}{llrrrrrrrrrr}", r"\hline",
          r"Network & Data & Acc. & LUTs & FFs & Lat. & Bits & Ess. & Crit. & Crit./ & Crit./ & FIT \\",
-         r" & & [\%] & & & [cyc] & [M] & [k] & [k] & Ess. [\%] & LUT & \\", r"\midrule"]
+         r" & & [\%] & & & [cyc] & [M] & [k] & [k] & Ess. [\%] & LUT & \\", r"\hline"]
     for r in rows:
         a, spec, res = r["a"], r["spec"], r["res"]
         data = "MNIST" if "mnist" in r["label"].lower() else "JSC"
@@ -295,7 +312,7 @@ def table_models_tvlsi(rows):
         L.append(f"{r['label']} & {data} & {100 * spec['meta']['test_acc']:.1f} & {int(res['dut_luts'])} & {int(res['dut_ffs'])} & "
                  f"{res['latency']} & {a['injected'] / 1e6:.2f} & {a['essential_in_range'] / 1e3:.0f} & {a['critical'] / 1e3:.1f} & "
                  f"{100 * a['critical_frac_essential']:.1f} & {a['critical'] / int(res['dut_luts']):.1f} & {fit:.1f} \\\\")
-    L += [r"\bottomrule", r"\end{tabular}"]
+    L += [r"\hline", r"\end{tabular}"]
     TVLSI.mkdir(exist_ok=True)
     (TVLSI / "table_models_tvlsi.tex").write_text("\n".join(L))
 
@@ -304,9 +321,9 @@ def table_composition_tvlsi(rows):
     """Critical bits by fabric resource for every network (the numbers behind the composition result;
     paper_tvlsi/table_composition_tvlsi.tex). DLGN has no parameter column: its gate parameters do not
     map one-to-one to CRAM bits."""
-    L = [r"\begin{tabular}{lrrrrrr}", r"\toprule",
+    L = [r"\begin{tabular}{lrrrrrr}", r"\hline",
          r"Network & Crit. & Param. & Other & Routing & Other & Clock \\",
-         r" & [k] & [\%] & LUT [\%] & [\%] & CLB [\%] & [\%] \\", r"\midrule"]
+         r" & [k] & [\%] & LUT [\%] & [\%] & CLB [\%] & [\%] \\", r"\hline"]
     for r in rows:
         comp = composition(r)
         tot = sum(comp.values())
@@ -314,7 +331,7 @@ def table_composition_tvlsi(rows):
         param = "--" if r["spec"]["type"] != "dwn" else f"{sh['Parameters (LUT tables)']:.1f}"
         L.append(f"{r['label']} & {tot / 1e3:.1f} & {param} & {sh['Other LUT logic']:.1f} & {sh['Routing']:.1f} & "
                  f"{sh['Other CLB config.']:.1f} & {sh['Clock']:.1f} \\\\")
-    L += [r"\bottomrule", r"\end{tabular}"]
+    L += [r"\hline", r"\end{tabular}"]
     TVLSI.mkdir(exist_ok=True)
     (TVLSI / "table_composition_tvlsi.tex").write_text("\n".join(L))
 
@@ -332,16 +349,16 @@ def hardening_table_tvlsi():
             return f"{v[0]:.{digits}f}"
         return f"{v.mean():.{digits}f}$\\pm${v.std(ddof=1):.{digits}f}"
 
-    L = [r"\begin{tabular}{lrrrrrrrrr}", r"\toprule",
-         r"Variant & Runs & Acc. & LUTs & Ess. & Crit. & Crit./Ess. & $\sum$mism. & $\geq$1\,\% & $\geq$10\,\% \\",
-         r" & & [\%] & & [k] & [k] & [\%] & [M] & [k] & \\", r"\midrule"]
+    L = [r"\begin{tabular}{lrrrrrrrrr}", r"\hline",
+         r"Variant & Runs & Acc. & LUTs & Ess. & Crit. & Crit./Ess. & $\sum$mism. & $\geq$1\% & $\geq$10\% \\",
+         r" & & [\%] & & [k] & [k] & [\%] & [M] & [k] & \\", r"\hline"]
     for label, ms in seeded_runs():
         col = lambda k: [m[k] for m in ms]          # noqa: E731
         ratio = [100 * m["crit"] / m["ess"] for m in ms]
         L.append(" & ".join([label, str(len(ms)), fmt(col("acc"), 1, 2), fmt(col("luts"), 1, 0), fmt(col("ess"), 1e3, 0),
                              fmt(col("crit"), 1e3, 1), fmt(ratio, 1, 1), fmt(col("smism"), 1e6, 2),
                              fmt(col("gt1"), 1e3, 1), fmt(col("gt10"), 1, 0)]) + r" \\")
-    L += [r"\bottomrule", r"\end{tabular}"]
+    L += [r"\hline", r"\end{tabular}"]
     TVLSI.mkdir(exist_ok=True)
     (TVLSI / "table_hardening_tvlsi.tex").write_text("\n".join(L))
 
@@ -353,8 +370,8 @@ def composition_check():
     network of the same seed. Writes results/composition_seeds.json."""
     groups = {label: runs for label, runs in SEEDED}
     out = {}
-    for fa_label, both_label in [("+ fault-aware (2\\,\\%)", "+ fault-aware (2\\,\\%) + TMR"),
-                                 ("+ phys.\\ fault-aware (5\\,\\%)", "+ phys.\\ fault-aware (5\\,\\%) + TMR")]:
+    for fa_label, both_label in [("+ fault-aware (2\\%)", "+ fault-aware (2\\%) + TMR"),
+                                 ("+ phys.\\ fault-aware (5\\%)", "+ phys.\\ fault-aware (5\\%) + TMR")]:
         names = ["DWN-M", fa_label, "+ output-stage TMR", both_label]
         rows = []
         for s in range(3):
@@ -399,8 +416,8 @@ def hardening_stats():
     groups = dict(SEEDED)
     paired = {}
     # variants that keep the trained network, compared with that network (same seed)
-    for hard, plain in [("+ output-stage TMR", "DWN-M"), ("+ fault-aware (2\\,\\%) + TMR", "+ fault-aware (2\\,\\%)"),
-                        ("+ phys.\\ fault-aware (5\\,\\%) + TMR", "+ phys.\\ fault-aware (5\\,\\%)"),
+    for hard, plain in [("+ output-stage TMR", "DWN-M"), ("+ fault-aware (2\\%) + TMR", "+ fault-aware (2\\%)"),
+                        ("+ phys.\\ fault-aware (5\\%) + TMR", "+ phys.\\ fault-aware (5\\%)"),
                         ("+ don't-care fill", "DWN-M"), ("+ SLICEL-only placement", "DWN-M")]:
         rows = []
         for h, p in zip(groups[hard], groups[plain]):
@@ -447,10 +464,10 @@ def fig_hardening():
     import numpy as np
     short = {"DWN-M": "DWN-M\n(3 runs)", "+ don't-care fill": "Don't-care\nfill",
              "+ SLICEL-only placement": "SLICEL\nonly",
-             "+ fault-aware (2\\,\\%)": "Fault-aware\n2%", "+ fault-aware (5\\,\\%)": "Fault-aware\n5%",
-             "+ phys.\\ fault-aware (2\\,\\%)": "Physical\nFA 2%", "+ phys.\\ fault-aware (5\\,\\%)": "Physical\nFA 5%",
-             "+ output-stage TMR": "Output\nTMR", "+ fault-aware (2\\,\\%) + TMR": "Fault-aware\n2% + TMR",
-             "+ phys.\\ fault-aware (5\\,\\%) + TMR": "Physical\nFA 5% + TMR"}
+             "+ fault-aware (2\\%)": "Fault-aware\n2%", "+ fault-aware (5\\%)": "Fault-aware\n5%",
+             "+ phys.\\ fault-aware (2\\%)": "Physical\nFA 2%", "+ phys.\\ fault-aware (5\\%)": "Physical\nFA 5%",
+             "+ output-stage TMR": "Output\nTMR", "+ fault-aware (2\\%) + TMR": "Fault-aware\n2% + TMR",
+             "+ phys.\\ fault-aware (5\\%) + TMR": "Physical\nFA 5% + TMR"}
     runs = seeded_runs()
     base = {k: np.mean([m[k] for m in runs[0][1]]) for k in METRICS + ["luts"]}
     labels, mean, sd = [], [], []

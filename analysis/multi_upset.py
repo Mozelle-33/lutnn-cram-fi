@@ -265,6 +265,7 @@ def plot():
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     from matplotlib.lines import Line2D
+    plt.rcParams.update({"pdf.fonttype": 42, "ps.fonttype": 42})   # no Type 3 fonts in the PDFs
     plt.rcParams.update({"font.size": 7.5, "font.family": "serif", "font.serif": ["Times New Roman"],
                          "mathtext.fontset": "stix", "axes.linewidth": 0.6, "xtick.major.width": 0.6,
                          "ytick.major.width": 0.6, "xtick.minor.width": 0.4, "legend.fontsize": 7})

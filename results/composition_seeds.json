@@ -1,5 +1,5 @@
 {
- "+ fault-aware (2\\,\\%)": [
+ "+ fault-aware (2\\%)": [
   {
    "seed": 0,
    "crit": {
@@ -82,7 +82,7 @@
    }
   }
  ],
- "+ phys.\\ fault-aware (5\\,\\%)": [
+ "+ phys.\\ fault-aware (5\\%)": [
   {
    "seed": 0,
    "crit": {

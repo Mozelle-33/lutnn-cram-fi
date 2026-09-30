@@ -1,0 +1,138 @@
+{
+ "build": "dwn_md_pf5_tmr",
+ "corr0": 3135,
+ "stats": {
+  "row/bridge": {
+   "n": 9891,
+   "crit": 3241,
+   "exact": 9891,
+   "crit_exact": 3241,
+   "pred_crit": 3241,
+   "both_crit": 3241
+  },
+  "row/bridge-unused": {
+   "n": 5356,
+   "crit": 389
+  },
+  "row/open": {
+   "n": 6000,
+   "crit": 3766,
+   "exact": 5996,
+   "crit_exact": 3762,
+   "pred_crit": 3762,
+   "both_crit": 3762
+  },
+  "col/open": {
+   "n": 6000,
+   "crit": 3778,
+   "exact": 5948,
+   "crit_exact": 3727,
+   "pred_crit": 3762,
+   "both_crit": 3761
+  },
+  "col/bridge-unused": {
+   "n": 10601,
+   "crit": 1168
+  },
+  "col/bridge": {
+   "n": 14490,
+   "crit": 4749,
+   "exact": 14490,
+   "crit_exact": 4749,
+   "pred_crit": 4749,
+   "both_crit": 4749
+  },
+  "col/bridge-net": {
+   "n": 4909,
+   "crit": 2253
+  },
+  "row/bridge-net": {
+   "n": 2753,
+   "crit": 1256
+  }
+ },
+ "alternatives": {
+  "col/bridge/replacement": {
+   "n": 14490,
+   "crit": 4749,
+   "exact": 8918,
+   "crit_exact": 3552
+  },
+  "col/bridge/stuck-at-0": {
+   "n": 14490,
+   "crit": 4749,
+   "exact": 8752,
+   "crit_exact": 2835
+  },
+  "col/bridge/stuck-at-1": {
+   "n": 14490,
+   "crit": 4749,
+   "exact": 3598,
+   "crit_exact": 179
+  },
+  "col/bridge/wired-OR": {
+   "n": 14490,
+   "crit": 4749,
+   "exact": 5461,
+   "crit_exact": 95
+  },
+  "col/open/stuck-at-0": {
+   "n": 6000,
+   "crit": 3778,
+   "exact": 2013,
+   "crit_exact": 676
+  },
+  "col/open/stuck-at-1": {
+   "n": 6000,
+   "crit": 3778,
+   "exact": 5018,
+   "crit_exact": 3177
+  },
+  "row/bridge/replacement": {
+   "n": 9891,
+   "crit": 3241,
+   "exact": 6137,
+   "crit_exact": 2438
+  },
+  "row/bridge/stuck-at-0": {
+   "n": 9891,
+   "crit": 3241,
+   "exact": 5980,
+   "crit_exact": 1919
+  },
+  "row/bridge/stuck-at-1": {
+   "n": 9891,
+   "crit": 3241,
+   "exact": 2443,
+   "crit_exact": 109
+  },
+  "row/bridge/wired-OR": {
+   "n": 9891,
+   "crit": 3241,
+   "exact": 3745,
+   "crit_exact": 46
+  },
+  "row/open/stuck-at-0": {
+   "n": 6000,
+   "crit": 3766,
+   "exact": 2061,
+   "crit_exact": 711
+  },
+  "row/open/stuck-at-1": {
+   "n": 6000,
+   "crit": 3766,
+   "exact": 5005,
+   "crit_exact": 3165
+  }
+ },
+ "evaluable": {
+  "n": 36381,
+  "crit": 15534,
+  "exact": 36325,
+  "crit_exact": 15479,
+  "pred_crit": 15514,
+  "both_crit": 15513
+ },
+ "coverage_bits": 0.60635,
+ "coverage_critical": 0.7540776699029126
+}

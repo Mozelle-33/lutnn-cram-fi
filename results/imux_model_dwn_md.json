@@ -51,6 +51,80 @@
    "crit": 1432
   }
  },
+ "alternatives": {
+  "col/bridge/replacement": {
+   "n": 12790,
+   "crit": 4285,
+   "exact": 8512,
+   "crit_exact": 3120
+  },
+  "col/bridge/stuck-at-0": {
+   "n": 12790,
+   "crit": 4285,
+   "exact": 8103,
+   "crit_exact": 2414
+  },
+  "col/bridge/stuck-at-1": {
+   "n": 12790,
+   "crit": 4285,
+   "exact": 3457,
+   "crit_exact": 133
+  },
+  "col/bridge/wired-OR": {
+   "n": 12790,
+   "crit": 4285,
+   "exact": 5468,
+   "crit_exact": 76
+  },
+  "col/open/stuck-at-0": {
+   "n": 6000,
+   "crit": 3652,
+   "exact": 2371,
+   "crit_exact": 731
+  },
+  "col/open/stuck-at-1": {
+   "n": 6000,
+   "crit": 3652,
+   "exact": 4913,
+   "crit_exact": 2978
+  },
+  "row/bridge/replacement": {
+   "n": 8859,
+   "crit": 2951,
+   "exact": 5951,
+   "crit_exact": 2186
+  },
+  "row/bridge/stuck-at-0": {
+   "n": 8859,
+   "crit": 2951,
+   "exact": 5672,
+   "crit_exact": 1703
+  },
+  "row/bridge/stuck-at-1": {
+   "n": 8859,
+   "crit": 2951,
+   "exact": 2505,
+   "crit_exact": 113
+  },
+  "row/bridge/wired-OR": {
+   "n": 8859,
+   "crit": 2951,
+   "exact": 3830,
+   "crit_exact": 65
+  },
+  "row/open/stuck-at-0": {
+   "n": 6000,
+   "crit": 3644,
+   "exact": 2424,
+   "crit_exact": 769
+  },
+  "row/open/stuck-at-1": {
+   "n": 6000,
+   "crit": 3644,
+   "exact": 4897,
+   "crit_exact": 2968
+  }
+ },
  "evaluable": {
   "n": 33649,
   "crit": 14532,
