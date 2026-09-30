@@ -88,5 +88,35 @@
    "critical": 2036,
    "share": 0.012366900925087923
   }
+ },
+ "camp_dlgn_a": {
+  "learned connectivity": {
+   "critical": 59045,
+   "share": 0.30987430790626885
+  },
+  "encoder": {
+   "critical": 35158,
+   "share": 0.18451284473483953
+  },
+  "read-out": {
+   "critical": 67521,
+   "share": 0.3543572384476108
+  },
+  "parameters": {
+   "critical": 6597,
+   "share": 0.034621742895379046
+  },
+  "clock": {
+   "critical": 4433,
+   "share": 0.0232648455745362
+  },
+  "other CLB settings": {
+   "critical": 15778,
+   "share": 0.08280458684300296
+  },
+  "rest": {
+   "critical": 2013,
+   "share": 0.010564433598362592
+  }
  }
 }

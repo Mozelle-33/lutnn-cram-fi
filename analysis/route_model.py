@@ -3,7 +3,9 @@
   python analysis/route_model.py <model> <campaign dir> [build] [--idle N] [--tables MODEL] [--tag TAG]
 --idle: the input vector the upsets were injected on (default 1024); --tables: predict with the tables
 of another model with the same mapping (e.g., a don't-care-filled variant on the same routing); --frozen
-0|1: value of a disconnected input instead of the idle-vector value; --tag: suffix of the output files.
+0|1: value of a disconnected input instead of the idle-vector value; --tag: suffix of the output files;
+--clbout 1: also resolve bridges to unused CLB outputs through the placement (clb_outputs() below):
+statistics under "clbout" in the result file, per-bit outcomes in route_model_<build><tag>_clbout_bits.json.
 Extends imux_model.py from the last hop to whole routing trees (hw/build/<build>/route_pips.csv and
 route_sinks.csv from hw/tcl/export_routetree.tcl). For each INT-tile multiplexer that a thermometer
 net t_r[k] passes through, each configuration bit is flipped in the model:
@@ -74,6 +76,39 @@ class Mux:
             on = [g for g, fn in GATES.items() if fn(rv)]
             return sorted(self.src_at[(c, g)] for c in self.cols if st[c] for g in on if (c, g) in self.src_at)
         return sorted(s for s, bits in self.feats.items() if all(st[(ff, bb)] == 1 for ff, bb, v in bits if v == 1))
+
+
+def clb_outputs(build, cm):
+    """lookup(INT tile, LOGIC_OUTS wire) -> (slice pin, cell in the BEL behind it or None, cell in the
+    LUT5 of the same letter or None). Output k of an interconnect tile is output k of the CLB tile with
+    the same coordinates (prjxray ppips); slice LL/M is the site with the lower X, slice L the other."""
+    cells = {}
+    with open(ROOT / f"hw/build/{build}/dut_cells.csv") as f:
+        for r in csv.DictReader(f):
+            if r["site"] and r["bel"]:
+                cells[(r["site"], r["bel"].split(".")[-1])] = r["cell"]
+    pins = {}
+    for tt in ("clbll_l", "clbll_r", "clblm_l", "clblm_r"):
+        for line in (ROOT / f"tools/prjxray-db/kintex7/ppips_{tt}.db").read_text().splitlines():
+            m = re.match(r"(\w+)\.CLBL[LM]_LOGIC_OUTS(\d+)\.CLBL[LM]_(L|LL|M)_(\w+) always", line)
+            if m:
+                pins[(m.group(1), int(m.group(2)))] = (m.group(3), m.group(4))
+
+    def lookup(tile, wire):
+        mt = re.match(r"INT_([LR])_(X\d+Y\d+)$", tile)
+        mw = re.match(r"LOGIC_OUTS(?:_L)?(\d+)$", wire)
+        if not mt or not mw:
+            return None
+        clb = next((t for t in (f"CLBLL_{mt.group(1)}_{mt.group(2)}", f"CLBLM_{mt.group(1)}_{mt.group(2)}")
+                    if t in cm.tg), None)
+        if clb is None:
+            return None
+        letter, pin = pins[(cm.tg[clb]["type"], int(mw.group(1)))]
+        sites = sorted(cm.tg[clb]["sites"], key=lambda s: int(re.search(r"X(\d+)", s).group(1)))
+        site = sites[0 if letter in ("LL", "M") else 1]
+        bel = pin[0] + ("6LUT" if len(pin) == 1 else "FF" if pin.endswith("Q") else "MUX")
+        return pin, cells.get((site, bel)), cells.get((site, pin[0] + "5LUT"))
+    return lookup
 
 
 def main():
@@ -199,6 +234,8 @@ def main():
     seen_bits = set()
     per_bit = []
     per_bit_unused = []
+    per_bit_clbout, cstats = [], defaultdict(Counter)
+    clb = clb_outputs(build, cm) if "clbout" in opt else None
     cand = set()
     # one multiplexer per used interconnect PIP: its destination wire, current source and the LUT
     # inputs below it; every configuration bit of the multiplexer is modelled once
@@ -247,8 +284,47 @@ def main():
                 if any(v is None for v in ks):
                     pred, why = None, "and-other-net"
                 elif clbout:
-                    # an unused CLB output is driven by its site with a BEL-dependent constant
+                    # an unused CLB output is driven by its site: by the LUT placed behind it, a
+                    # flip-flop, an output multiplexer, or nothing (an empty BEL)
                     pred, why = None, "and-unused-clbout"
+                    if clb is not None:
+                        v, cat, lut = tb[:, k].copy(), [], None
+                        for s, kk in zip(conn, ks):
+                            if kk is not None and kk >= 0:
+                                v &= tb[:, kk]
+                            elif s.startswith("LOGIC_OUTS"):
+                                site_out = clb(tile, s)
+                                if site_out is None:        # output of a block-RAM or DSP tile
+                                    cat.append("no CLB")
+                                    continue
+                                pin, cell, c5 = site_out
+                                m = re.match(r"u_dut/lut_l0_(\d+)$", cell or "")
+                                if m and len(pin) == 1:
+                                    lut = int(m.group(1))
+                                    cat.append("loop" if lut in {j for j, _ in sinks} else "LUT-layer O6")
+                                    v &= out[:, lut].astype(v.dtype)
+                                elif cell is None and c5 is None:
+                                    cat.append(f"empty {'LUT' if len(pin) == 1 else 'FF' if pin.endswith('Q') else 'MUX'}")
+                                else:
+                                    cat.append(f"other {'LUT' if len(pin) == 1 else 'FF' if pin.endswith('Q') else 'MUX'}")
+                        cat = "+".join(sorted(cat))
+                        hw_x = ev.get(addr_x, (0, corr0))
+                        c = cstats[cat]
+                        c["n"] += 1
+                        c["crit"] += hw_x[0] > 0
+                        p_lut = p_zero = None
+                        if cat == "LUT-layer O6":
+                            p_lut = effect({s: v for s in sinks})
+                            c["exact"] += tuple(hw_x) == tuple(p_lut)
+                            c["crit_exact"] += hw_x[0] > 0 and tuple(hw_x) == tuple(p_lut)
+                        elif (cat.startswith("empty") or cat == "no CLB") and "+" not in cat:
+                            # constant 0 (every downstream input reads 0) or 1 (no change)
+                            p_zero = effect({s: np.zeros(len(X), np.uint8) for s in sinks})
+                            c["exact0"] += tuple(hw_x) == tuple(p_zero)
+                            c["exact1"] += tuple(hw_x) == (0, corr0)
+                            c["crit_exact0"] += hw_x[0] > 0 and tuple(hw_x) == tuple(p_zero)
+                        per_bit_clbout.append([k, tile, dst, f"{x[0]}_{x[1]}", cat, [f"{tile}/{s}" for s in conn if s != src],
+                                               list(hw_x), list(p_lut) if p_lut else None, list(p_zero) if p_zero else None])
                 else:
                     v = tb[:, k].copy()
                     for kk in ks:
@@ -278,9 +354,17 @@ def main():
            "predicted": {"evaluable": len(ev_pred), "critical": sum(p[0] > 0 for p in ev_pred),
                          "sum_mism": sum(p[0] for p in ev_pred)},
            "stats": {f"{a}/{b}": dict(v) for (a, b), v in stats.items()}}
+    if clb is not None:
+        # outcome per category of the unused CLB output behind a bridge (exact: with the LUT value;
+        # exact0/exact1: with a constant 0 or 1)
+        res["clbout"] = {k: dict(v) for k, v in cstats.items()}
     (ROOT / f"results/route_model_{build}{tag}.json").write_text(json.dumps(res, indent=1))
     (ROOT / f"results/route_model_{build}{tag}_bits.json").write_text(json.dumps(per_bit))
     (ROOT / f"results/route_model_{build}{tag}_unused.json").write_text(json.dumps(per_bit_unused))
+    if clb is not None:
+        (ROOT / f"results/route_model_{build}{tag}_clbout_bits.json").write_text(json.dumps(per_bit_clbout))
+        for cat, v in sorted(cstats.items(), key=lambda kv: -kv[1]["n"]):
+            print(f"clbout {cat:24s} {dict(v)}")
     print("predicted over the evaluable bits:", res["predicted"])
     for (a, b), v in sorted(stats.items()):
         ex = f"exact {100 * v['exact'] / v['n']:6.2f}%  critical {v['crit_exact']}/{v['crit']}" if "exact" in v or b in ("none", "freeze", "and", "and-unused") else ""

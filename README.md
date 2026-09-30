@@ -11,7 +11,7 @@ Mitigation (SEM) controller flips, tests, restores and verifies **every** config
 (CRAM) bit of the region that holds a neural network, at up to 10,000 injections per second
 (5,900–8,400 averaged over complete campaigns). The study covers differentiable weightless networks
 (DWNs), differentiable logic-gate networks (DLGNs) and fixed-point MLPs of similar accuracy (dense
-and 70 % pruned) on the JSC and MNIST benchmarks (26 exhaustive campaigns, 95.4 M injections), and
+and 70 % pruned) on the JSC and MNIST benchmarks (34 exhaustive campaigns, 118.5 M injections), and
 adds:
 
 * bit-level attribution of every critical bit to its fabric resource and net (Project X-Ray database),
@@ -22,8 +22,9 @@ adds:
 * accumulated-upset experiments in hardware versus the parameter bit-flip model,
 * a functional model of interconnect-multiplexer upsets (a disconnected multiplexer freezes at its
   value at the time of the upset, a doubly selected one forms a wired-AND, an undriven wire acts as
-  logic one), validated bit by bit, with a second exhaustive campaign of DWN-M at another idle input
-  vector and a hold test of frozen values,
+  logic one, the unused output of a used LUT carries its value), validated bit by bit, with
+  second exhaustive campaigns at another idle input vector (unhardened and fault-aware DWN-M, three
+  training runs each), a model sweep over all idle vectors and a hold test of frozen values,
 * hardening measured exhaustively over three training runs per variant: don't-care filling,
   fault-aware training (inverted and physically modelled input faults), selective TMR, SLICEL-only
   placement. Two exploratory single runs (fault-aware 5 %, physical 2 %) and a first DWN-MNIST
@@ -83,13 +84,18 @@ in between, and resumes after an interruption (as does `train/train.py`, which c
 epoch). The other experiments have their own scripts: LUT-mode bits (`fi/inject_list.tcl`,
 `analysis/mode_bits.py`), accumulated upsets (`analysis/multi_upset.py`, `fi/multi_upset.tcl`),
 multiplexer fault models (`hw/tcl/export_lutpins.tcl`, `hw/tcl/export_routetree.tcl`,
-`analysis/imux_model.py`, `analysis/route_model.py`, `analysis/freeze_polarity.py`), frozen-value
-controls (`fi/idle_control.tcl`, `analysis/idle_control.py`; a whole-region campaign with the
-verify length set to another vector count, compared by `analysis/idle_compare.py`), injection
-timing (`fi/throughput.tcl`), frozen-input hold test (`analysis/freeze_hold.py`, `fi/hold_test.tcl`,
-die temperature `fi/read_temp.tcl`), critical bits by network stage (`analysis/stage_breakdown.py`),
-don't-care filling (`analysis/dontcare_fill.py`, `hw/tcl/reinit_luts.tcl`), test-set coverage
-(`analysis/test_coverage.py`; a random test sample is generated with `train/gen_dut.py
+`analysis/imux_model.py`, `analysis/route_model.py` with `--clbout 1` for the unused CLB outputs,
+`analysis/freeze_polarity.py`), frozen-value controls (`fi/idle_control.tcl`,
+`analysis/idle_control.py`; whole-region campaigns with the verify length set to another vector
+count, `FI_VERIFY=1479 FI_SUFFIX=_idle1479 fi/run_campaigns.ps1 ...`, compared by
+`analysis/idle_compare.py` and `analysis/state_hardening.py`; model sweep over all idle vectors
+`analysis/state_sweep.py`), injection timing (`fi/throughput.tcl`), frozen-input hold test
+(`analysis/freeze_hold.py`, `analysis/hold_stage.py`, `fi/hold_test.tcl`, die temperature
+`fi/read_temp.tcl`), critical bits by network stage (`analysis/stage_breakdown.py`), common-mode
+failures of the TMR (`analysis/tmr_cmf.py`), effective rate of the physical training faults
+(`analysis/pf_effective.py`), don't-care filling (`analysis/dontcare_fill.py`,
+`hw/tcl/reinit_luts.tcl`), test-set coverage and sampling spread (`analysis/test_coverage.py`,
+`analysis/sample_spread.py`; a random test sample is generated with `train/gen_dut.py
 --sample_seed`). Each script documents its usage in its header.
 
 ## Data formats

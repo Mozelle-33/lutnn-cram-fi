@@ -1,0 +1,51 @@
+{
+ "model": "dwn_md",
+ "critical_routing_bits": 148889,
+ "by_group": {
+  "thermometer->LUT": {
+   "critical": 72446,
+   "share": 0.4865772488229486,
+   "mean_mism": 5.776854484719653
+  },
+  "encoder": {
+   "critical": 46767,
+   "share": 0.31410648201008806,
+   "mean_mism": 22.07225180148395
+  },
+  "LUT layer->popcount": {
+   "critical": 22404,
+   "share": 0.1504745145712578,
+   "mean_mism": 6.109310837350473
+  },
+  "clock": {
+   "critical": 4766,
+   "share": 0.03201042387281801,
+   "mean_mism": 29.714645404951742
+  },
+  "inputs": {
+   "critical": 1430,
+   "share": 0.009604470444425042,
+   "mean_mism": 116.31678321678322
+  },
+  "constant": {
+   "critical": 904,
+   "share": 0.006071637259972194,
+   "mean_mism": 17.481194690265486
+  },
+  "popcount": {
+   "critical": 75,
+   "share": 0.0005037309673649497,
+   "mean_mism": 755.2666666666667
+  },
+  "argmax/output": {
+   "critical": 75,
+   "share": 0.0005037309673649497,
+   "mean_mism": 1037.5066666666667
+  },
+  "unused wire": {
+   "critical": 22,
+   "share": 0.00014776108376038526,
+   "mean_mism": 675.5454545454545
+  }
+ }
+}

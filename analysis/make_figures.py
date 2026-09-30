@@ -170,9 +170,9 @@ METRICS = ["crit", "smism", "gt1", "gt10"]
 # (first 2048 test images, replaced by a random sample) whose data are released but not reported in the
 # journal paper
 NOT_REPORTED = {"camp_dwn_md_fa5", "camp_dwn_md_pf2", "camp_dwn_mnist"}
-# second campaign of an already reported build (another idle input vector): counted in the injections,
-# not as a further build in the parameter-model comparison
-CONTROL = {"camp_dwn_md_idle1479"}
+# second campaigns of already reported builds (another idle input vector, suffix _idle1479): counted in
+# the injections, not as further builds in the parameter-model comparison
+CONTROL = {p.name for p in (ROOT / "results").glob("camp_*_idle1479")}
 
 
 def run_metrics(cdir, model, build):

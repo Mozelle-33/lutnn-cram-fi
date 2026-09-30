@@ -2,15 +2,15 @@
  "model": "dlgn_a",
  "critical_routing_bits": 140721,
  "by_group": {
-  "gate layers": {
-   "critical": 48719,
-   "share": 0.34620987628001504,
-   "mean_mism": 4.842751287998522
-  },
   "thermometer->LUT": {
    "critical": 36095,
    "share": 0.2565004512475039,
    "mean_mism": 6.168167336196149
+  },
+  "LUT layer->popcount": {
+   "critical": 25769,
+   "share": 0.1831212114751885,
+   "mean_mism": 5.349567309557996
   },
   "popcount": {
    "critical": 24539,
@@ -21,6 +21,11 @@
    "critical": 23151,
    "share": 0.16451702304560087,
    "mean_mism": 21.538983197270095
+  },
+  "gate layers": {
+   "critical": 22950,
+   "share": 0.16308866480482656,
+   "mean_mism": 4.273681917211329
   },
   "clock": {
    "critical": 4267,

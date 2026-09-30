@@ -1,7 +1,7 @@
 {
- "campaigns": 26,
- "injected": 95418336,
- "hours": 3.5952811111111114,
+ "campaigns": 34,
+ "injected": 118548727,
+ "hours": 4.528964722222223,
  "rate_min": 5888.214325205221,
  "rate_max": 8381.949177556551,
  "dwn_builds": 22,
@@ -48,6 +48,11 @@
    "param_bits": 64000,
    "param_exact": 64000
   },
+  "camp_dwn_md_fa2_idle1479": {
+   "injected": 2891432,
+   "seconds": 416.963,
+   "rate": 6934.504980058182
+  },
   "camp_dwn_md_fa2_s1": {
    "injected": 2891612,
    "seconds": 400.139,
@@ -55,12 +60,22 @@
    "param_bits": 64000,
    "param_exact": 64000
   },
+  "camp_dwn_md_fa2_s1_idle1479": {
+   "injected": 2891612,
+   "seconds": 416.37,
+   "rate": 6944.813507217139
+  },
   "camp_dwn_md_fa2_s2": {
    "injected": 2891087,
    "seconds": 406.11,
    "rate": 7118.9751545147865,
    "param_bits": 64000,
    "param_exact": 64000
+  },
+  "camp_dwn_md_fa2_s2_idle1479": {
+   "injected": 2891087,
+   "seconds": 422.401,
+   "rate": 6844.413247127729
   },
   "camp_dwn_md_fa2_tmr": {
    "injected": 4466053,
@@ -102,12 +117,22 @@
    "param_bits": 64000,
    "param_exact": 64000
   },
+  "camp_dwn_md_pf5_idle1479": {
+   "injected": 2891297,
+   "seconds": 420.296,
+   "rate": 6879.19228353351
+  },
   "camp_dwn_md_pf5_s1": {
    "injected": 2891132,
    "seconds": 406.043,
    "rate": 7120.260662048108,
    "param_bits": 64000,
    "param_exact": 64000
+  },
+  "camp_dwn_md_pf5_s1_idle1479": {
+   "injected": 2891132,
+   "seconds": 422.661,
+   "rate": 6840.309373232922
   },
   "camp_dwn_md_pf5_s2": {
    "injected": 2891342,
@@ -116,6 +141,11 @@
    "param_bits": 64000,
    "param_exact": 64000
   },
+  "camp_dwn_md_pf5_s2_idle1479": {
+   "injected": 2891342,
+   "seconds": 418.97,
+   "rate": 6901.071675776308
+  },
   "camp_dwn_md_s1": {
    "injected": 2891312,
    "seconds": 407.705,
@@ -123,12 +153,22 @@
    "param_bits": 64000,
    "param_exact": 64000
   },
+  "camp_dwn_md_s1_idle1479": {
+   "injected": 2891312,
+   "seconds": 423.499,
+   "rate": 6827.199119714568
+  },
   "camp_dwn_md_s2": {
    "injected": 2891177,
    "seconds": 403.207,
    "rate": 7170.453389946108,
    "param_bits": 64000,
    "param_exact": 64000
+  },
+  "camp_dwn_md_s2_idle1479": {
+   "injected": 2891177,
+   "seconds": 420.101,
+   "rate": 6882.099780767006
   },
   "camp_dwn_md_sl": {
    "injected": 4473088,

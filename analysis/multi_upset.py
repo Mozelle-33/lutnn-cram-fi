@@ -255,14 +255,14 @@ def plot():
     from matplotlib.lines import Line2D
     fig, ax = plt.subplots(figsize=(3.45, 1.85))
     nets = [("dwn_md", "DWN-M", "#2b6cb0"), ("dlgn_a", "DLGN", "#38a169"), ("mlp_32_16", "MLP", "#dd6b20"),
-            ("mlp_32_16_p70", "MLP, 70 % pruned", "#b7791f")]
+            ("mlp_32_16_p70", "MLP-P", "#b7791f")]
     nets = [n for n in nets if n[0] in hw]
     for m, lab, col in nets:
         ps = sorted(float(p) for p in hw[m])
         mu = [hw[m][f"{p:g}"]["dacc_mean"] for p in ps]
         se = [hw[m][f"{p:g}"]["dacc_se"] for p in ps]
         ax.errorbar(ps, mu, yerr=se, color=col, lw=1.1, marker="o", ms=2.5, capsize=1.5)
-        if m in sw_:                         # parameter model (not evaluated for the pruned MLP)
+        if m in sw_:                         # parameter model
             s = sw_[m]
             pp = sorted(float(p) for p in s["p"])
             ax.plot(pp, [100 * (s["correct0"] - s["p"][f"{p:g}"]["correct_mean"]) / s["ntest"] for p in pp],

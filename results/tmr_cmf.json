@@ -1,0 +1,260 @@
+{
+ "camp_dwn_md_tmr": {
+  "routing shared only": {
+   "critical": 120740,
+   "mean_mism": 14.160766937220474,
+   "severe": 5361,
+   "catastrophic": 558
+  },
+  "routing 3 replicas + shared": {
+   "critical": 28074,
+   "mean_mism": 10.482866709410843,
+   "severe": 606,
+   "catastrophic": 40
+  },
+  "LUT_INIT shared only": {
+   "critical": 20130,
+   "mean_mism": 3.3257824143070045,
+   "severe": 57,
+   "catastrophic": 11
+  },
+  "CLB_OTHER shared only": {
+   "critical": 8865,
+   "mean_mism": 23.079977439368303,
+   "severe": 622,
+   "catastrophic": 71
+  },
+  "CLB_OTHER 2 replicas": {
+   "critical": 634,
+   "mean_mism": 9.048895899053628,
+   "severe": 15,
+   "catastrophic": 0
+  },
+  "CLB_OTHER 1 replicas + shared": {
+   "critical": 265,
+   "mean_mism": 84.1245283018868,
+   "severe": 104,
+   "catastrophic": 12
+  },
+  "LUT_INIT 1 replicas + shared": {
+   "critical": 200,
+   "mean_mism": 6.3,
+   "severe": 4,
+   "catastrophic": 0
+  },
+  "HCLK shared only": {
+   "critical": 184,
+   "mean_mism": 884.1902173913044,
+   "severe": 174,
+   "catastrophic": 88
+  },
+  "CLB_OTHER 3 replicas": {
+   "critical": 150,
+   "mean_mism": 12.96,
+   "severe": 10,
+   "catastrophic": 0
+  },
+  "CLB_OTHER 2 replicas + shared": {
+   "critical": 72,
+   "mean_mism": 51.43055555555556,
+   "severe": 19,
+   "catastrophic": 1
+  },
+  "routing 1 replicas + shared": {
+   "critical": 46,
+   "mean_mism": 1216.5,
+   "severe": 46,
+   "catastrophic": 41
+  },
+  "routing 1 replicas": {
+   "critical": 29,
+   "mean_mism": 23.655172413793103,
+   "severe": 5,
+   "catastrophic": 0
+  },
+  "LUT_INIT 2 replicas + shared": {
+   "critical": 19,
+   "mean_mism": 1.631578947368421,
+   "severe": 0,
+   "catastrophic": 0
+  },
+  "CLB_OTHER 3 replicas + shared": {
+   "critical": 5,
+   "mean_mism": 10.4,
+   "severe": 0,
+   "catastrophic": 0
+  }
+ },
+ "camp_dwn_md_tmr_s1": {
+  "routing shared only": {
+   "critical": 127391,
+   "mean_mism": 13.446475810693062,
+   "severe": 5391,
+   "catastrophic": 505
+  },
+  "routing 3 replicas + shared": {
+   "critical": 28805,
+   "mean_mism": 10.781322687033501,
+   "severe": 525,
+   "catastrophic": 42
+  },
+  "LUT_INIT shared only": {
+   "critical": 22048,
+   "mean_mism": 3.5705732946298983,
+   "severe": 101,
+   "catastrophic": 11
+  },
+  "CLB_OTHER shared only": {
+   "critical": 9080,
+   "mean_mism": 19.544823788546257,
+   "severe": 586,
+   "catastrophic": 46
+  },
+  "CLB_OTHER 2 replicas": {
+   "critical": 684,
+   "mean_mism": 8.334795321637428,
+   "severe": 8,
+   "catastrophic": 0
+  },
+  "LUT_INIT 1 replicas + shared": {
+   "critical": 481,
+   "mean_mism": 19.112266112266113,
+   "severe": 8,
+   "catastrophic": 8
+  },
+  "CLB_OTHER 1 replicas + shared": {
+   "critical": 275,
+   "mean_mism": 105.14181818181818,
+   "severe": 54,
+   "catastrophic": 11
+  },
+  "HCLK shared only": {
+   "critical": 193,
+   "mean_mism": 806.6943005181347,
+   "severe": 156,
+   "catastrophic": 94
+  },
+  "CLB_OTHER 2 replicas + shared": {
+   "critical": 121,
+   "mean_mism": 175.9917355371901,
+   "severe": 47,
+   "catastrophic": 16
+  },
+  "LUT_INIT 2 replicas + shared": {
+   "critical": 117,
+   "mean_mism": 20.521367521367523,
+   "severe": 2,
+   "catastrophic": 1
+  },
+  "CLB_OTHER 3 replicas": {
+   "critical": 109,
+   "mean_mism": 12.394495412844037,
+   "severe": 2,
+   "catastrophic": 0
+  },
+  "routing 1 replicas + shared": {
+   "critical": 54,
+   "mean_mism": 1262.7407407407406,
+   "severe": 54,
+   "catastrophic": 50
+  },
+  "routing 1 replicas": {
+   "critical": 35,
+   "mean_mism": 104.88571428571429,
+   "severe": 2,
+   "catastrophic": 1
+  },
+  "CLB_OTHER 3 replicas + shared": {
+   "critical": 15,
+   "mean_mism": 82.8,
+   "severe": 12,
+   "catastrophic": 0
+  }
+ },
+ "camp_dwn_md_tmr_s2": {
+  "routing shared only": {
+   "critical": 120692,
+   "mean_mism": 12.70006297020515,
+   "severe": 5050,
+   "catastrophic": 484
+  },
+  "routing 3 replicas + shared": {
+   "critical": 29081,
+   "mean_mism": 8.764107148997628,
+   "severe": 430,
+   "catastrophic": 31
+  },
+  "LUT_INIT shared only": {
+   "critical": 18793,
+   "mean_mism": 2.869525887298462,
+   "severe": 60,
+   "catastrophic": 4
+  },
+  "CLB_OTHER shared only": {
+   "critical": 8701,
+   "mean_mism": 16.897942765199403,
+   "severe": 466,
+   "catastrophic": 43
+  },
+  "CLB_OTHER 2 replicas": {
+   "critical": 700,
+   "mean_mism": 7.982857142857143,
+   "severe": 7,
+   "catastrophic": 0
+  },
+  "LUT_INIT 1 replicas + shared": {
+   "critical": 320,
+   "mean_mism": 41.440625,
+   "severe": 12,
+   "catastrophic": 10
+  },
+  "CLB_OTHER 1 replicas + shared": {
+   "critical": 310,
+   "mean_mism": 151.99032258064517,
+   "severe": 113,
+   "catastrophic": 24
+  },
+  "HCLK shared only": {
+   "critical": 188,
+   "mean_mism": 811.936170212766,
+   "severe": 178,
+   "catastrophic": 84
+  },
+  "CLB_OTHER 2 replicas + shared": {
+   "critical": 119,
+   "mean_mism": 76.30252100840336,
+   "severe": 43,
+   "catastrophic": 2
+  },
+  "CLB_OTHER 3 replicas": {
+   "critical": 106,
+   "mean_mism": 8.537735849056604,
+   "severe": 1,
+   "catastrophic": 0
+  },
+  "routing 1 replicas + shared": {
+   "critical": 40,
+   "mean_mism": 1105.575,
+   "severe": 40,
+   "catastrophic": 32
+  },
+  "routing 1 replicas": {
+   "critical": 37,
+   "mean_mism": 30.16216216216216,
+   "severe": 3,
+   "catastrophic": 0
+  },
+  "LUT_INIT 2 replicas + shared": {
+   "critical": 37,
+   "mean_mism": 7.837837837837838,
+   "severe": 3,
+   "catastrophic": 0
+  },
+  "CLB_OTHER 3 replicas + shared": {
+   "critical": 26,
+   "mean_mism": 219.92307692307693,
+   "severe": 25,
+   "catastrophic": 6
+  }
+ }
+}

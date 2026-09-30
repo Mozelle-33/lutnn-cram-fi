@@ -35,7 +35,7 @@
  "mlp_32_16_p70": {
   "trials": 990,
   "p_1pt_hw": 1.5117294062674178e-06,
-  "p_1pt_param": null,
+  "p_1pt_param": 3.165697699152726e-05,
   "K_1pt": 9.444381316173878,
   "loss_at_1e-3": null,
   "measured_over_additive": [

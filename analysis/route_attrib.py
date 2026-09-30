@@ -40,8 +40,10 @@ def driver_group(net_type, driver, last_layer=0):
         return "popcount"
     if c.startswith(("am", "y")):
         return "argmax/output"
-    if re.match(r"g\d+", c):
-        return "gate layers"
+    m = re.match(r"g(\d+)", c)
+    if m:
+        # DLGN: the registered outputs of the last gate layer feed the population count
+        return "LUT layer->popcount" if last_layer and int(m.group(1)) >= last_layer else "gate layers"
     if re.match(r"[psav]\d+_", c):
         return "MAC/activation"
     return "other"
