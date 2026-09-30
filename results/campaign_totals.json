@@ -1,12 +1,12 @@
 {
- "campaigns": 34,
- "injected": 118548727,
- "hours": 4.528964722222223,
+ "campaigns": 37,
+ "injected": 131946916,
+ "hours": 5.013366111111112,
  "rate_min": 5888.214325205221,
  "rate_max": 8381.949177556551,
- "dwn_builds": 22,
- "param_bits": 1484800,
- "param_exact": 1484800,
+ "dwn_builds": 25,
+ "param_bits": 1676800,
+ "param_exact": 1676800,
  "runs": {
   "camp_dlgn_a": {
    "injected": 3563268,
@@ -145,6 +145,27 @@
    "injected": 2891342,
    "seconds": 418.97,
    "rate": 6901.071675776308
+  },
+  "camp_dwn_md_pf5_tmr": {
+   "injected": 4465978,
+   "seconds": 579.908,
+   "rate": 7701.1836360250245,
+   "param_bits": 64000,
+   "param_exact": 64000
+  },
+  "camp_dwn_md_pf5_tmr_s1": {
+   "injected": 4466008,
+   "seconds": 594.206,
+   "rate": 7515.925453462267,
+   "param_bits": 64000,
+   "param_exact": 64000
+  },
+  "camp_dwn_md_pf5_tmr_s2": {
+   "injected": 4466203,
+   "seconds": 569.731,
+   "rate": 7839.143385211618,
+   "param_bits": 64000,
+   "param_exact": 64000
   },
   "camp_dwn_md_s1": {
    "injected": 2891312,

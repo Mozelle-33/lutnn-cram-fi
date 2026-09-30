@@ -1,71 +1,168 @@
-[
- {
-  "seed": 0,
-  "crit": {
-   "pred_remaining": 0.7232138944725431,
-   "meas_remaining": 0.7210426619435423,
-   "diff_pts": -0.2171232529000866
+{
+ "+ fault-aware (2\\,\\%)": [
+  {
+   "seed": 0,
+   "crit": {
+    "pred_remaining": 0.7232138944725431,
+    "additive_remaining": 0.7056998325517618,
+    "meas_remaining": 0.7210426619435423,
+    "diff_pts": -0.2171232529000866
+   },
+   "smism": {
+    "pred_remaining": 0.5272376746496434,
+    "additive_remaining": 0.46949478915904974,
+    "meas_remaining": 0.5279313425176132,
+    "diff_pts": 0.06936678679697605
+   },
+   "gt1": {
+    "pred_remaining": 0.41403940791802796,
+    "additive_remaining": 0.31111278876642,
+    "meas_remaining": 0.4144647440736826,
+    "diff_pts": 0.04253361556546542
+   },
+   "gt10": {
+    "pred_remaining": 0.5651356808951666,
+    "additive_remaining": 0.5480631276901005,
+    "meas_remaining": 0.5624103299856528,
+    "diff_pts": -0.27253509095138684
+   }
   },
-  "smism": {
-   "pred_remaining": 0.5272376746496434,
-   "meas_remaining": 0.5279313425176132,
-   "diff_pts": 0.06936678679697605
+  {
+   "seed": 1,
+   "crit": {
+    "pred_remaining": 0.684978410618688,
+    "additive_remaining": 0.6576755239427989,
+    "meas_remaining": 0.6736028882062153,
+    "diff_pts": -1.137552241247275
+   },
+   "smism": {
+    "pred_remaining": 0.5764881046411724,
+    "additive_remaining": 0.5474886431400687,
+    "meas_remaining": 0.537204685280443,
+    "diff_pts": -3.9283419360729432
+   },
+   "gt1": {
+    "pred_remaining": 0.4690693783128143,
+    "additive_remaining": 0.41977260748437617,
+    "meas_remaining": 0.4996611700926135,
+    "diff_pts": 3.0591791779799204
+   },
+   "gt10": {
+    "pred_remaining": 0.619272128076748,
+    "additive_remaining": 0.6471893491124261,
+    "meas_remaining": 0.503698224852071,
+    "diff_pts": -11.557390322467697
+   }
   },
-  "gt1": {
-   "pred_remaining": 0.41403940791802796,
-   "meas_remaining": 0.4144647440736826,
-   "diff_pts": 0.04253361556546542
-  },
-  "gt10": {
-   "pred_remaining": 0.5651356808951666,
-   "meas_remaining": 0.5624103299856528,
-   "diff_pts": -0.27253509095138684
+  {
+   "seed": 2,
+   "crit": {
+    "pred_remaining": 0.7888151204584825,
+    "additive_remaining": 0.7841501940608357,
+    "meas_remaining": 0.7695685531185125,
+    "diff_pts": -1.9246567339969989
+   },
+   "smism": {
+    "pred_remaining": 0.5395623177967939,
+    "additive_remaining": 0.5087554003833423,
+    "meas_remaining": 0.5352064934024418,
+    "diff_pts": -0.43558243943521147
+   },
+   "gt1": {
+    "pred_remaining": 0.43317700746827875,
+    "additive_remaining": 0.3565029595264757,
+    "meas_remaining": 0.410894256918893,
+    "diff_pts": -2.2282750549385777
+   },
+   "gt10": {
+    "pred_remaining": 0.42488530030857113,
+    "additive_remaining": 0.37122207621550585,
+    "meas_remaining": 0.48291721419185285,
+    "diff_pts": 5.803191388328171
+   }
   }
- },
- {
-  "seed": 1,
-  "crit": {
-   "pred_remaining": 0.684978410618688,
-   "meas_remaining": 0.6736028882062153,
-   "diff_pts": -1.137552241247275
+ ],
+ "+ phys.\\ fault-aware (5\\,\\%)": [
+  {
+   "seed": 0,
+   "crit": {
+    "pred_remaining": 0.7919762218199206,
+    "additive_remaining": 0.792904765462592,
+    "meas_remaining": 0.8310750528494768,
+    "diff_pts": 3.9098831029556247
+   },
+   "smism": {
+    "pred_remaining": 0.5456228865287378,
+    "additive_remaining": 0.4990327697081629,
+    "meas_remaining": 0.5814361653839558,
+    "diff_pts": 3.581327885521801
+   },
+   "gt1": {
+    "pred_remaining": 0.4350135619927618,
+    "additive_remaining": 0.3506719009512307,
+    "meas_remaining": 0.4696512154612713,
+    "diff_pts": 3.46376534685095
+   },
+   "gt10": {
+    "pred_remaining": 0.5435623876873421,
+    "additive_remaining": 0.5114777618364419,
+    "meas_remaining": 0.5236728837876614,
+    "diff_pts": -1.9889503899680694
+   }
   },
-  "smism": {
-   "pred_remaining": 0.5764881046411724,
-   "meas_remaining": 0.537204685280443,
-   "diff_pts": -3.9283419360729432
+  {
+   "seed": 1,
+   "crit": {
+    "pred_remaining": 0.6985463577312904,
+    "additive_remaining": 0.6749774358889433,
+    "meas_remaining": 0.7041534525160019,
+    "diff_pts": 0.5607094784711553
+   },
+   "smism": {
+    "pred_remaining": 0.5669224717084577,
+    "additive_remaining": 0.5321780930171673,
+    "meas_remaining": 0.5783780901082598,
+    "diff_pts": 1.1455618399802137
+   },
+   "gt1": {
+    "pred_remaining": 0.4453165369353683,
+    "additive_remaining": 0.3743693998945863,
+    "meas_remaining": 0.4624651758150742,
+    "diff_pts": 1.7148638879705858
+   },
+   "gt10": {
+    "pred_remaining": 0.6514811499947482,
+    "additive_remaining": 0.7026627218934913,
+    "meas_remaining": 0.6649408284023669,
+    "diff_pts": 1.3459678407618747
+   }
   },
-  "gt1": {
-   "pred_remaining": 0.4690693783128143,
-   "meas_remaining": 0.4996611700926135,
-   "diff_pts": 3.0591791779799204
-  },
-  "gt10": {
-   "pred_remaining": 0.619272128076748,
-   "meas_remaining": 0.503698224852071,
-   "diff_pts": -11.557390322467697
+  {
+   "seed": 2,
+   "crit": {
+    "pred_remaining": 0.8154152177290339,
+    "additive_remaining": 0.8170502752956044,
+    "meas_remaining": 0.8034750428739056,
+    "diff_pts": -1.1940174855128327
+   },
+   "smism": {
+    "pred_remaining": 0.5626975684826103,
+    "additive_remaining": 0.5484688898886745,
+    "meas_remaining": 0.5962208101961702,
+    "diff_pts": 3.3523241713559915
+   },
+   "gt1": {
+    "pred_remaining": 0.46810930983725374,
+    "additive_remaining": 0.4244120940649496,
+    "meas_remaining": 0.49784034554471285,
+    "diff_pts": 2.973103570745911
+   },
+   "gt10": {
+    "pred_remaining": 0.4158716399508911,
+    "additive_remaining": 0.35216819973718794,
+    "meas_remaining": 0.4908015768725361,
+    "diff_pts": 7.492993692164501
+   }
   }
- },
- {
-  "seed": 2,
-  "crit": {
-   "pred_remaining": 0.7888151204584825,
-   "meas_remaining": 0.7695685531185125,
-   "diff_pts": -1.9246567339969989
-  },
-  "smism": {
-   "pred_remaining": 0.5395623177967939,
-   "meas_remaining": 0.5352064934024418,
-   "diff_pts": -0.43558243943521147
-  },
-  "gt1": {
-   "pred_remaining": 0.43317700746827875,
-   "meas_remaining": 0.410894256918893,
-   "diff_pts": -2.2282750549385777
-  },
-  "gt10": {
-   "pred_remaining": 0.42488530030857113,
-   "meas_remaining": 0.48291721419185285,
-   "diff_pts": 5.803191388328171
-  }
- }
-]
+ ]
+}

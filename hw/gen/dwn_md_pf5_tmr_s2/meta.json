@@ -1,0 +1,14 @@
+{
+ "name": "dwn_md_pf5_tmr_s2",
+ "model": "dwn_md_pf5_s2",
+ "type": "dwn",
+ "LATENCY": 9,
+ "IN_W": 160,
+ "QBITS": 10,
+ "CW": 3,
+ "TMR_OUT": true,
+ "DATASET": "jsc",
+ "NVEC": 4096,
+ "sw_acc_nvec": 0.76708984375,
+ "test_acc_full": 0.7636385542168674
+}

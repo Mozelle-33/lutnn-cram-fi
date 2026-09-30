@@ -227,6 +227,9 @@ SEEDED = [
     ("+ fault-aware (2\\,\\%) + TMR", [("camp_dwn_md_fa2_tmr", "dwn_md_fa2", "dwn_md_fa2_tmr"),
                                       ("camp_dwn_md_fa2_tmr_s1", "dwn_md_fa2_s1", "dwn_md_fa2_tmr_s1"),
                                       ("camp_dwn_md_fa2_tmr_s2", "dwn_md_fa2_s2", "dwn_md_fa2_tmr_s2")]),
+    ("+ phys.\\ fault-aware (5\\,\\%) + TMR", [("camp_dwn_md_pf5_tmr", "dwn_md_pf5", "dwn_md_pf5_tmr"),
+                                              ("camp_dwn_md_pf5_tmr_s1", "dwn_md_pf5_s1", "dwn_md_pf5_tmr_s1"),
+                                              ("camp_dwn_md_pf5_tmr_s2", "dwn_md_pf5_s2", "dwn_md_pf5_tmr_s2")]),
 ]
 METRICS = ["crit", "smism", "gt1", "gt10"]
 # exploratory single runs (fault-aware 5 %, physical fault-aware 2 %) and the first DWN-MNIST campaign
@@ -344,22 +347,29 @@ def hardening_table_tvlsi():
 
 
 def composition_check():
-    """Does fault-aware training (2 %) compose multiplicatively with output-stage TMR in every training
-    replica? For each seed: remaining fraction FA2 x TMR (predicted) vs FA2+TMR (measured), relative to
-    the unhardened network of the same seed. Writes results/composition_seeds.json."""
+    """Do fault-aware training (inversion 2 %, physical faults 5 %) and output-stage TMR compose
+    multiplicatively in every training replica? For each seed: remaining fraction FA x TMR (product),
+    FA + TMR - 1 (sum of the reductions) and the measured FA+TMR, all relative to the unhardened
+    network of the same seed. Writes results/composition_seeds.json."""
     groups = {label: runs for label, runs in SEEDED}
-    names = ["DWN-M", "+ fault-aware (2\\,\\%)", "+ output-stage TMR", "+ fault-aware (2\\,\\%) + TMR"]
-    out = []
-    for s in range(3):
-        runs = [groups[n][s] for n in names]
-        if not all(event_files(r[0]) for r in runs):
-            continue
-        base, fa, tmr, both = [run_metrics(*r) for r in runs]
-        row = {"seed": s}
-        for k in METRICS:
-            pred, meas = (fa[k] / base[k]) * (tmr[k] / base[k]), both[k] / base[k]
-            row[k] = {"pred_remaining": pred, "meas_remaining": meas, "diff_pts": 100 * (meas - pred)}
-        out.append(row)
+    out = {}
+    for fa_label, both_label in [("+ fault-aware (2\\,\\%)", "+ fault-aware (2\\,\\%) + TMR"),
+                                 ("+ phys.\\ fault-aware (5\\,\\%)", "+ phys.\\ fault-aware (5\\,\\%) + TMR")]:
+        names = ["DWN-M", fa_label, "+ output-stage TMR", both_label]
+        rows = []
+        for s in range(3):
+            runs = [groups[n][s] for n in names]
+            if not all(event_files(r[0]) and (ROOT / "results" / r[0] / "analysis.json").exists() for r in runs):
+                continue
+            base, fa, tmr, both = [run_metrics(*r) for r in runs]
+            row = {"seed": s}
+            for k in METRICS:
+                f, m = fa[k] / base[k], tmr[k] / base[k]
+                pred, add, meas = f * m, f + m - 1, both[k] / base[k]
+                row[k] = {"pred_remaining": pred, "additive_remaining": add, "meas_remaining": meas,
+                          "diff_pts": 100 * (meas - pred)}
+            rows.append(row)
+        out[fa_label] = rows
     (ROOT / "results/composition_seeds.json").write_text(json.dumps(out, indent=1))
     return out
 
@@ -390,6 +400,7 @@ def hardening_stats():
     paired = {}
     # variants that keep the trained network, compared with that network (same seed)
     for hard, plain in [("+ output-stage TMR", "DWN-M"), ("+ fault-aware (2\\,\\%) + TMR", "+ fault-aware (2\\,\\%)"),
+                        ("+ phys.\\ fault-aware (5\\,\\%) + TMR", "+ phys.\\ fault-aware (5\\,\\%)"),
                         ("+ don't-care fill", "DWN-M"), ("+ SLICEL-only placement", "DWN-M")]:
         rows = []
         for h, p in zip(groups[hard], groups[plain]):
@@ -438,7 +449,8 @@ def fig_hardening():
              "+ SLICEL-only placement": "SLICEL\nonly",
              "+ fault-aware (2\\,\\%)": "Fault-aware\n2%", "+ fault-aware (5\\,\\%)": "Fault-aware\n5%",
              "+ phys.\\ fault-aware (2\\,\\%)": "Physical\nFA 2%", "+ phys.\\ fault-aware (5\\,\\%)": "Physical\nFA 5%",
-             "+ output-stage TMR": "Output\nTMR", "+ fault-aware (2\\,\\%) + TMR": "Fault-aware\n2% + TMR"}
+             "+ output-stage TMR": "Output\nTMR", "+ fault-aware (2\\,\\%) + TMR": "Fault-aware\n2% + TMR",
+             "+ phys.\\ fault-aware (5\\,\\%) + TMR": "Physical\nFA 5% + TMR"}
     runs = seeded_runs()
     base = {k: np.mean([m[k] for m in runs[0][1]]) for k in METRICS + ["luts"]}
     labels, mean, sd = [], [], []

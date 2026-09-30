@@ -1,0 +1,1 @@
+golden_corr=3135 ntest=4096 inj=4465978 nonsilent=189097 persist=0 timeouts=0 events=189097 skipped=7110 sessions=1 seconds=579.908 far_first=72 far_last=1455 word_lo=0 word_hi=100 start_lin=0 end_lin=4473088 skipfile=results\camp_dwn_md_pf5_tmr\skip.txt

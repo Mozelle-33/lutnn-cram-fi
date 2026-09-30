@@ -1,0 +1,9 @@
+build	period_ns	wns_dut_ns	datapath_ns	fmax_mhz	logic_levels
+dwn_sm	10.000	5.157	4.744	206	9
+dwn_md	10.000	4.540	5.479	183	9
+dlgn_a	10.000	5.296	4.677	213	9
+mlp_32_16	10.000	2.707	7.350	137	6
+mlp_32_16_p70	10.000	3.614	6.406	157	5
+dwn_mnist_r	10.000	0.581	9.377	106	19
+dwn_md_tmr	10.000	4.797	5.086	192	2
+dwn_md_sl	10.000	4.625	5.332	186	9

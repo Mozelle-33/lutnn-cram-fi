@@ -11,11 +11,11 @@ Mitigation (SEM) controller flips, tests, restores and verifies **every** config
 (CRAM) bit of the region that holds a neural network, at up to 10,000 injections per second
 (5,900–8,400 averaged over complete campaigns). The study covers differentiable weightless networks
 (DWNs), differentiable logic-gate networks (DLGNs) and fixed-point MLPs of similar accuracy (dense
-and 70 % pruned) on the JSC and MNIST benchmarks (34 exhaustive campaigns, 118.5 M injections), and
+and 70 % pruned) on the JSC and MNIST benchmarks (37 exhaustive campaigns, 131.9 M injections), and
 adds:
 
 * bit-level attribution of every critical bit to its fabric resource and net (Project X-Ray database),
-* the exactness of the parameter bit-flip model for the LUT tables (1.48 M table bits in 22 builds),
+* the exactness of the parameter bit-flip model for the LUT tables (1.68 M table bits in 25 builds),
   and the test-set coverage of critical-bit counts,
 * the persistent upsets of the LUT-mode bits (shift register, LUT-RAM), injected exhaustively with
   reconfiguration after every persistent error, and a SLICEL-only placement that removes them,
@@ -26,8 +26,8 @@ adds:
   second exhaustive campaigns at another idle input vector (unhardened and fault-aware DWN-M, three
   training runs each), a model sweep over all idle vectors and a hold test of frozen values,
 * hardening measured exhaustively over three training runs per variant: don't-care filling,
-  fault-aware training (inverted and physically modelled input faults), selective TMR, SLICEL-only
-  placement. Two exploratory single runs (fault-aware 5 %, physical 2 %) and a first DWN-MNIST
+  fault-aware training (inverted and physically modelled input faults), selective TMR, alone and
+  combined with either kind of fault-aware training, SLICEL-only placement. Two exploratory single runs (fault-aware 5 %, physical 2 %) and a first DWN-MNIST
   campaign on the first 2048 test images (replaced in the paper by a random sample of 2048 images)
   are included in `results/` but not reported in the paper.
 
@@ -37,7 +37,7 @@ adds:
 |---|---|
 | `hw/rtl` | Injection platform: `fi_ctrl.v` (autonomous campaign controller), `jtag_regs.v` (BSCANE2 register file), `fi_top.v` (top level with the SEM controller) |
 | `hw/xdc` | Board constraints (NetFirm-4E40-C card with XC7K325T-FFG900-2; adapt the pins for other boards) |
-| `hw/tcl` | Vivado scripts: SEM IP generation, build with isolated pblocks and essential bits, exports for the analysis |
+| `hw/tcl` | Vivado scripts: SEM IP generation, build with isolated pblocks and essential bits, exports for the analysis, post-route timing of the network (`dut_timing.tcl`) |
 | `hw/sim` | RTL simulation of a generated network against its software reference |
 | `hw/gen` | Generated networks (`dut.v`), test vectors, software reference outputs, frame-address list |
 | `fi` | Host scripts for `xsdb`: programming, campaigns, targeted and multiple upsets, timing, recovery |

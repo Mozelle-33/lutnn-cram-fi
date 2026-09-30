@@ -1,0 +1,1 @@
+name=dwn_md_pf5_tmr rows=1 ncols=32 slice_x=0..65 y=200..249 dut_luts=6615 dut_ffs=5298 dut_carry4=105 latency=9 slices=all
