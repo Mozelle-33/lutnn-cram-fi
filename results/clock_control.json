@@ -1,0 +1,62 @@
+{
+ "runs": {
+  "100": {
+   "campaign": "camp_dwn_mnist_r",
+   "critical": 164633,
+   "sum_mism": 961642,
+   "severe": 3505,
+   "catastrophic": 623,
+   "param_exact": 192000,
+   "param_bits": 192000
+  },
+  "100 repeat": {
+   "campaign": "camp_dwn_mnist_r_rep",
+   "critical": 164626,
+   "sum_mism": 962464,
+   "severe": 3506,
+   "catastrophic": 624,
+   "param_exact": 192000,
+   "param_bits": 192000
+  },
+  "50": {
+   "campaign": "camp_dwn_mnist_r_50",
+   "critical": 164804,
+   "sum_mism": 980828,
+   "severe": 3525,
+   "catastrophic": 642,
+   "param_exact": 192000,
+   "param_bits": 192000
+  }
+ },
+ "lost_at_50": {
+  "bits": 354,
+  "share_of_critical": 0.0021502371942441673,
+  "max_mism": 5,
+  "sum_mism": 408
+ },
+ "gained_at_50": {
+  "bits": 520
+ },
+ "net_change_critical": 0.0010386738989145439,
+ "status_changes": {
+  "100 vs 50": 1019,
+  "100 vs 100 repeat": 281
+ },
+ "sum_mism_change": {
+  "100 vs 50": 0.019951291644915603,
+  "100 vs 100 repeat": 0.0008547879564329008
+ },
+ "sum_mism_change_by_group": {
+  "routing: popcount": 9842,
+  "routing: argmax/output": 7692,
+  "routing: unused wire": 677,
+  "routing: clock": 526,
+  "routing: thermometer->LUT": 253,
+  "routing: inputs": 148,
+  "routing: encoder": 100,
+  "routing: constant": 20,
+  "routing: LUT layer->popcount": 15,
+  "LUT_INIT": -4,
+  "CLB_OTHER": -83
+ }
+}

@@ -11,7 +11,7 @@ Mitigation (SEM) controller flips, tests, restores and verifies **every** config
 (CRAM) bit of the region that holds a neural network, at up to 10,000 injections per second
 (5,900–8,400 averaged over complete campaigns). The study covers differentiable weightless networks
 (DWNs), differentiable logic-gate networks (DLGNs) and fixed-point MLPs of similar accuracy (dense
-and 70 % pruned) on the JSC and MNIST benchmarks (37 exhaustive campaigns, 131.9 M injections), and
+and 70 % pruned) on the JSC and MNIST benchmarks (39 exhaustive campaigns, 137.7 M injections), and
 adds:
 
 * bit-level attribution of every critical bit to its fabric resource and net (Project X-Ray database),
@@ -25,6 +25,8 @@ adds:
   logic one, the unused output of a used LUT carries its value), validated bit by bit, with
   second exhaustive campaigns at another idle input vector (unhardened and fault-aware DWN-M, three
   training runs each), a model sweep over all idle vectors and a hold test of frozen values,
+* a clock-rate control: DWN-MNIST, whose maximum clock rate is closest to the 100 MHz of the
+  campaigns, injected again at 100 MHz and at 50 MHz with an unchanged configuration of the network,
 * hardening measured exhaustively over three training runs per variant: don't-care filling,
   fault-aware training (inverted and physically modelled input faults), selective TMR, alone and
   combined with either kind of fault-aware training, SLICEL-only placement. Two exploratory single runs (fault-aware 5 %, physical 2 %) and a first DWN-MNIST
@@ -89,7 +91,10 @@ multiplexer fault models (`hw/tcl/export_lutpins.tcl`, `hw/tcl/export_routetree.
 `analysis/idle_control.py`; whole-region campaigns with the verify length set to another vector
 count, `FI_VERIFY=1479 FI_SUFFIX=_idle1479 fi/run_campaigns.ps1 ...`, compared by
 `analysis/idle_compare.py` and `analysis/state_hardening.py`; model sweep over all idle vectors
-`analysis/state_sweep.py`), injection timing (`fi/throughput.tcl`), frozen-input hold test
+`analysis/state_sweep.py`), clock-rate control (`hw/tcl/dut_timing.tcl` for the maximum clock
+rates, `hw/tcl/eco_clkdiv.tcl` for the 50 MHz bitstream, `FI_SUFFIX=_rep fi/run_campaigns.ps1
+dwn_mnist_r:dwn_mnist` for the repeat, `analysis/clock_control.py`), injection timing
+(`fi/throughput.tcl`), frozen-input hold test
 (`analysis/freeze_hold.py`, `analysis/hold_stage.py`, `fi/hold_test.tcl`, die temperature
 `fi/read_temp.tcl`), critical bits by network stage (`analysis/stage_breakdown.py`), common-mode
 failures of the TMR (`analysis/tmr_cmf.py`), effective rate of the physical training faults
@@ -113,6 +118,8 @@ failures of the TMR (`analysis/tmr_cmf.py`), effective rate of the physical trai
 * `results/hardening_stats.json`, `results/composition_seeds.json`, `results/campaign_totals.json`:
   statistics of the hardening variants over the training runs, the per-run composition check of
   fault-aware training and TMR, and the totals of all campaigns.
+* `results/dut_timing.tsv`, `results/clock_control.json`: maximum clock rate of each network and the
+  comparison of the DWN-MNIST campaigns at 100 MHz (two runs) and 50 MHz.
 
 ## License
 

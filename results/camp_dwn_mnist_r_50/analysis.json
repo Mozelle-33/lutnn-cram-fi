@@ -1,0 +1,96 @@
+{
+ "model": "dwn_mnist",
+ "build": "dwn_mnist_r_50",
+ "campaign": "results\\camp_dwn_mnist_r_50",
+ "subcampaigns": [
+  "results\\camp_dwn_mnist_r_50"
+ ],
+ "ranges": [
+  [
+   72,
+   967
+  ]
+ ],
+ "injected": 2890652,
+ "reported_injections": 2890652,
+ "seconds": 602.411,
+ "skipped_mode_bits": 5220,
+ "skipped_by_class": {
+  "CLB_OTHER": 5220
+ },
+ "skipped_essential": 5220,
+ "essential_in_range": 1138633,
+ "ebd_lead_pad_frames": 1,
+ "ebd_probe_hits": "2000/2000",
+ "critical": 164804,
+ "critical_frac_injected": 0.05701274314583699,
+ "critical_frac_essential": 0.14473847148290978,
+ "fit_sea_level": 6.59216,
+ "cross_section_cm2": 9.3773476e-10,
+ "acc_degrading": 85803,
+ "persistent": 0,
+ "timeouts": 0,
+ "golden_corr": 2006,
+ "ntest": 2048,
+ "mean_mism_critical": 5.951481760151452,
+ "mean_acc_drop_critical": 0.0021453218197828934,
+ "classes": {
+  "LUT_INIT": {
+   "injected": 537600,
+   "essential": 279104,
+   "critical": 9999,
+   "acc_degrading": 6502,
+   "mean_mism": 10.696569656965696
+  },
+  "ROUTING": {
+   "injected": 2077400,
+   "essential": 821469,
+   "critical": 144771,
+   "acc_degrading": 73715,
+   "mean_mism": 4.906873614190688
+  },
+  "CLB_OTHER": {
+   "injected": 147480,
+   "essential": 37748,
+   "critical": 9891,
+   "acc_degrading": 5443,
+   "mean_mism": 11.922252552825801
+  },
+  "HCLK": {
+   "injected": 2704,
+   "essential": 312,
+   "critical": 143,
+   "acc_degrading": 143,
+   "mean_mism": 318.72027972027973
+  },
+  "BRAM_DSP": {
+   "injected": 17600,
+   "essential": 0,
+   "critical": 0,
+   "acc_degrading": 0,
+   "mean_mism": 0.0
+  },
+  "UNMAPPED": {
+   "injected": 107868,
+   "essential": 0,
+   "critical": 0,
+   "acc_degrading": 0,
+   "mean_mism": 0.0
+  }
+ },
+ "lut_init_critical_by_module": {
+  "lut_layer": 2844,
+  "popcount": 5707,
+  "other": 355,
+  "argmax": 1093
+ },
+ "dwn_lut_layer_hw_vs_sw": {
+  "bits": 192000,
+  "exact_agree": 192000,
+  "tp": 2844,
+  "fp": 0,
+  "fn": 0,
+  "tn": 189156,
+  "examples_diff": []
+ }
+}

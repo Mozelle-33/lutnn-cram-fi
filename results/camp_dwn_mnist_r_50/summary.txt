@@ -1,0 +1,1 @@
+golden_corr=2006 ntest=2048 inj=2890652 nonsilent=164804 persist=0 timeouts=0 events=164804 skipped=5220 sessions=1 seconds=602.411 far_first=72 far_last=967 word_lo=0 word_hi=100 start_lin=0 end_lin=2895872 skipfile=results\camp_dwn_mnist_r_50\skip.txt

@@ -254,9 +254,12 @@ METRICS = ["crit", "smism", "gt1", "gt10"]
 # (first 2048 test images, replaced by a random sample) whose data are released but not reported in the
 # journal paper
 NOT_REPORTED = {"camp_dwn_md_fa5", "camp_dwn_md_pf2", "camp_dwn_mnist"}
-# second campaigns of already reported builds (another idle input vector, suffix _idle1479): counted in
-# the injections, not as further builds in the parameter-model comparison
-CONTROL = {p.name for p in (ROOT / "results").glob("camp_*_idle1479")}
+# second campaigns of already reported builds (another idle input vector, suffix _idle1479; DWN-MNIST
+# repeated with the same bitstream, _rep, and at half the clock rate, _50): counted in the injections,
+# not as further builds in the parameter-model comparison
+CONTROL = {p.name for p in (ROOT / "results").glob("camp_*_idle1479")} | {"camp_dwn_mnist_r_rep", "camp_dwn_mnist_r_50"}
+# the campaign at 50 MHz, where every step of the injection loop takes twice as long
+SLOW_CLOCK = {"camp_dwn_mnist_r_50"}
 
 
 def run_metrics(cdir, model, build):
@@ -454,7 +457,7 @@ def campaign_totals():
         hs = j.get("dwn_lut_layer_hw_vs_sw")         # DWN: table bits compared with the parameter model
         if hs and a.parent.name not in CONTROL:
             runs[a.parent.name].update(param_bits=hs["bits"], param_exact=hs["exact_agree"])
-    rates = [r["rate"] for r in runs.values()]
+    rates = [r["rate"] for k, r in runs.items() if k not in SLOW_CLOCK]      # at 100 MHz
     dwn = [r for r in runs.values() if "param_bits" in r]
     out = {"campaigns": len(runs), "injected": sum(r["injected"] for r in runs.values()),
            "hours": sum(r["seconds"] for r in runs.values()) / 3600, "rate_min": min(rates), "rate_max": max(rates),
