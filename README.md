@@ -3,15 +3,21 @@
 This repository contains the platform, models, scripts and measurement data of
 
 > Y. Guo, "Beyond Parameter Bit-Flips: Exhaustive Configuration-Memory Fault Injection of
-> LUT-Native Neural Networks on SRAM FPGAs," submitted to *IEEE Transactions on Very Large Scale
-> Integration (VLSI) Systems*, 2026.
+> Weightless and Logic-Gate Neural Networks on SRAM FPGAs," submitted to *IEEE Transactions on Very
+> Large Scale Integration (VLSI) Systems*, 2026.
+
+A snapshot of this repository (commit b066d23) is archived on IEEE DataPort:
+
+> Y. Guo, "Exhaustive Configuration-Memory Fault-Injection Data of Weightless and Logic-Gate Neural
+> Networks on a Kintex-7 FPGA," IEEE DataPort, 2026, doi:
+> [10.21227/8357-7a78](https://doi.org/10.21227/8357-7a78).
 
 On an AMD/Xilinx Kintex-7 XC7K325T, an autonomous on-chip injector built around the Soft Error
 Mitigation (SEM) controller flips, tests, restores and verifies **every** configuration-memory
 (CRAM) bit of the region that holds a neural network, at up to 10,000 injections per second
 (5,900–8,400 averaged over complete campaigns). The study covers differentiable weightless networks
 (DWNs), differentiable logic-gate networks (DLGNs) and fixed-point MLPs of similar accuracy (dense
-and 70 % pruned) on the JSC and MNIST benchmarks (39 exhaustive campaigns, 137.7 M injections), and
+and 70 % pruned) on the JSC and MNIST benchmarks (42 exhaustive campaigns, 146.4 M injections), and
 adds:
 
 * bit-level attribution of every critical bit to its fabric resource and net (Project X-Ray database),
