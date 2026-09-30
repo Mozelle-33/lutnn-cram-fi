@@ -67,7 +67,7 @@ def load():
         res["synth_luts"], res["synth_ffs"] = res["dut_luts"], res["dut_ffs"]
         res["dut_luts"], res["dut_ffs"] = util_pblock(build)
         ra = ROOT / "results" / cdir / "route_attrib.json"
-        rows.append({"label": label, "a": a, "spec": spec, "res": res,
+        rows.append({"label": label, "build": build, "a": a, "spec": spec, "res": res,
                      "route": json.loads(ra.read_text()) if ra.exists() else None})
     return rows
 
@@ -301,16 +301,24 @@ def hardening_table():
 
 
 def table_models_tvlsi(rows):
-    """Table of networks and campaigns for the journal paper (paper_tvlsi/table_models_tvlsi.tex)."""
-    L = [r"\begin{tabular}{llrrrrrrrrrr}", r"\hline",
-         r"Network & Data & Acc. & LUTs & FFs & Lat. & Bits & Ess. & Crit. & Crit./ & Crit./ & FIT \\",
-         r" & & [\%] & & & [cyc] & [M] & [k] & [k] & Ess. [\%] & LUT & \\", r"\hline"]
+    """Table of networks and campaigns for the journal paper (paper_tvlsi/table_models_tvlsi.tex).
+    Fmax: post-route maximum clock rate of the network's own register-to-register paths
+    (hw/tcl/dut_timing.tcl -> results/dut_timing.tsv)."""
+    fmax = {}
+    ft = ROOT / "results/dut_timing.tsv"
+    if ft.exists():
+        for line in ft.read_text().splitlines()[1:]:
+            f = line.split("\t")
+            fmax[f[0]] = f[4]
+    L = [r"\begin{tabular}{llrrrrrrrrrrr}", r"\hline",
+         r"Network & Data & Acc. & LUTs & FFs & Lat. & $f_\mathrm{max}$ & Bits & Ess. & Crit. & Crit./ & Crit./ & FIT \\",
+         r" & & [\%] & & & [cyc] & [MHz] & [M] & [k] & [k] & Ess. [\%] & LUT & \\", r"\hline"]
     for r in rows:
         a, spec, res = r["a"], r["spec"], r["res"]
         data = "MNIST" if "mnist" in r["label"].lower() else "JSC"
         fit = a["critical"] * FIT_PER_MB / 1e6       # recomputed with the current UG116 rate
         L.append(f"{r['label']} & {data} & {100 * spec['meta']['test_acc']:.1f} & {int(res['dut_luts'])} & {int(res['dut_ffs'])} & "
-                 f"{res['latency']} & {a['injected'] / 1e6:.2f} & {a['essential_in_range'] / 1e3:.0f} & {a['critical'] / 1e3:.1f} & "
+                 f"{res['latency']} & {fmax.get(r['build'], '--')} & {a['injected'] / 1e6:.2f} & {a['essential_in_range'] / 1e3:.0f} & {a['critical'] / 1e3:.1f} & "
                  f"{100 * a['critical_frac_essential']:.1f} & {a['critical'] / int(res['dut_luts']):.1f} & {fit:.1f} \\\\")
     L += [r"\hline", r"\end{tabular}"]
     TVLSI.mkdir(exist_ok=True)
