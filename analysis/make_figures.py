@@ -108,6 +108,69 @@ def fig_composition(rows):
     fig.savefig(PAPER / "fig_composition.pdf")
 
 
+def fig_composition_tvlsi(rows):
+    """Journal figure: shares of the critical bits (a) by fabric resource for every network and (b) by
+    network stage for the LUT-native networks (results/stage_breakdown.json), as stacked horizontal
+    bars; segments of 8 % or more carry their share, the table bits (the parameter model's domain)
+    are the last segment and labelled at the end of the bar (paper/fig_composition_tvlsi.pdf)."""
+    plt.rcParams.update({"font.size": 7.5, "font.family": "serif", "font.serif": ["Times New Roman"],
+                         "mathtext.fontset": "stix", "axes.linewidth": 0.6, "legend.fontsize": 7})
+    order = ["DWN-S", "DWN-M", "DWN-MNIST", "DLGN", "MLP", "MLP-P"]
+    by = {r["label"]: r for r in rows}
+    ink, light_ink = "#0b0b0b", "#ffffff"
+    # (a) resources; (b) stages. (name, colour, text colour inside the segment)
+    cats_a = [("Routing", "#2a78d6", light_ink), ("Other LUT", "#4a3aa7", light_ink),
+              ("Other", "#b9b8b3", ink), ("Param.", "#eb6834", ink)]
+    cats_b = [("Conn.", "#2a78d6", light_ink), ("Enc.", "#1baf7a", ink), ("Read-out", "#eda100", ink),
+              ("Other", "#b9b8b3", ink), ("Tables", "#eb6834", ink)]
+    data_a = {}
+    for lab in order:
+        if lab not in by:
+            continue
+        c = composition(by[lab])
+        tot = sum(c.values())
+        param = c["Parameters (LUT tables)"]
+        data_a[lab] = [100 * c["Routing"] / tot, 100 * c["Other LUT logic"] / tot,
+                       100 * (c["Other CLB config."] + c["Clock"]) / tot,
+                       100 * param / tot if by[lab]["spec"]["type"] == "dwn" else None]
+    st = json.loads((ROOT / "results/stage_breakdown.json").read_text())
+    camp = {"DWN-S": "camp_dwn_sm", "DWN-M": "camp_dwn_md", "DWN-MNIST": "camp_dwn_mnist_r", "DLGN": "camp_dlgn_a"}
+    data_b = {}
+    for lab, cd in camp.items():
+        s = {k: 100 * v["share"] for k, v in st[cd].items()}
+        data_b[lab] = [s["learned connectivity"], s["encoder"], s["read-out"],
+                       s["clock"] + s["other CLB settings"] + s["rest"], s["parameters"]]
+    fig, (ax_a, ax_b) = plt.subplots(2, 1, figsize=(3.45, 2.42), sharex=True,
+                                     gridspec_kw={"height_ratios": [len(data_a), len(data_b)], "hspace": 0.85})
+    for ax, data, cats, title in [(ax_a, data_a, cats_a, "(a) By fabric resource"),
+                                  (ax_b, data_b, cats_b, "(b) By network stage")]:
+        labels = list(data)
+        y = list(range(len(labels)))[::-1]
+        left = [0.0] * len(labels)
+        for k, (name, col, tcol) in enumerate(cats):
+            vals = [data[l][k] or 0.0 for l in labels]
+            ax.barh(y, vals, left=left, height=0.72, color=col, edgecolor="white", linewidth=0.8, label=name)
+            for yi, v, x0 in zip(y, vals, left):
+                if v >= 8:
+                    ax.text(x0 + v / 2, yi, f"{v:.1f}", ha="center", va="center", fontsize=6.5, color=tcol)
+            left = [a + b for a, b in zip(left, vals)]
+        # the table bits: labelled at the end of the bar ("--" where they are not one-to-one parameters)
+        for yi, l in zip(y, labels):
+            v = data[l][-1]
+            ax.text(101.5, yi, "--" if v is None else f"{v:.1f}", ha="left", va="center", fontsize=6.5, color=ink)
+        ax.set_yticks(y, labels)
+        ax.tick_params(axis="y", length=0)
+        ax.set_xlim(0, 100)
+        ax.spines[["top", "right", "left"]].set_visible(False)
+        ax.set_title(title, loc="left", fontsize=7.5, pad=16)
+        ax.legend(loc="lower left", bbox_to_anchor=(-0.02, 1.0), ncol=len(cats), frameon=False,
+                  handlelength=1.0, handletextpad=0.4, columnspacing=0.9, borderaxespad=0.1)
+    ax_b.set_xticks([0, 25, 50, 75, 100])
+    ax_b.set_xlabel("Share of the critical bits [%]")
+    fig.subplots_adjust(left=0.2, right=0.93, top=0.86, bottom=0.14)
+    fig.savefig(PAPER / "fig_composition_tvlsi.pdf")
+
+
 def fig_routing(rows):
     """DWN-M: share of the critical routing bits per network stage (analysis/route_attrib.py)."""
     r = next((x for x in rows if x["label"] == "DWN-M" and x["route"]), None)
@@ -460,6 +523,7 @@ if __name__ == "__main__":
         fig_severity()
         table_models_tvlsi(rows)
         table_composition_tvlsi(rows)
+        fig_composition_tvlsi(rows)
         hardening_table_tvlsi()
         fig_hardening()
         print(json.dumps(composition_check(), indent=1))

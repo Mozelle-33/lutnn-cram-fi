@@ -245,46 +245,56 @@ def hw_summary():
 
 
 def plot():
+    """Fig. (accumulated upsets): accuracy loss against the per-bit upset probability, in hardware
+    (solid, filled markers, mean +- standard error) and in the parameter bit-flip model (dashed, open
+    markers). Colours are a validated colour-blind-safe set (every pair apart); markers keep the
+    networks apart in greyscale."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    plt.rcParams.update({"font.size": 7, "font.family": "serif", "axes.linewidth": 0.6})
+    from matplotlib.lines import Line2D
+    plt.rcParams.update({"font.size": 7.5, "font.family": "serif", "font.serif": ["Times New Roman"],
+                         "mathtext.fontset": "stix", "axes.linewidth": 0.6, "xtick.major.width": 0.6,
+                         "ytick.major.width": 0.6, "xtick.minor.width": 0.4, "legend.fontsize": 7})
     hw = hw_summary()
     sw_ = json.loads((ROOT / "results/multi_upset_sw.json").read_text())
-    pr = json.loads((ROOT / "results/multi_upset_pred.json").read_text())
-    from matplotlib.lines import Line2D
-    fig, ax = plt.subplots(figsize=(3.45, 1.85))
-    # a marker per network as well as a colour, so that the curves stay apart in greyscale
-    nets = [("dwn_md", "DWN-M", "#2b6cb0", "o"), ("dlgn_a", "DLGN", "#38a169", "s"),
-            ("mlp_32_16", "MLP", "#dd6b20", "^"), ("mlp_32_16_p70", "MLP-P", "#b7791f", "D")]
+    nets = [("dwn_md", "DWN-M", "#2a78d6", "o"), ("dlgn_a", "DLGN", "#1baf7a", "s"),
+            ("mlp_32_16", "MLP", "#eb6834", "^"), ("mlp_32_16_p70", "MLP-P", "#4a3aa7", "D")]
     nets = [n for n in nets if n[0] in hw]
+    fig, ax = plt.subplots(figsize=(3.45, 1.95))
+    ax.grid(axis="y", color="#e4e3df", lw=0.5)
+    ax.set_axisbelow(True)
     for m, lab, col, mk in nets:
-        ps = sorted(float(p) for p in hw[m])
-        mu = [hw[m][f"{p:g}"]["dacc_mean"] for p in ps]
-        se = [hw[m][f"{p:g}"]["dacc_se"] for p in ps]
-        ax.errorbar(ps, mu, yerr=se, color=col, lw=1.1, marker=mk, ms=3, capsize=1.5)
-        if m in sw_:                         # parameter model
+        if m in sw_:                         # parameter model, behind the hardware curves
             s = sw_[m]
             pp = sorted(float(p) for p in s["p"])
             ax.plot(pp, [100 * (s["correct0"] - s["p"][f"{p:g}"]["correct_mean"]) / s["ntest"] for p in pp],
-                    color=col, lw=1.0, ls="--", marker=mk, ms=3, mfc="none", markevery=2)
-        if m in pr:
-            xa = np.logspace(-6, np.log10(max(ps)), 40)
-            ya = np.array([100 * p * pr[m]["N"] * pr[m]["dcorr_per_bit"] / 4096 for p in xa])
-            ax.plot(xa[ya < 45], ya[ya < 45], color=col, lw=0.7, ls=":")
+                    color=col, lw=1.0, ls=(0, (4, 2)), marker=mk, ms=3.2, mfc="white", mew=0.9)
+        ps = sorted(float(p) for p in hw[m])
+        mu = [hw[m][f"{p:g}"]["dacc_mean"] for p in ps]
+        se = [hw[m][f"{p:g}"]["dacc_se"] for p in ps]
+        ax.errorbar(ps, mu, yerr=se, color=col, lw=1.3, marker=mk, ms=3.6, mec="white", mew=0.5,
+                    capsize=1.5, elinewidth=0.7)
     ax.set_xscale("log")
-    ax.set_xlim(8e-7, 1.2e-1)
-    ax.set_ylim(-2, 60)
+    ax.set_xlim(7e-7, 1.4e-1)
+    ax.set_ylim(-1.5, 60)
+    ax.set_yticks([0, 20, 40, 60])
     ax.set_xlabel("Per-bit upset probability $p$")
     ax.set_ylabel("Accuracy loss [points]")
-    h = [Line2D([], [], color=c, lw=1.1, marker=mk, ms=3, label=l) for _, l, c, mk in nets]
-    h += [Line2D([], [], color="black", lw=1.1, label="Hardware (CRAM of region)"),
-          Line2D([], [], color="black", lw=1.0, ls="--", label="Parameter bit-flip model"),
-          Line2D([], [], color="black", lw=0.7, ls=":", label="Sum of single-bit effects")]
-    ax.legend(handles=h, fontsize=5.3, frameon=False, ncol=2, loc="lower center", bbox_to_anchor=(0.5, 1.0),
-              handlelength=1.8, columnspacing=1.0)
     ax.spines[["top", "right"]].set_visible(False)
-    fig.tight_layout(pad=0.2)
+    # networks: colour and marker, upper left; line style: hardware or parameter model, upper middle
+    leg1 = ax.legend(handles=[Line2D([], [], color=c, lw=1.3, marker=mk, ms=3.6, mec=c, label=l)
+                              for _, l, c, mk in nets],
+                     loc="upper left", bbox_to_anchor=(0.0, 1.02), frameon=False, handlelength=2.2,
+                     borderaxespad=0.2, labelspacing=0.3)
+    ax.add_artist(leg1)
+    ax.legend(handles=[Line2D([], [], color="#52514e", lw=1.3, marker="o", ms=3.6, mec="#52514e",
+                              label="Hardware (CRAM of the region)"),
+                       Line2D([], [], color="#52514e", lw=1.0, ls=(0, (4, 2)), marker="o", ms=3.2, mfc="white",
+                              mew=0.9, label="Parameter bit-flip model")],
+              loc="upper left", bbox_to_anchor=(0.27, 1.02), frameon=False, handlelength=2.4,
+              borderaxespad=0.2, labelspacing=0.3)
+    fig.tight_layout(pad=0.25)
     fig.savefig(ROOT / "paper/fig_multi.pdf")
     print(json.dumps(hw, indent=1))
 
