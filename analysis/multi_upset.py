@@ -1,7 +1,7 @@
 """Accumulated upsets: K simultaneous CRAM upsets in hardware vs the parameter bit-flip model.
 
   python analysis/multi_upset.py gen  <campaign> <out_trials> <seed>      # trial lists for fi/multi_upset.tcl
-  python analysis/multi_upset.py sw   <model> [ntrials]                    # parameter-model Monte Carlo
+  python analysis/multi_upset.py sw   <model> [ntrials] [--retained]       # parameter-model Monte Carlo
   python analysis/multi_upset.py pred <model> <campaign>                   # additive single-bit prediction
   python analysis/multi_upset.py plot                                      # fig_multi.pdf from all results
 
@@ -95,23 +95,32 @@ def gen(cdir, out_path, seed, mult=1.0):
           {p: max(1, int(round(p * n))) for p in P_HW[cdir]})
 
 
-def param_bits(spec):
+def weight_positions(spec, retained_only=False):
+    """Per MLP layer, the flat indices of the weights that the parameter model can flip: all of them,
+    or for a pruned network only the retained (non-zero) ones."""
+    return [np.flatnonzero(np.asarray(L["w"])) if retained_only else np.arange(np.asarray(L["w"]).size)
+            for L in spec["layers"]]
+
+
+def param_bits(spec, retained_only=False):
     """Number of parameter bits the parameter model can flip: DWN table entries, 4 truth-table bits
-    per DLGN gate, 6-bit MLP weights plus the biases."""
+    per DLGN gate, 6-bit MLP weights (optionally only the retained ones) plus the biases."""
     if spec["type"] == "dwn":
         return sum(np.asarray(L["tables"]).size for L in spec["layers"])
     if spec["type"] == "dlgn":
         return 4 * sum(len(L["gate"]) for L in spec["layers"])
-    return sum(np.asarray(L["w"]).size * 6 + len(L["b"]) * bb for L, bb in zip(spec["layers"], MLP_BIAS_BITS))
+    return sum(len(wp) * 6 + len(L["b"]) * bb
+               for L, bb, wp in zip(spec["layers"], MLP_BIAS_BITS, weight_positions(spec, retained_only)))
 
 
 class ParamModel:
     """Prediction with a set of parameter bits (flat indices, see param_bits) inverted; the parts of
     the computation that flips cannot change (thermometer code, first-layer addresses) are cached."""
 
-    def __init__(self, spec, X):
+    def __init__(self, spec, X, retained_only=False):
         self.spec, self.X = spec, X
         self.kind = spec["type"]
+        self.wpos = weight_positions(spec, retained_only) if self.kind == "qmlp" else None
         if self.kind in ("dwn", "dlgn"):
             self.x0 = M._thermo_np(spec, X)
         if self.kind == "dwn":
@@ -145,14 +154,15 @@ class ParamModel:
             s = x.reshape(x.shape[0], spec["classes"], -1).sum(-1)
             return M.argmax_first(s)
         layers, off = [], 0
-        for L, bb in zip(spec["layers"], MLP_BIAS_BITS):
+        for L, bb, wp in zip(spec["layers"], MLP_BIAS_BITS, self.wpos):
             w = np.asarray(L["w"], dtype=np.int64).copy()
             b = np.asarray(L["b"], dtype=np.int64).copy()
-            for i in idx[(idx >= off) & (idx < off + w.size * 6)] - off:
-                j, bit = divmod(int(i), 6)
+            for i in idx[(idx >= off) & (idx < off + len(wp) * 6)] - off:
+                k, bit = divmod(int(i), 6)
+                j = wp[k]
                 v = (int(w.flat[j]) & 63) ^ (1 << bit)
                 w.flat[j] = v - 64 if v >= 32 else v
-            off += w.size * 6
+            off += len(wp) * 6
             for i in idx[(idx >= off) & (idx < off + len(b) * bb)] - off:
                 j, bit = divmod(int(i), bb)
                 v = (int(b[j]) & ((1 << bb) - 1)) ^ (1 << bit)
@@ -162,18 +172,20 @@ class ParamModel:
         return M.qmlp_forward_spec({**spec, "layers": layers}, self.X)[1]
 
 
-def sw(model, ntrials=200):
+def sw(model, ntrials=200, retained_only=False):
     """Parameter bit-flip model: for each p in P_SW, ntrials Monte-Carlo trials in which every
     parameter bit flips independently with probability p (Binomial number of flips), evaluated on
-    the hardware test vectors. Results go to results/multi_upset_sw.json."""
+    the hardware test vectors; retained_only: a pruned MLP flips only its retained weights. Results go
+    to results/multi_upset_sw.json."""
     spec = json.loads((ROOT / f"models/{model}.json").read_text())
     X, y = load_vectors(model)
-    nb = param_bits(spec)
-    pm = ParamModel(spec, X)
+    nb = param_bits(spec, retained_only)
+    pm = ParamModel(spec, X, retained_only)
     forward_flipped = lambda spec_, X_, idx: pm.pred(idx)  # noqa: E731
     pred0 = forward_flipped(spec, X, np.array([], dtype=np.int64))
     rng = np.random.default_rng(1)
-    res = {"model": model, "param_bits": nb, "ntest": len(y), "correct0": int((pred0 == y).sum()), "p": {}}
+    res = {"model": model, "param_bits": nb, "ntest": len(y), "correct0": int((pred0 == y).sum()), "p": {},
+           "weights": "retained" if retained_only else "all"}
     for p in P_SW:
         acc, mis = [], []
         for _ in range(ntrials):
@@ -351,6 +363,7 @@ if __name__ == "__main__":
     if cmd == "gen":
         gen(sys.argv[2], sys.argv[3], int(sys.argv[4]), float(sys.argv[5]) if len(sys.argv) > 5 else 1.0)
     elif cmd == "sw":
-        sw(sys.argv[2], int(sys.argv[3]) if len(sys.argv) > 3 else 200)
+        a = [x for x in sys.argv[2:] if not x.startswith("--")]
+        sw(a[0], int(a[1]) if len(a) > 1 else 200, retained_only="--retained" in sys.argv)
     elif cmd == "pred":
         pred(sys.argv[2], sys.argv[3])

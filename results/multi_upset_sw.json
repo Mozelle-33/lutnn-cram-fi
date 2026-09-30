@@ -223,76 +223,77 @@
  },
  "mlp_32_16_p70": {
   "model": "mlp_32_16_p70",
-  "param_bits": 7240,
+  "param_bits": 2566,
   "ntest": 4096,
   "correct0": 3067,
   "p": {
    "1e-06": {
-    "correct_mean": 3066.98,
-    "correct_std": 0.28213471959331765,
-    "mism_mean": 0.145,
+    "correct_mean": 3066.985,
+    "correct_std": 0.21160103969498828,
+    "mism_mean": 0.04,
     "trials": 200
    },
    "3e-06": {
-    "correct_mean": 3066.955,
-    "correct_std": 0.6348031190849647,
-    "mism_mean": 0.585,
+    "correct_mean": 3067.0,
+    "correct_std": 0.0,
+    "mism_mean": 0.0,
     "trials": 200
    },
    "1e-05": {
-    "correct_mean": 3063.16,
-    "correct_std": 36.714907054219815,
-    "mism_mean": 10.58,
+    "correct_mean": 3066.985,
+    "correct_std": 0.7034024452616013,
+    "mism_mean": 0.305,
     "trials": 200
    },
    "3e-05": {
-    "correct_mean": 3027.395,
-    "correct_std": 198.93827931044342,
-    "mism_mean": 77.435,
+    "correct_mean": 3066.07,
+    "correct_std": 6.753154818305294,
+    "mism_mean": 4.455,
     "trials": 200
    },
    "0.0001": {
-    "correct_mean": 2997.05,
-    "correct_std": 232.0572073864546,
-    "mism_mean": 146.47,
+    "correct_mean": 3049.08,
+    "correct_std": 118.92381426779079,
+    "mism_mean": 39.44,
     "trials": 200
    },
    "0.0003": {
-    "correct_mean": 2915.605,
-    "correct_std": 267.2756610224732,
-    "mism_mean": 330.14,
+    "correct_mean": 2992.635,
+    "correct_std": 207.10195985311196,
+    "mism_mean": 157.65,
     "trials": 200
    },
    "0.001": {
-    "correct_mean": 2580.13,
-    "correct_std": 469.86600547390105,
-    "mism_mean": 936.27,
+    "correct_mean": 2819.87,
+    "correct_std": 420.89066644438674,
+    "mism_mean": 491.85,
     "trials": 200
    },
    "0.003": {
-    "correct_mean": 1904.695,
-    "correct_std": 556.7606415462573,
-    "mism_mean": 1933.675,
+    "correct_mean": 2405.245,
+    "correct_std": 625.6162761429725,
+    "mism_mean": 1191.895,
     "trials": 200
    },
    "0.01": {
-    "correct_mean": 1164.145,
-    "correct_std": 343.17372273383637,
-    "mism_mean": 2870.08,
+    "correct_mean": 1672.13,
+    "correct_std": 524.8795796180301,
+    "mism_mean": 2173.16,
     "trials": 200
    },
    "0.03": {
-    "correct_mean": 858.545,
-    "correct_std": 266.5928318147358,
-    "mism_mean": 3218.37,
+    "correct_mean": 1083.33,
+    "correct_std": 390.1525356831607,
+    "mism_mean": 2965.24,
     "trials": 200
    },
    "0.1": {
-    "correct_mean": 822.15,
-    "correct_std": 193.47534080600556,
-    "mism_mean": 3242.84,
+    "correct_mean": 859.97,
+    "correct_std": 231.9135379834476,
+    "mism_mean": 3218.39,
     "trials": 200
    }
-  }
+  },
+  "weights": "retained"
  }
 }
