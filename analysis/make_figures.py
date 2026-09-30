@@ -170,12 +170,12 @@ def fig_composition_tvlsi(rows):
             ax.barh(y, vals, left=left, height=0.72, color=col, edgecolor="white", linewidth=0.8, label=name)
             for yi, v, x0 in zip(y, vals, left):
                 if v >= 8:
-                    ax.text(x0 + v / 2, yi, f"{v:.1f}", ha="center", va="center", fontsize=6.5, color=tcol)
+                    ax.text(x0 + v / 2, yi, f"{v:.1f}", ha="center", va="center", fontsize=7, color=tcol)
             left = [a + b for a, b in zip(left, vals)]
         # the table bits: labelled at the end of the bar ("--" where they are not one-to-one parameters)
         for yi, l in zip(y, labels):
             v = data[l][-1]
-            ax.text(101.5, yi, "--" if v is None else f"{v:.1f}", ha="left", va="center", fontsize=6.5, color=ink)
+            ax.text(101.5, yi, "--" if v is None else f"{v:.1f}", ha="left", va="center", fontsize=7, color=ink)
         ax.set_yticks(y, labels)
         ax.tick_params(axis="y", length=0)
         ax.set_xlim(0, 100)
@@ -255,11 +255,13 @@ METRICS = ["crit", "smism", "gt1", "gt10"]
 # journal paper
 NOT_REPORTED = {"camp_dwn_md_fa5", "camp_dwn_md_pf2", "camp_dwn_mnist"}
 # second campaigns of already reported builds (another idle input vector, suffix _idle1479; DWN-MNIST
-# repeated with the same bitstream, _rep, and at half the clock rate, _50): counted in the injections,
-# not as further builds in the parameter-model comparison
-CONTROL = {p.name for p in (ROOT / "results").glob("camp_*_idle1479")} | {"camp_dwn_mnist_r_rep", "camp_dwn_mnist_r_50"}
-# the campaign at 50 MHz, where every step of the injection loop takes twice as long
-SLOW_CLOCK = {"camp_dwn_mnist_r_50"}
+# repeated with the same bitstream, _rep, and at half the clock rate, _50) and the clock-rate control of
+# DWN-M (a build with a 200 MHz network clock, _f200, repeated, _f200_rep, and run at 100 MHz, _f200_100):
+# counted in the injections, not as further builds in the parameter-model comparison
+CONTROL = {p.name for p in (ROOT / "results").glob("camp_*_idle1479")} | {
+    "camp_dwn_mnist_r_rep", "camp_dwn_mnist_r_50", "camp_dwn_md_f200", "camp_dwn_md_f200_rep", "camp_dwn_md_f200_100"}
+# campaigns whose network (and injection loop) do not run at 100 MHz
+OTHER_CLOCK = {"camp_dwn_mnist_r_50", "camp_dwn_md_f200", "camp_dwn_md_f200_rep"}
 
 
 def run_metrics(cdir, model, build):
@@ -354,21 +356,25 @@ def hardening_table_tvlsi():
     (paper_tvlsi/table_hardening_tvlsi.tex)."""
     import numpy as np
 
+    def num(x, digits):
+        s = f"{x:.{digits}f}"
+        return s[:-3] + r"\," + s[-3:] if digits == 0 and abs(x) >= 9999.5 else s   # 13\,009
+
     def fmt(vals, scale, digits):
         v = np.array(vals, dtype=float) / scale
         if len(v) == 1:
-            return f"{v[0]:.{digits}f}"
-        return f"{v.mean():.{digits}f}$\\pm${v.std(ddof=1):.{digits}f}"
+            return num(v[0], digits)
+        return f"{num(v.mean(), digits)}$\\pm${num(v.std(ddof=1), digits)}"
 
     L = [r"\begin{tabular}{lrrrrrrrrr}", r"\hline",
          r"Variant & Runs & Acc. & LUTs & Ess. & Crit. & Crit./Ess. & $\sum$mism. & $\geq$1\% & $\geq$10\% \\",
-         r" & & [\%] & & [k] & [k] & [\%] & [M] & [k] & \\", r"\hline"]
+         r" & & [\%] & & [k] & [k] & [\%] & [M] & & \\", r"\hline"]
     for label, ms in seeded_runs():
         col = lambda k: [m[k] for m in ms]          # noqa: E731
         ratio = [100 * m["crit"] / m["ess"] for m in ms]
         L.append(" & ".join([label, str(len(ms)), fmt(col("acc"), 1, 2), fmt(col("luts"), 1, 0), fmt(col("ess"), 1e3, 0),
                              fmt(col("crit"), 1e3, 1), fmt(ratio, 1, 1), fmt(col("smism"), 1e6, 2),
-                             fmt(col("gt1"), 1e3, 1), fmt(col("gt10"), 1, 0)]) + r" \\")
+                             fmt(col("gt1"), 1, 0), fmt(col("gt10"), 1, 0)]) + r" \\")
     L += [r"\hline", r"\end{tabular}"]
     TVLSI.mkdir(exist_ok=True)
     (TVLSI / "table_hardening_tvlsi.tex").write_text("\n".join(L))
@@ -457,7 +463,7 @@ def campaign_totals():
         hs = j.get("dwn_lut_layer_hw_vs_sw")         # DWN: table bits compared with the parameter model
         if hs and a.parent.name not in CONTROL:
             runs[a.parent.name].update(param_bits=hs["bits"], param_exact=hs["exact_agree"])
-    rates = [r["rate"] for k, r in runs.items() if k not in SLOW_CLOCK]      # at 100 MHz
+    rates = [r["rate"] for k, r in runs.items() if k not in OTHER_CLOCK]     # at 100 MHz
     dwn = [r for r in runs.values() if "param_bits" in r]
     out = {"campaigns": len(runs), "injected": sum(r["injected"] for r in runs.values()),
            "hours": sum(r["seconds"] for r in runs.values()) / 3600, "rate_min": min(rates), "rate_max": max(rates),

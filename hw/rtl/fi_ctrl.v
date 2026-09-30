@@ -27,7 +27,9 @@ module fi_ctrl #(
     parameter VEC_FILE = "vectors.mem",   // one hex line per vector: {label[CW-1:0], x[IN_W-1:0]}
     parameter FAR_FILE = "farlist.mem",   // one hex line per frame: 25-bit frame address (FAR)
     parameter [15:0] BUILD_ID = 16'h0001, // reported in the status word so that the host can check
-    parameter [15:0] DUT_ID   = 16'h0000  // which bitstream is running
+    parameter [15:0] DUT_ID   = 16'h0000, // which bitstream is running
+    parameter WIN_PIPE = 0                // 1: one more register between the log RAM and the window
+                                          // (for clocks above 100 MHz, fi_top_dual.v)
 ) (
     input  wire              clk,
     input  wire [255:0]      cmd,        // command word from jtag_regs (key already checked)
@@ -385,6 +387,7 @@ module fi_ctrl #(
     reg [8:0]  win_i = 0;
     reg [63:0] win_mem [0:WIN_N-1];
     initial for (k = 0; k < WIN_N; k = k + 1) win_mem[k] = 0;
+    generate if (WIN_PIPE == 0) begin : g_wl1
     always @(posedge clk) begin
         if (!wl_busy && cmd_valid && op == 8'h0A) begin
             wl_busy <= 1'b1; wl_tag <= cmd[55:40];
@@ -400,6 +403,25 @@ module fi_ctrl #(
             win_i <= win_i + 1'b1;
         end
     end
+    end else begin : g_wl2
+    // the same with the RAM output registered once more: lq2 holds the record addressed two cycles ago
+    reg [63:0] lq2 = 0;
+    always @(posedge clk) begin
+        lq2 <= lq;
+        if (!wl_busy && cmd_valid && op == 8'h0A) begin
+            wl_busy <= 1'b1; wl_tag <= cmd[55:40];
+            win_start <= cmd[87:56]; rd_ptr <= cmd[87:56];
+            lraddr <= cmd[56+LA-1:56]; win_i <= 0;
+        end else if (!wl_busy && cmd_valid && op == 8'h0B && st == S_IDLE) begin
+            rd_ptr <= 0;
+        end else if (wl_busy) begin
+            lraddr <= lraddr + 1'b1;
+            if (win_i > 1) win_mem[win_i - 2] <= lq2;
+            if (win_i == WIN_N + 1) begin wl_busy <= 1'b0; win_tag <= wl_tag; end
+            win_i <= win_i + 1'b1;
+        end
+    end
+    end endgenerate
 
     // ---------------- status and window ----------------
     assign status = {

@@ -1,11 +1,14 @@
 # Non-project build of the FI platform for one DUT.
 # Usage: vivado -mode batch -source hw/tcl/build.tcl -tclargs <name> <latency> <in_w> <build_id> <dut_id>
-#            [rows] [y0] [gen_name] [cw] [nvec] [slices]
+#            [rows] [y0] [gen_name] [cw] [nvec] [slices] [fast_div]
 #   rows: auto | 1 | 2   (DUT pblock height in clock regions starting at X0Y4)
 #   slices: all (default) | slicel (the DUT may not use SLICEMs, so it has no LUT-mode bits)
+#   fast_div: 0 (default) single 100 MHz clock (fi_top.v) | n > 0: fi_top_dual.v, the SEM controller
+#             at 100 MHz and the FI controller and DUT at 1000/n MHz (5: 200 MHz)
 # Outputs in hw/build/<name>/: fi_<name>.bit (+ .ebd/.ebc essential bits), routed.dcp, reports,
 # dut_cells.csv (every DUT leaf cell with BEL/site/INIT), pblock.txt, isolation_audit.txt.
-lassign $argv name lat in_w bid did rows y0 gen_name cw nvec slices
+lassign $argv name lat in_w bid did rows y0 gen_name cw nvec slices fast_div
+if {$fast_div eq ""} { set fast_div 0 }
 if {$slices eq ""} { set slices all }
 if {$rows eq ""} { set rows auto }
 if {$y0 eq ""} { set y0 200 }
@@ -25,14 +28,19 @@ set part xc7k325tffg900-2
 create_project -in_memory -part $part
 set_property target_language Verilog [current_project]
 read_verilog [list $root/hw/rtl/fi_top.v $root/hw/rtl/fi_ctrl.v $root/hw/rtl/jtag_regs.v $gen/dut.v]
+if {$fast_div > 0} { read_verilog $root/hw/rtl/fi_top_dual.v }
 read_ip $root/hw/ip/sem_0/sem_0.xci
 set_property GENERATE_SYNTH_CHECKPOINT false [get_files sem_0.xci]
 generate_target all [get_ips sem_0]
 read_xdc $root/hw/xdc/fi_board.xdc
+if {$fast_div > 0} { read_xdc $root/hw/xdc/fi_dual.xdc }
+set top [expr {$fast_div > 0 ? "fi_top_dual" : "fi_top"}]
+set generics "IN_W=$in_w CW=$cw NVEC=$nvec LATENCY=$lat BUILD_ID=$bid DUT_ID=$did"
+if {$fast_div > 0} { append generics " FAST_DIV=$fast_div" }
 
 # -max_dsp 0: every design is implemented in the fabric only (LUTs, carry chains, flip-flops), so that
 # the networks are compared on the same kind of configuration memory
-synth_design -top fi_top -part $part -max_dsp 0 -generic "IN_W=$in_w CW=$cw NVEC=$nvec LATENCY=$lat BUILD_ID=$bid DUT_ID=$did"
+synth_design -top $top -part $part -max_dsp 0 -generic $generics
 report_utilization -hierarchical -file $out/util_synth_hier.rpt
 
 set dut_luts [llength [get_cells -hier -filter {PRIMITIVE_GROUP == LUT && NAME =~ u_dut/*}]]
@@ -79,7 +87,7 @@ add_cells_to_pblock pb_harness [get_cells {u_ctrl u_jtag u_sem u_mon}]
 resize_pblock pb_harness -add {CLOCKREGION_X0Y0:CLOCKREGION_X0Y2}
 set_property CONTAIN_ROUTING true [get_pblocks pb_harness]
 set fp [open $out/pblock.txt w]
-puts $fp "name=$name rows=$rows ncols=$ncols slice_x=$xmin..$xmax y=$y0..$y1 dut_luts=$dut_luts dut_ffs=$dut_ffs dut_carry4=$dut_carry latency=$lat slices=$slices"
+puts $fp "name=$name rows=$rows ncols=$ncols slice_x=$xmin..$xmax y=$y0..$y1 dut_luts=$dut_luts dut_ffs=$dut_ffs dut_carry4=$dut_carry latency=$lat slices=$slices[expr {$fast_div > 0 ? " fast_div=$fast_div" : ""}]"
 close $fp
 
 opt_design

@@ -1,7 +1,7 @@
 {
- "campaigns": 39,
- "injected": 137728220,
- "hours": 5.2781866666666675,
+ "campaigns": 42,
+ "injected": 146401796,
+ "hours": 5.592528611111111,
  "rate_min": 5888.214325205221,
  "rate_max": 8381.949177556551,
  "dwn_builds": 25,
@@ -40,6 +40,21 @@
    "rate": 7163.222782163156,
    "param_bits": 64000,
    "param_exact": 64000
+  },
+  "camp_dwn_md_f200": {
+   "injected": 2891192,
+   "seconds": 345.237,
+   "rate": 8374.513739836691
+  },
+  "camp_dwn_md_f200_100": {
+   "injected": 2891192,
+   "seconds": 427.98,
+   "rate": 6755.437169961213
+  },
+  "camp_dwn_md_f200_rep": {
+   "injected": 2891192,
+   "seconds": 358.414,
+   "rate": 8066.626861673931
   },
   "camp_dwn_md_fa2": {
    "injected": 2891432,

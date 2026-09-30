@@ -25,8 +25,10 @@ adds:
   logic one, the unused output of a used LUT carries its value), validated bit by bit, with
   second exhaustive campaigns at another idle input vector (unhardened and fault-aware DWN-M, three
   training runs each), a model sweep over all idle vectors and a hold test of frozen values,
-* a clock-rate control: DWN-MNIST, whose maximum clock rate is closest to the 100 MHz of the
-  campaigns, injected again at 100 MHz and at 50 MHz with an unchanged configuration of the network,
+* clock-rate controls: DWN-MNIST, whose maximum clock rate is closest to the 100 MHz of the
+  campaigns, injected again at 100 MHz and at 50 MHz with an unchanged configuration of the network;
+  DWN-M implemented for a 200 MHz network clock (the SEM controller keeps its own 100 MHz clock),
+  injected twice at 200 MHz and once, with the same configuration, at 100 MHz,
 * hardening measured exhaustively over three training runs per variant: don't-care filling,
   fault-aware training (inverted and physically modelled input faults), selective TMR, alone and
   combined with either kind of fault-aware training, SLICEL-only placement. Two exploratory single runs (fault-aware 5 %, physical 2 %) and a first DWN-MNIST
@@ -37,7 +39,7 @@ adds:
 
 | Directory | Contents |
 |---|---|
-| `hw/rtl` | Injection platform: `fi_ctrl.v` (autonomous campaign controller), `jtag_regs.v` (BSCANE2 register file), `fi_top.v` (top level with the SEM controller) |
+| `hw/rtl` | Injection platform: `fi_ctrl.v` (autonomous campaign controller), `jtag_regs.v` (BSCANE2 register file), `fi_top.v` (top level with the SEM controller), `fi_top_dual.v` (the same with a separate, faster clock for the controller and the network) |
 | `hw/xdc` | Board constraints (NetFirm-4E40-C card with XC7K325T-FFG900-2; adapt the pins for other boards) |
 | `hw/tcl` | Vivado scripts: SEM IP generation, build with isolated pblocks and essential bits, exports for the analysis, post-route timing of the network (`dut_timing.tcl`) |
 | `hw/sim` | RTL simulation of a generated network against its software reference |
@@ -91,9 +93,12 @@ multiplexer fault models (`hw/tcl/export_lutpins.tcl`, `hw/tcl/export_routetree.
 `analysis/idle_control.py`; whole-region campaigns with the verify length set to another vector
 count, `FI_VERIFY=1479 FI_SUFFIX=_idle1479 fi/run_campaigns.ps1 ...`, compared by
 `analysis/idle_compare.py` and `analysis/state_hardening.py`; model sweep over all idle vectors
-`analysis/state_sweep.py`), clock-rate control (`hw/tcl/dut_timing.tcl` for the maximum clock
+`analysis/state_sweep.py`), clock-rate controls (`hw/tcl/dut_timing.tcl` for the maximum clock
 rates, `hw/tcl/eco_clkdiv.tcl` for the 50 MHz bitstream, `FI_SUFFIX=_rep fi/run_campaigns.ps1
-dwn_mnist_r:dwn_mnist` for the repeat, `analysis/clock_control.py`), injection timing
+dwn_mnist_r:dwn_mnist` for the repeat; the 200 MHz build with `hw/rtl/fi_top_dual.v` and
+`hw/xdc/fi_dual.xdc`, selected by the last argument of `hw/tcl/build.tcl`,
+`build.tcl ... dwn_md_f200 8 160 40 1 auto 200 dwn_md 3 4096 all 5`, its 100 MHz variant with
+`hw/tcl/eco_fastdiv.tcl dwn_md_f200 dwn_md_f200_100 10`; `analysis/clock_control.py`), injection timing
 (`fi/throughput.tcl`), frozen-input hold test
 (`analysis/freeze_hold.py`, `analysis/hold_stage.py`, `fi/hold_test.tcl`, die temperature
 `fi/read_temp.tcl`), critical bits by network stage (`analysis/stage_breakdown.py`), common-mode
@@ -118,8 +123,9 @@ failures of the TMR (`analysis/tmr_cmf.py`), effective rate of the physical trai
 * `results/hardening_stats.json`, `results/composition_seeds.json`, `results/campaign_totals.json`:
   statistics of the hardening variants over the training runs, the per-run composition check of
   fault-aware training and TMR, and the totals of all campaigns.
-* `results/dut_timing.tsv`, `results/clock_control.json`: maximum clock rate of each network and the
-  comparison of the DWN-MNIST campaigns at 100 MHz (two runs) and 50 MHz.
+* `results/dut_timing.tsv`, `results/dut_timing_f200.tsv`, `results/clock_control.json`: maximum
+  clock rate of each network and the comparison of the DWN-MNIST campaigns at 100 MHz (two runs) and
+  50 MHz and of the DWN-M campaigns at 200 MHz (two runs) and 100 MHz.
 
 ## License
 

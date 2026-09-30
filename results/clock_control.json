@@ -1,62 +1,141 @@
 {
- "runs": {
-  "100": {
-   "campaign": "camp_dwn_mnist_r",
-   "critical": 164633,
-   "sum_mism": 961642,
-   "severe": 3505,
-   "catastrophic": 623,
-   "param_exact": 192000,
-   "param_bits": 192000
+ "DWN-MNIST": {
+  "clock_mhz": {
+   "high": 100,
+   "low": 50
   },
-  "100 repeat": {
-   "campaign": "camp_dwn_mnist_r_rep",
-   "critical": 164626,
-   "sum_mism": 962464,
-   "severe": 3506,
-   "catastrophic": 624,
-   "param_exact": 192000,
-   "param_bits": 192000
+  "runs": {
+   "high": {
+    "campaign": "camp_dwn_mnist_r",
+    "critical": 164633,
+    "sum_mism": 961642,
+    "severe": 3505,
+    "catastrophic": 623,
+    "golden_corr": 2006,
+    "param_exact": 192000,
+    "param_bits": 192000
+   },
+   "high repeat": {
+    "campaign": "camp_dwn_mnist_r_rep",
+    "critical": 164626,
+    "sum_mism": 962464,
+    "severe": 3506,
+    "catastrophic": 624,
+    "golden_corr": 2006,
+    "param_exact": 192000,
+    "param_bits": 192000
+   },
+   "low": {
+    "campaign": "camp_dwn_mnist_r_50",
+    "critical": 164804,
+    "sum_mism": 980828,
+    "severe": 3525,
+    "catastrophic": 642,
+    "golden_corr": 2006,
+    "param_exact": 192000,
+    "param_bits": 192000
+   }
   },
-  "50": {
-   "campaign": "camp_dwn_mnist_r_50",
-   "critical": 164804,
-   "sum_mism": 980828,
-   "severe": 3525,
-   "catastrophic": 642,
-   "param_exact": 192000,
-   "param_bits": 192000
+  "lost_at_low": {
+   "bits": 354,
+   "share_of_critical": 0.0021502371942441673,
+   "max_mism": 5,
+   "sum_mism": 408
+  },
+  "gained_at_low": {
+   "bits": 520,
+   "max_mism": 49
+  },
+  "net_change_critical": 0.0010386738989145439,
+  "status_changes": {
+   "high vs low": 1019,
+   "high vs high repeat": 281
+  },
+  "sum_mism_change": {
+   "high to low": 0.019951291644915603,
+   "high to high repeat": 0.0008547879564329008
+  },
+  "sum_mism_change_by_group": {
+   "routing: popcount": 9842,
+   "routing: argmax/output": 7692,
+   "routing: unused wire": 677,
+   "routing: clock": 526,
+   "routing: thermometer->LUT": 253,
+   "routing: inputs": 148,
+   "routing: encoder": 100,
+   "routing: constant": 20,
+   "routing: LUT layer->popcount": 15,
+   "LUT_INIT": -4,
+   "CLB_OTHER": -83
   }
  },
- "lost_at_50": {
-  "bits": 354,
-  "share_of_critical": 0.0021502371942441673,
-  "max_mism": 5,
-  "sum_mism": 408
- },
- "gained_at_50": {
-  "bits": 520
- },
- "net_change_critical": 0.0010386738989145439,
- "status_changes": {
-  "100 vs 50": 1019,
-  "100 vs 100 repeat": 281
- },
- "sum_mism_change": {
-  "100 vs 50": 0.019951291644915603,
-  "100 vs 100 repeat": 0.0008547879564329008
- },
- "sum_mism_change_by_group": {
-  "routing: popcount": 9842,
-  "routing: argmax/output": 7692,
-  "routing: unused wire": 677,
-  "routing: clock": 526,
-  "routing: thermometer->LUT": 253,
-  "routing: inputs": 148,
-  "routing: encoder": 100,
-  "routing: constant": 20,
-  "routing: LUT layer->popcount": 15,
-  "LUT_INIT": -4,
-  "CLB_OTHER": -83
+ "DWN-M": {
+  "clock_mhz": {
+   "high": 200,
+   "low": 100
+  },
+  "runs": {
+   "high": {
+    "campaign": "camp_dwn_md_f200",
+    "critical": 231960,
+    "sum_mism": 4185760,
+    "severe": 13767,
+    "catastrophic": 1496,
+    "golden_corr": 3133,
+    "param_exact": 64000,
+    "param_bits": 64000
+   },
+   "high repeat": {
+    "campaign": "camp_dwn_md_f200_rep",
+    "critical": 231956,
+    "sum_mism": 4185777,
+    "severe": 13756,
+    "catastrophic": 1495,
+    "golden_corr": 3133,
+    "param_exact": 64000,
+    "param_bits": 64000
+   },
+   "low": {
+    "campaign": "camp_dwn_md_f200_100",
+    "critical": 232107,
+    "sum_mism": 4219865,
+    "severe": 13826,
+    "catastrophic": 1520,
+    "golden_corr": 3133,
+    "param_exact": 64000,
+    "param_bits": 64000
+   }
+  },
+  "lost_at_low": {
+   "bits": 204,
+   "share_of_critical": 0.0008794619762027936,
+   "max_mism": 5,
+   "sum_mism": 310
+  },
+  "gained_at_low": {
+   "bits": 356,
+   "max_mism": 730
+  },
+  "net_change_critical": 0.000633729953440243,
+  "status_changes": {
+   "high vs low": 657,
+   "high vs high repeat": 174
+  },
+  "sum_mism_change": {
+   "high to low": 0.008147863231527941,
+   "high to high repeat": 4.061389090592726e-06
+  },
+  "sum_mism_change_by_group": {
+   "routing: popcount": 25145,
+   "routing: encoder": 4962,
+   "routing: argmax/output": 2270,
+   "CLB_OTHER": 1301,
+   "routing: unused wire": 1210,
+   "routing: thermometer->LUT": 586,
+   "routing: LUT layer->popcount": 300,
+   "routing: inputs": 103,
+   "routing: constant": -28,
+   "routing: clock": -1744
+  }
  }
 }
